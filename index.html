@@ -1,0 +1,3488 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#C27A1A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="محسين للخبز التقليدي">
+<title>محسين للخبز التقليدي</title>
+<script>
+(function(){
+  try{
+    var cfg=JSON.parse(localStorage.getItem('makhbaza_cfg')||'{}');
+    var t=cfg.theme||'auto';
+    var dark=(t==='auto')?window.matchMedia('(prefers-color-scheme:dark)').matches:(t==='dark');
+    document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+  }catch(e){}
+})();
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --A:#C27A1A;--AL:#FEF3E2;--AM:#F5C469;--AD:#7A4A08;--AX:#4A2C04;
+  --T:#1D9E75;--TL:#E1F5EE;--TM:#9FE1CB;--TD:#085041;
+  --CL:#FAECE7;--CD:#993C1D;
+  --GL:#EAF3DE;--GD:#27500A;
+  --PL:#EEEDFE;--PD:#3C3489;
+  --c-sha:#7A4A08;--c-sha-bg:#FEF0D8;--c-sha-bd:#D4932A;
+  --c-dra:#6B5500;--c-dra-bg:#FFFBD0;--c-dra-bd:#D4B800;
+  --c-qmh:#5C3D1E;--c-qmh-bg:#F5ECD8;--c-qmh-bd:#C09050;
+  --bg:#FFFDF8;--bg2:#F5ECD8;--bg3:#EDE0C4;
+  --br:#E0CFA8;--br2:#C8B080;
+  --tx:#2A1A06;--tx2:#7A5830;--tx3:#A88050;
+  --r:14px;--rl:18px;
+  --sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px)
+}
+[data-theme="light"]{
+  --A:#C27A1A;--AL:#FEF3E2;--AM:#F5C469;--AD:#7A4A08;--AX:#4A2C04;
+  --c-sha:#7A4A08;--c-sha-bg:#FEF0D8;--c-sha-bd:#D4932A;
+  --c-dra:#6B5500;--c-dra-bg:#FFFBD0;--c-dra-bd:#D4B800;
+  --c-qmh:#5C3D1E;--c-qmh-bg:#F5ECD8;--c-qmh-bd:#C09050;
+  --bg:#FFFDF8;--bg2:#F5ECD8;--bg3:#EDE0C4;
+  --br:#E0CFA8;--br2:#C8B080;
+  --tx:#2A1A06;--tx2:#7A5830;--tx3:#A88050
+}
+[data-theme="dark"]{
+  --bg:#1E1608;--bg2:#2A1E0A;--bg3:#352610;--br:#4A3418;--br2:#6A4C22;
+  --tx:#F5E8CC;--tx2:#C4A06A;--tx3:#8A6840;
+  --AL:#2a1c08;--AM:#7a4e10;--AD:#F5C469;--AX:#FEF3E2;
+  --TL:#0a2018;--TM:#0f4a30;--TD:#9FE1CB;
+  --CL:#2a1208;--CD:#F0997B;--GL:#111f08;--GD:#C0DD97;
+  --c-sha:#F5C469;--c-sha-bg:#2a1c08;--c-sha-bd:#8a5018;
+  --c-dra:#E8D500;--c-dra-bg:#221f00;--c-dra-bd:#6a5a00;
+  --c-qmh:#DCAD80;--c-qmh-bg:#1e1208;--c-qmh-bd:#7a5030
+}
+/* ─── PIN SCREEN ─── */
+#pin-screen{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center}
+.pin-title{font-size:24px;font-weight:900;color:var(--A);margin-bottom:6px}
+.pin-sub{font-size:15px;color:var(--tx2);margin-bottom:28px}
+.pin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:320px;margin-bottom:20px}
+.pin-role-btn{padding:22px 16px;border-radius:var(--rl);border:3px solid var(--br2);background:var(--bg2);cursor:pointer;font-family:inherit;text-align:center;transition:all .15s}
+.pin-role-btn:active{transform:scale(.97)}
+.pin-role-btn.manager{border-color:var(--A)}
+.pin-role-btn-icon{font-size:36px;margin-bottom:8px}
+.pin-role-btn-name{font-size:17px;font-weight:800;color:var(--tx)}
+.pin-role-btn-sub{font-size:13px;color:var(--tx2);margin-top:3px}
+.pin-dots{display:flex;justify-content:center;gap:14px;margin:20px 0}
+.pin-dot{width:18px;height:18px;border-radius:50%;background:var(--br2);transition:background .15s}
+.pin-dot.filled{background:var(--A)}
+.pin-numpad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;width:100%;max-width:280px;margin:0 auto}
+.pin-num{padding:18px;border-radius:var(--r);border:2px solid var(--br2);background:var(--bg2);font-size:22px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;text-align:center}
+.pin-num:active{background:var(--AL);border-color:var(--A);transform:scale(.95)}
+.driver-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.driver-pill{padding:8px 16px;border-radius:20px;border:2px solid var(--br2);background:var(--bg2);color:var(--tx2);font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit}
+.driver-pill.on{background:var(--A);color:#fff;border-color:var(--A)}
+.role-badge{font-size:11px;padding:3px 8px;border-radius:10px;font-weight:700;margin-right:4px;display:inline-block}
+.role-badge.manager{background:var(--AL);color:var(--AD)}
+.role-badge.driver{background:var(--TL);color:var(--TD)}
+/* ─── SPLASH SCREEN ─── */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+
+#splash{
+  position:fixed;inset:0;z-index:999;
+  background:linear-gradient(155deg,#7A3008 0%,#B86010 35%,#C27A1A 65%,#D4922A 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 28px;text-align:center;
+  /* أبطأ قليلاً — fade-out بعد 3.2 ثانية */
+  animation:splashOut .6s ease-out forwards 3.2s;
+  /* طبقة خفيفة لإضفاء عمق */
+  box-shadow:inset 0 -120px 200px rgba(0,0,0,.18),inset 0 40px 80px rgba(255,220,100,.12);
+}
+@keyframes splashOut{
+  0%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(1.04);pointer-events:none;visibility:hidden}
+}
+
+/* الأيقونة */
+.splash-icon{
+  font-size:96px;
+  margin-bottom:22px;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.35)) drop-shadow(0 2px 6px rgba(0,0,0,.2));
+  animation:iconIn .7s cubic-bezier(.34,1.56,.64,1) both;
+  display:block;line-height:1
+}
+@keyframes iconIn{
+  0%{transform:scale(.3) translateY(20px);opacity:0}
+  100%{transform:scale(1) translateY(0);opacity:1}
+}
+
+/* العنوان */
+.splash-title{
+  font-family:'Cairo',sans-serif;
+  font-size:34px;
+  font-weight:900;
+  color:#FFFFFF;
+  letter-spacing:.5px;
+  margin-bottom:14px;
+  line-height:1.3;
+  text-shadow:0 2px 12px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.25);
+  animation:titleIn .7s ease both .35s;
+  opacity:0
+}
+@keyframes titleIn{
+  0%{transform:translateY(18px);opacity:0}
+  100%{transform:translateY(0);opacity:1}
+}
+
+/* الفاصل الذهبي */
+.splash-divider{
+  width:60px;height:3px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);
+  border-radius:2px;
+  margin:0 auto 18px;
+  animation:titleIn .6s ease both .55s;
+  opacity:0
+}
+
+/* النص التقديمي */
+.splash-tagline{
+  font-family:'Cairo',sans-serif;
+  font-size:16px;
+  font-weight:400;
+  color:rgba(255,255,255,.9);
+  line-height:1.75;
+  max-width:300px;
+  margin:0 auto 32px;
+  text-shadow:0 1px 6px rgba(0,0,0,.25);
+  animation:taglineIn .7s ease both .65s;
+  opacity:0
+}
+@keyframes taglineIn{
+  0%{transform:translateY(12px);opacity:0}
+  100%{transform:translateY(0);opacity:.9}
+}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:'Cairo',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;color:var(--tx);font-size:17px;line-height:1.5}
+#app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto}
+
+/* ─── TOPBAR ─── */
+.topbar{background:var(--A);padding:11px 16px 10px;padding-top:calc(11px + var(--st));flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.tb-logo{font-size:17px;font-weight:800;color:#fff;letter-spacing:-.3px;line-height:1.3}
+.tb-sub{font-size:11px;color:rgba(255,255,255,.75);margin-top:2px}
+.tb-ca-val{font-size:19px;font-weight:800;color:#fff;text-align:left}
+.tb-ca-lbl{font-size:11px;color:rgba(255,255,255,.75);text-align:left}
+
+/* ─── CONTENT + SCREENS ─── */
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.screen{display:none;padding:14px 14px 24px;animation:fi .15s ease}
+.screen.on{display:block}
+@keyframes fi{from{opacity:.5;transform:translateY(3px)}to{opacity:1;transform:none}}
+
+/* ─── NAV ─── */
+.nav{background:var(--bg);border-top:2px solid var(--br);display:flex;flex-shrink:0;padding-bottom:var(--sb);position:relative;z-index:100}
+.nb{flex:1;padding:10px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:none;background:none;color:var(--tx3);font-size:10px;font-family:inherit;font-weight:700;transition:color .15s;position:relative;min-width:0}
+.nb.on{color:var(--A)}
+.nb.on::after{content:'';position:absolute;top:0;left:15%;right:15%;height:3px;background:var(--A);border-radius:0 0 3px 3px}
+.nb svg{width:22px;height:22px;stroke-width:2}
+
+/* ─── SECTION LABEL ─── */
+.slbl{font-size:13px;color:var(--tx2);letter-spacing:.05em;margin:18px 0 10px;font-weight:700;text-transform:uppercase}
+
+/* ─── CARDS ─── */
+.card{background:var(--bg);border:1.5px solid var(--br);border-radius:var(--rl);padding:14px;margin-bottom:12px}
+.card-flat{background:var(--bg2);border-radius:var(--r);padding:13px;margin-bottom:12px}
+
+/* ─── METRIC GRID ─── */
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.met{background:var(--bg2);border-radius:var(--r);padding:12px 14px}
+.met-lbl{font-size:13px;color:var(--tx2);margin-bottom:5px;font-weight:700}
+.met-val{font-size:26px;font-weight:800;color:var(--tx);line-height:1}
+.met-sub{font-size:12px;color:var(--tx2);margin-top:4px}
+
+/* ─── FORMS ─── */
+.fg{margin-bottom:14px}
+.fl{font-size:15px;color:var(--tx2);margin-bottom:6px;display:block;font-weight:600}
+input[type=text],input[type=number],input[type=time],select{
+  width:100%;padding:13px 15px;border:1.5px solid var(--br2);border-radius:var(--r);
+  background:var(--bg);color:var(--tx);font-size:17px;font-family:inherit;
+  direction:rtl;-webkit-appearance:none;appearance:none;transition:border .15s
+}
+input:focus,select:focus{outline:none;border-color:var(--A);box-shadow:0 0 0 3px color-mix(in srgb,var(--A) 15%,transparent)}
+input[type=number]{text-align:center;font-size:20px;font-weight:700}
+
+/* ─── BUTTONS ─── */
+.btn{width:100%;padding:15px;border-radius:var(--r);border:none;font-size:17px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s,transform .1s;letter-spacing:.3px}
+.btn:active{transform:scale(.97);opacity:.85}
+.btn-p{background:var(--A);color:#fff}
+.btn-s{background:var(--bg2);color:var(--tx);border:1.5px solid var(--br2)}
+.btn-d{background:#FAECE7;color:#993C1D;border:1.5px solid #F0997B}
+.btn-g{background:#1a73e8;color:#fff}
+.btn-teal{background:var(--TL);color:var(--TD);border:1.5px solid var(--TM);font-size:18px}
+.btn-sm{width:auto;padding:9px 18px;font-size:15px;border-radius:10px}
+
+/* ─── MODE PILLS (تسليم / فائض) ─── */
+.mode-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.mode-btn{padding:20px 10px;border-radius:var(--r);font-size:19px;font-weight:800;cursor:pointer;border:2.5px solid var(--br2);background:var(--bg2);color:var(--tx2);text-align:center;transition:all .18s;font-family:inherit;line-height:1.4}
+.mode-btn.on{background:var(--A);color:#fff;border-color:var(--A);box-shadow:0 3px 12px color-mix(in srgb,var(--A) 35%,transparent)}
+
+/* ─── BREAD TYPE CARDS — عمودي للوضوح الميداني ─── */
+.tgrid{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.tcard{
+  border-radius:var(--r);padding:0;border:3px solid;
+  display:flex;flex-direction:row;align-items:center;
+  gap:0;min-height:68px;overflow:hidden
+}
+.tcard-left{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 12px;min-width:80px;flex-shrink:0}
+.tcard-sha .tcard-left{background:var(--c-sha-bg)}
+.tcard-dra .tcard-left{background:var(--c-dra-bg)}
+.tcard-qmh .tcard-left{background:var(--c-qmh-bg)}
+.tcard-sha{background:var(--c-sha-bg);border-color:var(--c-sha-bd)}
+.tcard-dra{background:var(--c-dra-bg);border-color:var(--c-dra-bd)}
+.tcard-qmh{background:var(--c-qmh-bg);border-color:var(--c-qmh-bd)}
+.tcard-icon{font-size:30px;line-height:1;margin-bottom:2px}
+.tcard-nm{font-size:13px;font-weight:800;line-height:1.2;margin:0;text-align:center}
+.tcard-nm-sha{color:var(--c-sha)}
+.tcard-nm-dra{color:var(--c-dra)}
+.tcard-nm-qmh{color:var(--c-qmh)}
+.tcard-pr{font-size:11px;color:var(--tx2);margin:0}
+.tcard-right{flex:1;display:flex;align-items:center;padding:8px 10px;background:#fff;gap:0}
+.tcard-adj{display:flex;align-items:center;gap:6px;width:100%}
+.tcard-adj-btn:active{transform:scale(.9)}
+.tcard input{
+  font-size:36px;font-weight:900;padding:6px 4px;border-radius:10px;
+  flex:1;height:56px;-moz-appearance:textfield;appearance:textfield;
+  border-width:2px;border-style:solid;text-align:center
+}
+.tcard input::-webkit-outer-spin-button,.tcard input::-webkit-inner-spin-button{-webkit-appearance:none}
+.tcard-sha input{border-color:var(--c-sha-bd);background:#FFF8F0;color:#5A2D00}
+.tcard-sha input::placeholder{color:#C89050;opacity:1}
+.tcard-dra input{border-color:var(--c-dra-bd);background:#FFFDE8;color:#5A4500}
+.tcard-dra input::placeholder{color:#B09000;opacity:1}
+.tcard-qmh input{border-color:var(--c-qmh-bd);background:#FDF5E8;color:#3E2000}
+.tcard-qmh input::placeholder{color:#9A7040;opacity:1}
+/* أزرار +/- */
+.tcard-adj-btn{
+  width:44px;height:56px;border-radius:10px;border:2.5px solid;
+  font-size:28px;font-weight:900;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-family:inherit;line-height:1;padding:0
+}
+.tcard-sha .tcard-adj-btn{background:#FEE8C0;border-color:var(--c-sha-bd);color:#5A2D00}
+.tcard-dra .tcard-adj-btn{background:#FFF8C0;border-color:var(--c-dra-bd);color:#5A4500}
+.tcard-qmh .tcard-adj-btn{background:#F5E8D0;border-color:var(--c-qmh-bd);color:#3E2000}
+/* اسم النقطة المختارة — بارز فوق الأزرار */
+.pt-selected-banner{
+  background:var(--A);color:#fff;
+  border-radius:var(--r);padding:12px 16px;
+  margin-bottom:12px;
+  display:flex;align-items:center;gap:10px
+}
+.pt-selected-banner-name{font-size:20px;font-weight:900;flex:1}
+.pt-selected-banner-lbl{font-size:12px;opacity:.85}
+/* زر التأكيد يلتصق بلوحة المفاتيح عبر JS */
+.sticky-submit{
+  position:fixed;
+  left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;
+  background:var(--bg);
+  padding:10px 14px;
+  border-top:1.5px solid var(--br);
+  z-index:80; /* أقل من الـ nav */
+  transition:bottom .1s ease;
+  /* الموضع الافتراضي: فوق شريط التنقل مباشرة */
+  bottom:calc(62px + var(--sb))
+}
+/* مساحة سفلية إضافية في الـ screen لتجنب تداخل الزر مع المحتوى */
+#scr-deliv{padding-bottom:140px}
+
+/* ─── DELIVERY ITEMS ─── */
+.ditem{padding:11px 0;border-bottom:1.5px solid var(--br)}
+.ditem:last-child{border-bottom:none}
+.ditem-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.ditem-time{font-size:18px;font-weight:800;color:var(--A)}
+.ditem-driver{font-size:13px;color:var(--tx2)}
+.ditem-counts{display:flex;gap:6px;flex-wrap:wrap}
+/* تسليم مُصفَّر أو مُلغى */
+.ditem-zeroed{opacity:.55;background:var(--bg2);border-radius:var(--r);padding:8px 10px;margin:-4px 0}
+.ditem-zeroed .ditem-time{color:var(--tx3)}
+.zeroed-badge{font-size:12px;font-weight:700;color:var(--tx3);background:var(--bg3);border-radius:6px;padding:2px 8px;border:1px solid var(--br2)}
+.dcount{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;font-size:15px;font-weight:700;border:1.5px solid}
+.dcount-sha{background:var(--c-sha-bg);border-color:var(--c-sha-bd);color:var(--c-sha)}
+.dcount-dra{background:var(--c-dra-bg);border-color:var(--c-dra-bd);color:var(--c-dra)}
+.dcount-qmh{background:var(--c-qmh-bg);border-color:var(--c-qmh-bd);color:var(--c-qmh)}
+.ditem-del{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:18px;padding:4px 8px;border-radius:8px}
+
+/* ─── TOTALS BOX ─── */
+.totals-box{background:var(--bg2);border-radius:var(--r);padding:13px 14px;margin-bottom:14px;border:1.5px solid var(--br)}
+.totals-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--br)}
+.totals-row:last-child{border-bottom:none;padding-top:10px;margin-top:4px;border-top:2px solid var(--br2)}
+.totals-label{font-size:15px;font-weight:600;color:var(--tx2)}
+.totals-count{font-size:22px;font-weight:800;color:var(--tx)}
+.totals-val{font-size:15px;font-weight:600;color:var(--A)}
+.totals-grand .totals-label{font-size:17px;font-weight:800;color:var(--tx)}
+.totals-grand .totals-count{font-size:26px;color:var(--A)}
+.totals-grand .totals-val{font-size:17px;font-weight:800}
+
+/* ─── SUM BOX ─── */
+.sum-box{background:var(--AL);border-radius:var(--r);padding:13px 15px;margin-bottom:14px;border:1px solid var(--AM)}
+.sum-row{display:flex;justify-content:space-between;font-size:15px;padding:4px 0;color:var(--AD)}
+.sum-total{font-size:18px;font-weight:800;border-top:2px solid var(--AM);margin-top:8px;padding-top:10px;color:var(--AX)}
+/* ملخص موسّع — يظهر الفائض + مجموع اليوم */
+.sum-section{border-top:1.5px dashed var(--AM);margin-top:10px;padding-top:10px}
+.sum-section-title{font-size:12px;font-weight:700;color:var(--AD);letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.sum-net{font-size:20px;font-weight:800;color:var(--T);display:flex;justify-content:space-between;padding:8px 12px;background:color-mix(in srgb,var(--T) 10%,transparent);border-radius:8px;margin-top:6px}
+.sum-net-red{color:#D85A30!important;background:color-mix(in srgb,#D85A30 10%,transparent)!important}
+/* شارة الاستعمال على أزرار النقاط */
+.pt-btn-usage{position:absolute;top:8px;left:8px;font-size:11px;font-weight:700;background:var(--A);color:#fff;border-radius:10px;padding:2px 7px;line-height:1.4}
+/* زر الترتيب */
+.sort-toggle{display:flex;gap:8px;margin-bottom:12px}
+.sort-btn{flex:1;padding:9px 8px;border-radius:var(--r);border:1.5px solid var(--br2);background:var(--bg2);color:var(--tx2);font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit}
+.sort-btn.on{background:var(--AL);color:var(--AD);border-color:var(--AM)}
+
+/* ─── POINT ITEMS ─── */
+.pitem{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1.5px solid var(--br);cursor:pointer}
+.pitem:last-child{border-bottom:none}
+.pav{width:44px;height:44px;border-radius:50%;background:var(--AL);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--AD);flex-shrink:0}
+
+/* ─── BADGES ─── */
+.bdg{font-size:13px;padding:4px 11px;border-radius:20px;font-weight:700;white-space:nowrap}
+.bdg-a{background:var(--AL);color:var(--AD)}
+.bdg-t{background:var(--TL);color:var(--TD)}
+.bdg-g{background:var(--GL);color:var(--GD)}
+.bdg-p{background:var(--PL);color:var(--PD)}
+.bdg-r{background:#FAECE7;color:#993C1D}
+.bdg-sha{background:var(--c-sha-bg);color:var(--c-sha);border:1px solid var(--c-sha-bd)}
+.bdg-dra{background:var(--c-dra-bg);color:var(--c-dra);border:1px solid var(--c-dra-bd)}
+.bdg-qmh{background:var(--c-qmh-bg);color:var(--c-qmh);border:1px solid var(--c-qmh-bd)}
+
+/* ─── ALERTS ─── */
+.alrt{padding:13px 16px;border-radius:var(--r);font-size:15px;margin-bottom:13px;line-height:1.6}
+.alrt-s{background:var(--TL);color:var(--TD);border:1.5px solid var(--TM)}
+.alrt-w{background:var(--AL);color:var(--AD);border:1.5px solid var(--AM)}
+.alrt-e{background:#FAECE7;color:#993C1D;border:1.5px solid #F0997B}
+
+/* ─── MODAL ─── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:flex;align-items:flex-end;justify-content:center;animation:fi .15s ease}
+.modal{background:var(--bg);border-radius:22px 22px 0 0;width:100%;max-width:480px;padding:22px 16px;padding-bottom:calc(22px + var(--sb));max-height:92vh;overflow-y:auto;position:relative}
+.modal-handle{width:44px;height:5px;background:var(--br2);border-radius:3px;margin:0 auto 16px}
+.modal-title{font-size:19px;font-weight:800;margin-bottom:16px}
+
+/* ─── SETTLEMENT ─── */
+.settle-hero{text-align:center;padding:18px 0 12px}
+.settle-hero-amount{font-size:42px;font-weight:800;color:var(--A);line-height:1}
+.settle-hero-lbl{font-size:15px;color:var(--tx2);margin-top:5px}
+.settle-period{background:var(--bg2);border-radius:var(--r);padding:12px 16px;margin-bottom:14px;font-size:14px;color:var(--tx2);text-align:center;border:1px solid var(--br)}
+.settle-period strong{color:var(--tx);font-size:15px}
+.settle-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.settle-box{background:var(--bg2);border-radius:var(--r);padding:12px 8px;text-align:center;border:1.5px solid var(--br)}
+.settle-box-val{font-size:26px;font-weight:800;color:var(--tx)}
+.settle-box-lbl{font-size:13px;color:var(--tx2);margin-top:4px;font-weight:600}
+.settle-box.green{border-color:var(--TM)}.settle-box.green .settle-box-val{color:var(--T)}
+.settle-box.red{border-color:#F0997B}.settle-box.red .settle-box-val{color:#D85A30}
+.debt-banner{border-radius:var(--r);padding:14px 18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.debt-banner.has-debt{background:#FAECE7;border:2px solid #F0997B}
+.debt-banner.no-debt{background:var(--TL);border:2px solid var(--TM)}
+.settle-hist-item{padding:14px 0;border-bottom:1.5px solid var(--br)}
+.settle-hist-item:last-child{border-bottom:none}
+.settle-hist-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.settle-hist-date{font-size:16px;font-weight:800;color:var(--tx)}
+.settle-hist-period{font-size:13px;color:var(--tx2);margin-bottom:7px}
+.settle-hist-detail{display:flex;gap:7px;flex-wrap:wrap}
+/* archived deliveries in settlement */
+.arch-item{padding:8px 0;border-bottom:1px solid var(--br);display:flex;justify-content:space-between;align-items:center}
+.arch-item:last-child{border-bottom:none}
+.arch-time{font-size:16px;font-weight:700;color:var(--tx2)}
+.arch-counts{display:flex;gap:5px;flex-wrap:wrap}
+/* ─── اختيار الأيام للتخليص ─── */
+.day-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--r);border:2px solid var(--br);margin-bottom:10px;cursor:pointer;transition:all .15s;background:var(--bg)}
+.day-row.selected{border-color:var(--A);background:var(--AL)}
+.day-row input[type=checkbox]{width:22px;height:22px;accent-color:var(--A);cursor:pointer;flex-shrink:0}
+.day-row-info{flex:1}
+.day-row-date{font-size:16px;font-weight:800;color:var(--tx)}
+.day-row-detail{font-size:13px;color:var(--tx2);margin-top:3px}
+.day-row-val{text-align:left;flex-shrink:0}
+.day-row-count{font-size:20px;font-weight:800;color:var(--tx)}
+.day-row-dh{font-size:14px;font-weight:700;color:var(--A);margin-top:2px}
+.day-row.selected .day-row-date{color:var(--AD)}
+.day-row.selected .day-row-count{color:var(--AX)}
+.settle-confirm-overlay{
+  position:absolute;inset:0;background:var(--bg);border-radius:22px 22px 0 0;
+  z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:28px 20px;text-align:center;animation:fi .2s ease
+}
+.settle-confirm-icon{font-size:54px;margin-bottom:16px}
+.settle-confirm-title{font-size:20px;font-weight:900;color:var(--tx);margin-bottom:6px}
+.settle-confirm-sub{font-size:14px;color:var(--tx2);margin-bottom:20px}
+.settle-confirm-box{background:var(--bg2);border-radius:var(--r);padding:16px 20px;
+  width:100%;margin-bottom:22px;border:2px solid var(--br)}
+.settle-confirm-amount{font-size:38px;font-weight:900;color:var(--A);line-height:1}
+.settle-confirm-detail{font-size:14px;color:var(--tx2);margin-top:6px}
+.settle-live-count{font-size:36px;font-weight:800;color:var(--A);line-height:1}
+.settle-live-dh{font-size:18px;font-weight:700;color:var(--tx2);margin-top:4px}
+.settle-remaining{background:#FAECE7;border-radius:var(--r);padding:12px 16px;border:2px solid #F0997B;margin-top:10px}
+.settle-remaining-lbl{font-size:14px;font-weight:700;color:#993C1D}
+.settle-remaining-val{font-size:24px;font-weight:800;color:#D85A30;margin-top:3px}
+
+/* ─── SETTINGS ─── */
+.srow{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1.5px solid var(--br)}
+.srow:last-child{border-bottom:none}
+.srow-lbl{font-size:15px;font-weight:600;color:var(--tx)}
+.srow-sub{font-size:13px;color:var(--tx2);margin-top:3px}
+.switch{width:52px;height:30px;background:var(--br2);border-radius:15px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none}
+.switch.on{background:var(--A)}
+.switch::after{content:'';position:absolute;top:3px;right:3px;width:24px;height:24px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.switch.on::after{transform:translateX(-22px)}
+.sync-status{display:flex;align-items:center;gap:8px;font-size:14px;padding:12px 15px;border-radius:var(--r);margin-bottom:13px}
+.sync-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sync-ok{background:var(--TL);color:var(--TD)}.sync-dot-ok{background:var(--T)}
+.sync-err{background:#FAECE7;color:#993C1D}.sync-dot-err{background:#D85A30}
+.sync-pending{background:var(--AL);color:var(--AD)}.sync-dot-pending{background:var(--A);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.theme-pills{display:flex;gap:10px;justify-content:center}
+.theme-pill{flex:1;padding:12px 6px;border-radius:var(--r);font-size:14px;cursor:pointer;border:1.5px solid var(--br2);background:var(--bg2);color:var(--tx2);font-weight:600;text-align:center;transition:all .15s}
+.theme-pill.on{background:var(--AL);color:var(--AD);border-color:var(--A)}
+.balance-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--br);font-size:14px}
+.balance-row:last-child{border-bottom:none}
+.back-btn{display:flex;align-items:center;gap:7px;background:none;border:none;color:var(--A);cursor:pointer;font-size:16px;font-family:inherit;font-weight:700;padding:0 0 16px}
+.bbar{margin:6px 0}.bbar-head{display:flex;justify-content:space-between;font-size:13px;color:var(--tx2);margin-bottom:4px}
+.btrack{height:12px;background:var(--bg2);border-radius:6px;overflow:hidden;position:relative}
+.bfill{height:100%;background:var(--AM);border-radius:6px;transition:width .5s;position:relative}
+.bfill-left{position:absolute;top:0;right:0;height:100%;background:#F0997B;border-radius:0 6px 6px 0;transition:width .5s}
+.best-time{background:var(--AL);border-radius:var(--r);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border:1px solid var(--AM)}
+.hrow{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--br);font-size:14px}
+.hrow:last-child{border-bottom:none}
+.empty{text-align:center;padding:40px 20px;color:var(--tx2);font-size:15px}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;border-radius:22px;font-size:15px;font-weight:700;z-index:400;white-space:nowrap;animation:toastIn .2s ease;pointer-events:none;max-width:90vw}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+/* ─── لوحة الاختيار بعد تسجيل التسليم ─── */
+.after-submit{background:var(--TL);border:2px solid var(--TM);border-radius:var(--rl);padding:16px;margin-bottom:16px}
+.after-submit-title{font-size:16px;font-weight:800;color:var(--TD);margin-bottom:4px}
+.after-submit-cnt{font-size:28px;font-weight:800;color:var(--T);margin-bottom:14px}
+.after-submit-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* ─── طباعة ─── */
+@media print{
+  body *{visibility:hidden}
+  #print-area,#print-area *{visibility:visible}
+  #print-area{position:fixed;top:0;right:0;width:100%;font-family:Arial,sans-serif;direction:rtl;padding:16px}
+  .print-header{text-align:center;margin-bottom:12px;border-bottom:2px solid #000;padding-bottom:8px}
+  .print-title{font-size:18px;font-weight:800}
+  .print-sub{font-size:13px;color:#555;margin-top:4px}
+  .print-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #ccc;font-size:14px}
+  .print-row-bold{font-weight:700}
+  .print-total{font-size:16px;font-weight:800;border-top:2px solid #000;margin-top:8px;padding-top:8px}
+  .print-footer{margin-top:16px;text-align:center;font-size:12px;color:#888}
+  @page{margin:10mm}
+}
+/* Progress bar */
+.splash-progress{
+  width:220px;height:6px;
+  background:rgba(255,255,255,.22);
+  border-radius:10px;overflow:hidden;
+  margin:0 auto;
+  animation:taglineIn .5s ease both .8s;
+  opacity:0;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.15)
+}
+.splash-bar{
+  height:100%;width:0;
+  background:linear-gradient(90deg,rgba(255,255,255,.6),rgba(255,255,255,1));
+  border-radius:10px;
+  animation:progressBar 3.2s cubic-bezier(.4,0,.2,1) forwards .5s;
+  box-shadow:0 0 8px rgba(255,255,255,.5)
+}
+@keyframes progressBar{
+  0%{width:0;opacity:.7}
+  15%{opacity:1}
+  100%{width:100%;opacity:1}
+}
+.pt-btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.pt-btn{padding:18px 12px;border-radius:var(--r);border:3px solid var(--br2);background:var(--bg2);cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;position:relative;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pt-btn:active{transform:scale(.95)}
+.pt-btn.selected{border-color:var(--A);background:var(--AL);box-shadow:0 3px 10px color-mix(in srgb,var(--A) 25%,transparent)}
+.pt-btn-name{font-size:18px;font-weight:800;color:var(--tx);margin-bottom:5px}
+.pt-btn.selected .pt-btn-name{color:var(--AD)}
+.pt-btn-meta{font-size:13px;color:var(--tx2)}
+.pt-btn-debt{font-size:13px;color:#D85A30;font-weight:700;margin-top:3px}
+.pt-btn.selected .pt-btn-debt{color:#993C1D}
+/* ─── قائمة النقاط مع السحب ─── */
+.pt-list-item{display:flex;align-items:center;gap:10px;padding:12px;border-radius:var(--r);border:1.5px solid var(--br);background:var(--bg);margin-bottom:8px;cursor:pointer;transition:opacity .15s;user-select:none}
+.pt-list-item.dragging{opacity:.4;border-style:dashed}
+.pt-list-item.drag-over{border-color:var(--A);background:var(--AL)}
+.drag-handle{color:var(--tx3);font-size:22px;cursor:grab;padding:4px 2px;flex-shrink:0;touch-action:none}
+.drag-handle:active{cursor:grabbing}
+.pt-list-av{width:42px;height:42px;border-radius:50%;background:var(--AL);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--AD);flex-shrink:0}
+/* ─── حماية حذف البيانات ─── */
+.delete-confirm-box{background:#FAECE7;border:2px solid #F0997B;border-radius:var(--r);padding:14px;margin-top:12px}
+/* ─── أنواع الفائض ─── */
+.ltype-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.ltype-btn{padding:12px 6px;border-radius:var(--r);border:2.5px solid var(--br2);background:var(--bg2);cursor:pointer;text-align:center;font-family:inherit;transition:all .15s;font-size:13px;font-weight:700;color:var(--tx2);line-height:1.4}
+.ltype-btn.on{border-color:var(--A);background:var(--AL);color:var(--AD)}
+.ltype-btn-icon{font-size:22px;display:block;margin-bottom:4px}
+.delete-confirm-input{border-color:#F0997B!important}
+.delete-confirm-input:focus{border-color:#D85A30!important}
+.price-table{width:100%;border-collapse:collapse;font-size:15px}
+.price-table th{text-align:center;padding:9px 8px;background:var(--bg2);color:var(--tx2);font-weight:700;font-size:13px;border-bottom:1.5px solid var(--br)}
+.price-table td{padding:9px 8px;border-bottom:1px solid var(--br);text-align:center}
+.price-table tr:last-child td{border-bottom:none}
+.price-table input{width:85px;padding:8px;font-size:16px;text-align:center}
+.icon-btn{background:none;border:none;color:var(--tx2);cursor:pointer;font-size:20px;padding:6px 8px;line-height:1;border-radius:8px}
+/* زر الحذف بنقرتين */
+.del-btn{background:none;border:1.5px solid var(--br2);color:var(--tx3);cursor:pointer;font-size:13px;font-weight:700;padding:5px 9px;line-height:1;border-radius:8px;font-family:inherit;transition:all .2s;white-space:nowrap}
+.del-btn.confirm{background:#FAECE7;border-color:#F0997B;color:#993C1D;animation:pulseRed 0.3s ease}
+@keyframes pulseRed{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+/* ملاحظات */
+.note-private{background:#FEF9E7;border:1.5px solid #F5C469;border-radius:8px;padding:6px 10px;font-size:13px;color:#7A4A08;margin-top:5px;display:flex;align-items:flex-start;gap:6px}
+.note-public{background:var(--TL);border:1.5px solid var(--TM);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--TD);margin-top:5px;display:flex;align-items:flex-start;gap:6px}
+.edit-btn{background:var(--AL);border:1.5px solid var(--AM);color:var(--AD);cursor:pointer;font-size:13px;font-weight:700;padding:5px 10px;border-radius:8px;font-family:inherit}
+/* ─── كتل التاريخ في السجل ─── */
+.date-block{margin-bottom:14px;border-radius:var(--rl);overflow:hidden;border:2px solid var(--br)}
+.date-block-header{background:var(--A);color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.date-block-header.today{background:var(--T)}
+.date-block-header-date{font-size:15px;font-weight:800}
+.date-block-header-badge{font-size:12px;opacity:.85}
+.date-block-body{background:var(--bg);padding:0}
+.date-block-footer{background:var(--bg2);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-top:1.5px solid var(--br)}
+.date-block-footer-lbl{font-size:13px;font-weight:700;color:var(--tx2)}
+.date-block-footer-val{font-size:20px;font-weight:900;color:var(--T)}
+.date-block-footer-val.negative{color:#D85A30}
+.retour-row{padding:10px 14px;border-top:2px dashed #F0997B;display:flex;justify-content:space-between;align-items:flex-start}
+.retour-left{flex:1}
+.retour-tag{display:inline-block;background:#FAECE7;border:1.5px solid #F0997B;color:#993C1D;border-radius:8px;padding:3px 10px;font-size:13px;font-weight:800;margin-bottom:4px}
+.retour-dates{font-size:12px;color:#D85A30;font-weight:600}
+.retour-right{text-align:left;font-size:15px;font-weight:700;color:#D85A30}
+/* ─── HISTORY FILTERS ─── */
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.filter-bar::-webkit-scrollbar{display:none}
+.fpill{padding:8px 16px;border-radius:20px;border:1.5px solid var(--br2);background:var(--bg2);color:var(--tx2);font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0;transition:all .15s}
+.fpill.on{background:var(--AL);color:var(--AD);border-color:var(--A)}
+.hist-entry{padding:12px 0;border-bottom:1.5px solid var(--br)}
+.hist-entry:last-child{border-bottom:none}
+.hist-entry-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+/* ─── PRINT ─── */
+@media print{
+  body{background:#fff;color:#000;font-size:12pt}
+  .no-print{display:none!important}
+  .print-only{display:block!important}
+  .topbar,.nav{display:none}
+}
+.print-only{display:none}
+</style>
+</head>
+<body>
+<!-- شاشة اختيار الدور -->
+<div id="pin-screen" style="display:none"></div>
+<!-- شاشة الترحيب -->
+<div id="splash">
+  <div class="splash-icon">🍞</div>
+  <div class="splash-title">محسين للخبز التقليدي</div>
+  <div class="splash-divider"></div>
+  <div class="splash-tagline">خبز بلدي تقليدي، يُحضَّر الشعير بالخميرة البلدية، إلى جانب خبز القمح وخبز الذرة — بدون إضافات ولا محسنات كيماوية، ويُطهى على الحطب للحفاظ على الجودة والنكهة الطبيعية.</div>
+  <div class="splash-progress"><div class="splash-bar"></div></div>
+</div>
+<div id="app">
+  <div class="topbar">
+    <div style="flex:1;min-width:0">
+      <div class="tb-logo">🍞 محسين للخبز التقليدي</div>
+      <div class="tb-sub" id="tb-date"></div>
+      <div style="margin-top:3px"><span id="tb-role" class="role-badge manager">👑 مدير</span>
+        <button onclick="switchRole()" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">تغيير</button>
+      </div>
+    </div>
+    <div style="text-align:left;flex-shrink:0;margin-right:0;margin-left:0">
+      <div class="tb-ca-val" id="tb-ca">—</div>
+      <div class="tb-ca-lbl">اليوم</div>
+    </div>
+  </div>
+  <div class="content" id="content">
+    <div class="screen on" id="scr-home"></div>
+    <div class="screen" id="scr-deliv"></div>
+    <div class="screen" id="scr-pts"></div>
+    <div class="screen" id="scr-stats"></div>
+    <div class="screen" id="scr-history"></div>
+    <div class="screen" id="scr-settings"></div>
+  </div>
+  <nav class="nav">
+    <button class="nb on" onclick="go('home')" id="n-home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/></svg>
+      الرئيسية
+    </button>
+    <button class="nb" onclick="go('deliv')" id="n-deliv">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      تسليم
+    </button>
+    <button class="nb" onclick="go('pts')" id="n-pts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      النقاط
+    </button>
+    <button class="nb" onclick="go('stats')" id="n-stats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      الإحصاء
+    </button>
+    <button class="nb" onclick="go('history')" id="n-history">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      السجل
+    </button>
+    <button class="nb" onclick="go('settings')" id="n-settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      الإعدادات
+    </button>
+  </nav>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  ثلاثة أنواع فقط — بدون شعير صغير
+// ═══════════════════════════════════════════════
+const TK = ['sha3ir_k','dra','qmh'];
+const TM = {
+  sha3ir_k:{ label:'خبز الشعير', short:'شعير', icon:'🌾', cls:'sha', bdgCls:'bdg-sha' },
+  dra:     { label:'خبز الذرة',  short:'ذرة',   icon:'🌽', cls:'dra', bdgCls:'bdg-dra' },
+  qmh:     { label:'خبز القمح', short:'قمح',   icon:'🌾', cls:'qmh', bdgCls:'bdg-qmh' }
+};
+const DP = { sha3ir_k:2.50, dra:2.50, qmh:2.50 };
+const TODAY = new Date().toISOString().split('T')[0];
+const YESTERDAY = (()=>{const d=new Date();d.setDate(d.getDate()-1);return d.toISOString().split('T')[0];})();
+
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+let S = {points:[], deliveries:[], leftovers:[], drivers:[], settlements:[]};
+let CFG = {googleClientId:'', autoSync:false, theme:'auto', managerPin:'', driverMode:false};
+let SESSION = {role:'manager', driverName:''}; // الجلسة الحالية
+let CUR='home', SEL_PT=null;
+let DF = {ptId:'', items:ei(), time:nstr(), driver:'', notes:'', notePrivate:'', notePublic:'', leftMode:false, lPtId:'', lItems:ei(), lType:'yesterday'};
+let PT_SORT = 'manual'; // 'manual' | 'usage'
+let AFTER_SUBMIT = null; // {ptId, cnt, val, ptName} — حالة الاختيار بعد التسليم
+let GD = {token:null, fileId:null, tokenExpiry:null, status:'idle'};
+let deferredInstall=null;
+
+function ei(){ return {sha3ir_k:'',dra:'',qmh:''} }
+function nstr(){ const d=new Date(); return pad(d.getHours())+':'+pad(d.getMinutes()) }
+function pad(n){ return String(n).padStart(2,'0') }
+function dl(d){ const p=d.split('-'); return p[2]+'/'+p[1]+'/'+p[0] }
+function fdate(d){
+  const D=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  const Mo=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const dt=new Date(d+'T12:00:00');
+  return D[dt.getDay()]+' '+dt.getDate()+' '+Mo[dt.getMonth()]+' '+dt.getFullYear();
+}
+
+// ═══════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════
+function gpr(ptId){ const pt=S.points.find(p=>p.id===ptId); return {...DP,...(pt?.prices||{})} }
+function cval(items,ptId){ const pr=gpr(ptId); return TK.reduce((s,k)=>s+(parseInt(items[k])||0)*pr[k],0) }
+function ccount(items){ return TK.reduce((s,k)=>s+(parseInt(items[k])||0),0) }
+function hasI(items){ return TK.some(k=>parseInt(items[k])>0) }
+function gd(ptId,date){ return S.deliveries.filter(d=>d.ptId===ptId&&d.date===date) }
+function gl(ptId,date){ return S.leftovers.find(l=>l.ptId===ptId&&l.date===date)||null }
+function ptNet(ptId,date){
+  const t=gd(ptId,date).reduce((s,d)=>s+cval(d.items,ptId),0);
+  const l=gl(ptId,date); return t-(l?cval(l.items,ptId):0);
+}
+function ptNetCount(ptId,date){
+  const t=gd(ptId,date).reduce((s,d)=>s+ccount(d.items),0);
+  const l=gl(ptId,date); return t-(l?ccount(l.items):0);
+}
+function todayCA(){
+  const t=S.deliveries.filter(d=>d.date===TODAY).reduce((s,d)=>s+cval(d.items,d.ptId),0);
+  const l=S.leftovers.filter(l=>l.date===TODAY).reduce((s,l)=>s+cval(l.items,l.ptId),0);
+  return t-l;
+}
+function todayCount(){
+  const t=S.deliveries.filter(d=>d.date===TODAY).reduce((s,d)=>s+ccount(d.items),0);
+  const l=S.leftovers.filter(l=>l.date===TODAY).reduce((s,l)=>s+ccount(l.items),0);
+  return t-l;
+}
+function btTime(ptId){
+  const ds=S.deliveries.filter(d=>d.ptId===ptId); if(ds.length<2)return null;
+  const h={}; ds.forEach(d=>{const hr=d.time.split(':')[0]; h[hr]=(h[hr]||0)+ccount(d.items)});
+  const b=Object.entries(h).sort((a,b)=>b[1]-a[1])[0]; return b?b[0]+':00':null;
+}
+function sByDay(ptId){
+  const days={};
+  S.deliveries.filter(d=>d.ptId===ptId).forEach(d=>{
+    if(!days[d.date])days[d.date]={del:0,lft:0};
+    days[d.date].del+=ccount(d.items);
+  });
+  // الفائض يُطرح من تاريخه الخاص (قد يكون أمس أو اليوم)
+  S.leftovers.filter(l=>l.ptId===ptId).forEach(l=>{
+    if(!days[l.date])days[l.date]={del:0,lft:0};
+    days[l.date].lft+=ccount(l.items);
+  });
+  return Object.entries(days).sort((a,b)=>a[0]>b[0]?-1:1).slice(0,10);
+}
+
+// عرض تفصيل الكميات بالشارات الملونة
+function dcounts(items){
+  return TK.filter(k=>parseInt(items[k])>0).map(k=>
+    `<span class="dcount dcount-${TM[k].cls}">${TM[k].icon} ${items[k]}</span>`
+  ).join('');
+}
+function fmtI(items){ return TK.filter(k=>parseInt(items[k])>0).map(k=>`${items[k]} ${TM[k].short}`).join(' + ') }
+
+// ═══════════════════════════════════════════════
+//  SETTLEMENT HELPERS — نظام التخليص حسب الأيام
+// ═══════════════════════════════════════════════
+function getUnsettledDeliveries(ptId){
+  // المعرّفات المخلَّصة صراحةً (النظام الجديد)
+  const explicitIds=new Set(
+    S.settlements.filter(s=>s.ptId===ptId&&s.settledDeliveryIds)
+      .flatMap(s=>s.settledDeliveryIds)
+  );
+  // آخر تخليص بالنظام القديم (بدون settledDeliveryIds)
+  const oldSt=S.settlements.filter(s=>s.ptId===ptId&&!s.settledDeliveryIds);
+  const lastOldId=oldSt.length>0?Math.max(...oldSt.map(s=>parseInt(s.id))):0;
+  return S.deliveries.filter(d=>
+    d.ptId===ptId&&!explicitIds.has(d.id)&&parseInt(d.id)>lastOldId
+  );
+}
+
+function ptDebt(ptId){
+  const unsettled=getUnsettledDeliveries(ptId);
+  const unsettledDates=new Set(unsettled.map(d=>d.date));
+  const totalNet=unsettled.reduce((s,d)=>s+cval(d.items,ptId),0)
+    -S.leftovers.filter(l=>l.ptId===ptId&&unsettledDates.has(l.date))
+      .reduce((s,l)=>s+cval(l.items,ptId),0);
+  // رصيد متبقي من تخليصات جزئية سابقة
+  const prevRemaining=S.settlements.filter(s=>s.ptId===ptId)
+    .reduce((s,st)=>s+(st.remainingBalance||0),0);
+  return Math.max(0,totalNet+prevRemaining);
+}
+
+// دين الأيام السابقة فقط — بدون احتساب اليوم الجاري
+function ptOldDebt(ptId){
+  const unsettled=getUnsettledDeliveries(ptId).filter(d=>d.date<TODAY);
+  const prevRemaining=S.settlements.filter(s=>s.ptId===ptId)
+    .reduce((s,st)=>s+(st.remainingBalance||0),0);
+  if(!unsettled.length) return Math.max(0,prevRemaining);
+  const unsettledDates=new Set(unsettled.map(d=>d.date));
+  const totalNet=unsettled.reduce((s,d)=>s+cval(d.items,ptId),0)
+    -S.leftovers.filter(l=>l.ptId===ptId&&unsettledDates.has(l.date))
+      .reduce((s,l)=>s+cval(l.items,ptId),0);
+  return Math.max(0,totalNet+prevRemaining);
+}
+
+function calcSettlement(ptId){
+  const unsettled=getUnsettledDeliveries(ptId);
+  if(!unsettled.length)return null;
+  // تجميع التسليمات حسب اليوم
+  const byDay={};
+  unsettled.forEach(d=>{if(!byDay[d.date])byDay[d.date]=[];byDay[d.date].push(d);});
+  const days=Object.entries(byDay).sort((a,b)=>a[0]>b[0]?1:-1); // ترتيب تصاعدي
+  const allDates=unsettled.map(d=>d.date).sort();
+  const periodStart=allDates[0];const periodEnd=allDates[allDates.length-1];
+  const leftsInPeriod=S.leftovers.filter(l=>l.ptId===ptId&&l.date>=periodStart&&l.date<=periodEnd);
+  const delivered=ei(),leftover=ei();
+  unsettled.forEach(d=>TK.forEach(k=>{delivered[k]=(parseInt(delivered[k])||0)+(parseInt(d.items[k])||0)}));
+  leftsInPeriod.forEach(l=>TK.forEach(k=>{leftover[k]=(parseInt(leftover[k])||0)+(parseInt(l.items[k])||0)}));
+  const totalDelivCount=TK.reduce((s,k)=>s+(parseInt(delivered[k])||0),0);
+  const totalLeftCount=TK.reduce((s,k)=>s+(parseInt(leftover[k])||0),0);
+  const totalNetCount=totalDelivCount-totalLeftCount;
+  const totalNet=cval(delivered,ptId)-cval(leftover,ptId);
+  const prevRemaining=S.settlements.filter(s=>s.ptId===ptId)
+    .reduce((s,st)=>s+(st.remainingBalance||0),0);
+  return{ptId,periodStart,periodEnd,delivered,leftover,
+    totalDelivered:cval(delivered,ptId),totalLeftover:cval(leftover,ptId),
+    totalNet,totalDelivCount,totalLeftCount,totalNetCount,
+    delivsInPeriod:unsettled,days,prevRemaining};
+}
+
+// حساب مجموع أيام مختارة
+function calcForDays(ptId,selectedDates){
+  const pr=gpr(ptId);
+  const selSet=new Set(selectedDates);
+  const selDelivs=getUnsettledDeliveries(ptId).filter(d=>selSet.has(d.date));
+  const selLefts=S.leftovers.filter(l=>l.ptId===ptId&&selSet.has(l.date));
+  const deliv=ei(),left=ei();
+  selDelivs.forEach(d=>TK.forEach(k=>{deliv[k]=(parseInt(deliv[k])||0)+(parseInt(d.items[k])||0)}));
+  selLefts.forEach(l=>TK.forEach(k=>{left[k]=(parseInt(left[k])||0)+(parseInt(l.items[k])||0)}));
+  const cnt=TK.reduce((s,k)=>s+(parseInt(deliv[k])||0),0)-TK.reduce((s,k)=>s+(parseInt(left[k])||0),0);
+  const val=cval(deliv,ptId)-cval(left,ptId);
+  return{cnt:Math.max(0,cnt),val:Math.max(0,val),delivIds:selDelivs.map(d=>d.id),delivs:selDelivs};
+}
+
+// ═══════════════════════════════════════════════
+//  PERSISTENCE
+// ═══════════════════════════════════════════════
+function save(){
+  S._ts=Date.now();
+  localStorage.setItem('makhbaza_v4',JSON.stringify(S));
+  localStorage.setItem('makhbaza_cfg',JSON.stringify(CFG));
+}
+function loadLocal(){
+  try{const r=localStorage.getItem('makhbaza_v4');if(r){const d=JSON.parse(r);Object.assign(S,d);if(!S.settlements)S.settlements=[];}}catch(e){}
+  try{const r=localStorage.getItem('makhbaza_cfg');if(r)Object.assign(CFG,JSON.parse(r));}catch(e){}
+}
+function dataForSync(){ return JSON.stringify({...S,_ts:S._ts||Date.now()}) }
+function mergeFromSync(raw){
+  try{
+    const R=JSON.parse(raw);
+    const mId=(l,r)=>{const m=new Map();l.forEach(x=>m.set(x.id,x));r.forEach(x=>{if(!m.has(x.id))m.set(x.id,x)});return[...m.values()]};
+    const mLft=(l,r)=>{const m=new Map();l.forEach(x=>m.set(x.ptId+'_'+x.date,x));r.forEach(x=>{const k=x.ptId+'_'+x.date;if(!m.has(k))m.set(k,x)});return[...m.values()]};
+    const mPts=(l,r)=>{const m=new Map();l.forEach(x=>m.set(x.id,x));r.forEach(x=>{if(!m.has(x.id))m.set(x.id,x)});return[...m.values()]};
+    S.deliveries=mId(S.deliveries,R.deliveries||[]);
+    S.settlements=mId(S.settlements,R.settlements||[]);
+    S.leftovers=mLft(S.leftovers,R.leftovers||[]);
+    S.points=mPts(S.points,R.points||[]);
+    S.drivers=[...new Set([...S.drivers,...(R.drivers||[])])];
+    save();render();toast('✓ تمت المزامنة بنجاح');
+  }catch(e){toast('خطأ في البيانات','e');}
+}
+
+// ═══════════════════════════════════════════════
+//  GOOGLE DRIVE
+// ═══════════════════════════════════════════════
+function loadGS(cb){
+  if(window.google?.accounts?.oauth2){cb();return;}
+  const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';
+  s.onload=cb;s.onerror=()=>{setSync('err');renderSettings();toast('تعذّر تحميل Google','e');};
+  document.head.appendChild(s);
+}
+function googleSignIn(){
+  if(!CFG.googleClientId){toast('أدخل Google Client ID أولاً','e');return;}
+  setSync('syncing');renderSettings();
+  loadGS(()=>{
+    try{
+      google.accounts.oauth2.initTokenClient({
+        client_id:CFG.googleClientId,
+        scope:'https://www.googleapis.com/auth/drive.appdata',
+        prompt:'',
+        callback(resp){
+          if(resp.error||!resp.access_token){setSync('err');renderSettings();toast('فشل الربط — تأكد من Client ID والـ origins','e');return;}
+          GD.token=resp.access_token;GD.tokenExpiry=Date.now()+((resp.expires_in||3600)-60)*1000;syncDrive();
+        },
+        error_callback(err){
+          setSync('err');renderSettings();
+          if(err.type==='popup_closed')toast('أُغلقت نافذة Google','e');
+          else if(err.type==='popup_failed_to_open')toast('اسمح بالنوافذ المنبثقة في Chrome','e');
+          else toast('خطأ Google: '+err.type,'e');
+        }
+      }).requestAccessToken();
+    }catch(e){setSync('err');renderSettings();toast('خطأ: '+e.message,'e');}
+  });
+}
+async function driveReq(url,opts){
+  if(GD.tokenExpiry&&Date.now()>GD.tokenExpiry){GD.token=null;setSync('err');renderSettings();toast('انتهت جلسة Google — أعد الربط','e');return null;}
+  const resp=await fetch(url,{...opts,headers:{...opts.headers,Authorization:'Bearer '+GD.token}});
+  if(resp.status===401){GD.token=null;setSync('err');renderSettings();toast('خطأ 401 — أعد ربط Google','e');return null;}
+  return resp;
+}
+async function syncDrive(){
+  if(!GD.token){googleSignIn();return;}
+  setSync('syncing');renderSettings();
+  try{
+    const sr=await driveReq('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name%3D%27makhbaza_backup.json%27&fields=files(id)',{headers:{}});
+    if(!sr)return;
+    const sd=await sr.json();
+    if(sd.error){handleDE(sd.error);return;}
+    if(sd.files?.length>0){
+      GD.fileId=sd.files[0].id;
+      const dr=await driveReq('https://www.googleapis.com/drive/v3/files/'+GD.fileId+'?alt=media',{headers:{}});
+      if(!dr)return;
+      mergeFromSync(await dr.text());
+      await uploadD(dataForSync());
+      setSync('ok');renderSettings();
+    }else{await createD(dataForSync());if(GD.fileId){setSync('ok');renderSettings();toast('✓ تم إنشاء ملف النسخ الاحتياطي');}else{setSync('err');renderSettings();}}
+  }catch(e){setSync('err');renderSettings();toast('خطأ: '+e.message,'e');}
+}
+async function uploadD(content){
+  if(!GD.fileId||!GD.token)return;
+  const B='mkh_bnd';
+  const body='--'+B+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify({name:'makhbaza_backup.json'})+'\r\n--'+B+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+content+'\r\n--'+B+'--';
+  return driveReq('https://www.googleapis.com/upload/drive/v3/files/'+GD.fileId+'?uploadType=multipart',{method:'PATCH',headers:{'Content-Type':'multipart/related; boundary='+B},body});
+}
+async function createD(content){
+  if(!GD.token)return;
+  const B='mkh_bnd';
+  const body='--'+B+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify({name:'makhbaza_backup.json',parents:['appDataFolder']})+'\r\n--'+B+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+content+'\r\n--'+B+'--';
+  try{
+    const r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+      {method:'POST',headers:{Authorization:'Bearer '+GD.token,'Content-Type':'multipart/related; boundary='+B},body});
+    const d=await r.json();if(d.id)GD.fileId=d.id;else if(d.error)handleDE(d.error);
+  }catch(e){toast('فشل الإنشاء: '+e.message,'e');}
+}
+function handleDE(err){
+  GD.token=null;setSync('err');renderSettings();
+  if(err.code===401||err.status==='UNAUTHENTICATED')toast('انتهت الجلسة — أعد الربط','e');
+  else if(err.code===403)toast('خطأ 403 — تأكد من تفعيل Drive API','e');
+  else toast('خطأ Drive: '+(err.message||''),'e');
+}
+function setSync(s){GD.status=s;}
+function syncStatusHtml(){
+  const s=GD.status;
+  if(s==='syncing')return`<div class="sync-status sync-pending"><div class="sync-dot sync-dot-pending"></div>جاري المزامنة...</div>`;
+  if(s==='ok')return`<div class="sync-status sync-ok"><div class="sync-dot sync-dot-ok"></div>تمت المزامنة بنجاح</div>`;
+  if(s==='err')return`<div class="sync-status sync-err"><div class="sync-dot sync-dot-err"></div>فشلت المزامنة</div>`;
+  return'';
+}
+
+// ═══════════════════════════════════════════════
+//  PWA
+// ═══════════════════════════════════════════════
+function regSW(){
+  if(!('serviceWorker' in navigator))return;
+  const swPath=window.location.pathname.replace(/\/[^/]*$/,'/')+' sw.js';
+  navigator.serviceWorker.register(swPath.trim()).catch(()=>{});
+  window.addEventListener('online',()=>toast('✅ عاد الاتصال'));
+  window.addEventListener('offline',()=>toast('📴 بدون انترنت — التطبيق يعمل','e'));
+}
+function injectManifest(){
+  const m={name:'محسين للخبز التقليدي',short_name:'محسين',start_url:window.location.href,display:'standalone',
+    background_color:'#FFFDF8',theme_color:'#C27A1A',orientation:'portrait',
+    icons:[{src:'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="80" fill="%23C27A1A"/><text x="256" y="340" font-size="280" text-anchor="middle">🍞</text></svg>',sizes:'512x512',type:'image/svg+xml'}]};
+  const l=document.createElement('link');l.rel='manifest';
+  l.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(m));
+  document.head.appendChild(l);
+}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;renderHome();});
+function installApp(){if(!deferredInstall)return;deferredInstall.prompt();deferredInstall.userChoice.then(()=>{deferredInstall=null;renderHome();});}
+
+// ═══════════════════════════════════════════════
+//  THEME
+// ═══════════════════════════════════════════════
+function setTheme(t){
+  CFG.theme=t;applyTheme();save();renderSettings();
+}
+function applyTheme(){
+  const t=CFG.theme||'auto';
+  const dark=(t==='auto')?window.matchMedia('(prefers-color-scheme:dark)').matches:(t==='dark');
+  document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+}
+window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if((CFG.theme||'auto')==='auto')applyTheme();});
+
+// ═══════════════════════════════════════════════
+//  UI
+// ═══════════════════════════════════════════════
+function toast(msg,type='s'){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t=document.createElement('div');t.className='toast';
+  if(type==='e')t.style.background='#993C1D';
+  t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
+}
+function scrollTop(){document.getElementById('content').scrollTop=0;}
+function go(name){
+  CUR=name;SEL_PT=null;
+  if(name!=='deliv')AFTER_SUBMIT=null; // مسح حالة الاختيار عند مغادرة تبويب التسليم
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('scr-'+name).classList.add('on');
+  document.getElementById('n-'+name).classList.add('on');
+  scrollTop();render();
+}
+function render(){
+  document.getElementById('tb-date').textContent=fdate(TODAY);
+  // فلترة التسليمات حسب الدور
+  const isDriver=SESSION.role==='driver';
+  const driverDelivs=isDriver
+    ?S.deliveries.filter(d=>d.driver===SESSION.driverName)
+    :S.deliveries;
+  const ca=driverDelivs.filter(d=>d.date===TODAY).reduce((s,d)=>s+cval(d.items,d.ptId),0)
+          -S.leftovers.filter(l=>l.date===TODAY).reduce((s,l)=>s+cval(l.items,l.ptId),0);
+  const cc=driverDelivs.filter(d=>d.date===TODAY).reduce((s,d)=>s+ccount(d.items),0)
+          -S.leftovers.filter(l=>l.date===TODAY).reduce((s,l)=>s+ccount(l.items),0);
+  document.getElementById('tb-ca').textContent=Math.max(0,cc)+' خبزة / '+Math.max(0,ca).toFixed(2)+' د.م';
+  // شارة الدور
+  const roleEl=document.getElementById('tb-role');
+  if(roleEl){
+    if(isDriver){
+      roleEl.className='role-badge driver';
+      roleEl.textContent='🚚 '+SESSION.driverName;
+    }else{
+      roleEl.className='role-badge manager';
+      roleEl.textContent='👑 مدير';
+    }
+  }
+  renderHome();renderDeliv();if(SEL_PT)renderPtDetail();else renderPts();renderStats();renderHistory();renderSettings();
+}
+function autoSync(){if(CFG.autoSync&&GD.token)syncDrive();}
+
+// ═══════════════════════════════════════════════
+//  HOME
+// ═══════════════════════════════════════════════
+function renderHome(){
+  const tds=S.deliveries.filter(d=>d.date===TODAY);
+  const totCount=tds.reduce((s,d)=>s+ccount(d.items),0);
+  const totCA=tds.reduce((s,d)=>s+cval(d.items,d.ptId),0);
+  const lftCA=S.leftovers.filter(l=>l.date===TODAY).reduce((s,l)=>s+cval(l.items,l.ptId),0);
+  const lftCount=S.leftovers.filter(l=>l.date===TODAY).reduce((s,l)=>s+ccount(l.items),0);
+  const netCA=totCA-lftCA;const netCount=totCount-lftCount;
+  const actPts=[...new Set(tds.map(d=>d.ptId))].length;
+  const totalDebt=S.points.reduce((s,pt)=>s+ptDebt(pt.id),0);
+
+  let h='';
+  if(deferredInstall)h+=`<div style="background:var(--AL);border:2px solid var(--AM);border-radius:var(--r);padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px"><div style="font-size:28px">📲</div><div style="flex:1;font-size:15px;color:var(--AD);font-weight:600">ثبّت التطبيق على الشاشة الرئيسية</div><button class="btn btn-p btn-sm" onclick="installApp()">تثبيت</button></div>`;
+
+  h+=`<div class="mgrid">
+    <div class="met"><div class="met-lbl">الخبز المباع اليوم</div><div class="met-val">${netCount}</div><div class="met-sub">${netCA.toFixed(2)} د.م صافي</div></div>
+    <div class="met"><div class="met-lbl">إجمالي التوزيع</div><div class="met-val">${totCount}</div><div class="met-sub">${totCA.toFixed(2)} د.م موزع</div></div>
+    <div class="met"><div class="met-lbl">عمليات المرور</div><div class="met-val">${tds.length}</div><div class="met-sub">${actPts} نقطة مخدومة</div></div>
+    <div class="met" style="${totalDebt>0?'border:2px solid #F0997B':''}"><div class="met-lbl">الديون المتراكمة</div><div class="met-val" style="${totalDebt>0?'color:#D85A30':''}">${totalDebt.toFixed(2)}</div><div class="met-sub">درهم مستحق</div></div>
+  </div>`;
+
+  if(S.points.length){
+    h+=`<div class="slbl">حالة النقاط اليوم</div>`;
+    S.points.forEach(pt=>{
+      const ds=gd(pt.id,TODAY);
+      const cnt=ds.reduce((s,d)=>s+ccount(d.items),0);
+      const val=ds.reduce((s,d)=>s+cval(d.items,pt.id),0);
+      const lft=gl(pt.id,TODAY);const lftC=lft?ccount(lft.items):0;const lftV=lft?cval(lft.items,pt.id):0;
+      const debt=ptDebt(pt.id);
+      h+=`<div class="card" style="cursor:pointer" onclick="viewPt('${pt.id}')">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:17px;font-weight:800">${pt.name}</div>
+            <div style="font-size:14px;color:var(--tx2);margin-top:4px">${ds.length} مرور · فائض: ${lftC} خبزة</div>
+            ${debt>0?`<div style="font-size:14px;color:#D85A30;font-weight:700;margin-top:3px">دين: ${debt.toFixed(2)} د.م</div>`:'<div style="font-size:14px;color:var(--T);font-weight:700;margin-top:3px">✓ مصفى</div>'}
+          </div>
+          <div style="text-align:left">
+            <div style="font-size:28px;font-weight:800;color:var(--A)">${cnt-lftC}</div>
+            <div style="font-size:12px;color:var(--tx2)">خبزة مباعة</div>
+            <div style="font-size:14px;font-weight:700;color:var(--A)">${(val-lftV).toFixed(2)} د.م</div>
+          </div>
+        </div>
+      </div>`;
+    });
+  }
+
+  h+=`<div class="slbl">آخر التسليمات (الأحدث في الأسفل)</div>`;
+  if(!tds.length){h+=`<div class="empty"><div class="empty-icon">🚚</div>لم يتم تسجيل أي تسليم اليوم</div>`;}
+  else{
+    h+=`<div class="card">`;
+    [...tds].sort((a,b)=>a.time>b.time?1:-1).forEach(d=>{
+      const pt=S.points.find(p=>p.id===d.ptId);
+      h+=`<div class="ditem">
+        <div class="ditem-top">
+          <div class="ditem-time">${d.time}</div>
+          <div style="font-size:14px;font-weight:600;color:var(--tx2)">${pt?pt.name:'?'}</div>
+          ${d.driver?`<div class="ditem-driver">👤 ${d.driver}</div>`:''}
+        </div>
+        <div class="ditem-counts">${dcounts(d.items)}</div>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+  document.getElementById('scr-home').innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════
+//  DELIVERY
+// ═══════════════════════════════════════════════
+function renderDeliv(){
+  let h='';
+
+  // ─── لوحة الاختيار بعد التسليم ───────────────
+  if(AFTER_SUBMIT&&!DF.leftMode){
+    const {ptId,cnt,val,ptName}=AFTER_SUBMIT;
+    h+=`<div class="after-submit">
+      <div class="after-submit-title">✅ تم تسجيل التسليم</div>
+      <div class="after-submit-cnt">${cnt} خبزة · ${val.toFixed(2)} د.م</div>
+      <div style="font-size:15px;color:var(--TD);font-weight:700;margin-bottom:16px">📍 ${ptName}</div>
+      <div style="font-size:15px;font-weight:700;color:var(--TD);margin-bottom:12px">ماذا تريد الآن؟</div>
+      <div class="after-submit-btns">
+        <button class="btn btn-teal" style="padding:16px 10px;font-size:16px" onclick="goLeftSamePt('${ptId}')">📦 سجّل الفائض<br><span style="font-size:13px;font-weight:500">لنفس النقطة</span></button>
+        <button class="btn btn-p" style="padding:16px 10px;font-size:16px" onclick="goNewDeliv()">➡️ نقطة بيع أخرى<br><span style="font-size:13px;font-weight:500">تسليم جديد</span></button>
+      </div>
+    </div>`;
+  }
+
+  if(!S.points.length){h+=`<div class="alrt alrt-w">أضف نقطة بيع أولاً من تبويب النقاط</div>`;}
+  else if(!DF.leftMode){h+=bDelivForm();}
+  else{h+=bLeftForm();}
+  document.getElementById('scr-deliv').innerHTML=h;
+}
+
+function bTGrid(items,ptId,pfx,onchg){
+  const pr=ptId?gpr(ptId):DP;
+  // الترتيب: شعير → قمح → ذرة (عمودياً)
+  const orderedKeys=['sha3ir_k','qmh','dra'];
+  let h=`<div class="tgrid">`;
+  orderedKeys.forEach(k=>{
+    const v=parseInt(items[k])||0; const t=TM[k];
+    h+=`<div class="tcard tcard-${t.cls}">
+      <div class="tcard-left">
+        <div class="tcard-icon">${t.icon}</div>
+        <div class="tcard-nm tcard-nm-${t.cls}">${t.label.replace('خبز ','')}</div>
+        <div class="tcard-pr">${pr[k].toFixed(2)} د.م</div>
+      </div>
+      <div class="tcard-right">
+        <div class="tcard-adj">
+          <button type="button" class="tcard-adj-btn" onclick="adjTC('${k}','${pfx}',${onchg?'true':'false'},-1)">−</button>
+          <input type="number" id="tc-${k}" min="0" step="1" placeholder="0" inputmode="numeric" autocomplete="off" value="${v||''}"
+            oninput="${pfx}['${k}']=this.value${onchg?';'+onchg:''}">
+          <button type="button" class="tcard-adj-btn" onclick="adjTC('${k}','${pfx}',${onchg?'true':'false'},1)">+</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  h+=`</div>`;return h;
+}
+
+function adjTC(k,pfx,hasOnchg,delta){
+  const inp=document.getElementById('tc-'+k);if(!inp)return;
+  const newVal=Math.max(0,(parseInt(inp.value)||0)+delta);
+  inp.value=newVal;
+  // update state
+  if(pfx==='DF.items') DF.items[k]=String(newVal);
+  else if(pfx==='DF.lItems') DF.lItems[k]=String(newVal);
+  if(hasOnchg) updSum();
+}
+
+function bDelivForm(){
+  const ptId=DF.ptId;const items=DF.items;
+  const total=ptId?cval(items,ptId):0;const totalCnt=ccount(items);
+  const hasQ=hasI(items)&&ptId;
+
+  // ─── ترتيب النقاط ───────────────────────────
+  let pts=[...S.points];
+  // حساب الاستعمال: مجموع التسليمات الكلية لكل نقطة
+  const usageMap={};
+  S.deliveries.forEach(d=>{usageMap[d.ptId]=(usageMap[d.ptId]||0)+1;});
+  if(PT_SORT==='usage'){
+    pts.sort((a,b)=>(usageMap[b.id]||0)-(usageMap[a.id]||0));
+  }
+
+  // ─── أزرار نقاط البيع ────────────────────────
+  let h=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <div style="font-size:15px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em">① اختر نقطة البيع</div>
+    <div class="sort-toggle" style="margin:0;gap:6px">
+      <div class="sort-btn ${PT_SORT==='manual'?'on':''}" onclick="PT_SORT='manual';renderDeliv()" style="padding:6px 10px;font-size:12px">⠿ يدوي</div>
+      <div class="sort-btn ${PT_SORT==='usage'?'on':''}" onclick="PT_SORT='usage';renderDeliv()" style="padding:6px 10px;font-size:12px">🔥 الأكثر</div>
+    </div>
+  </div>`;
+
+  if(!S.points.length){h+=`<div class="alrt alrt-w">أضف نقطة بيع أولاً</div>`;}
+  else{
+    h+=`<div class="pt-btn-grid">`;
+    pts.forEach(pt=>{
+      const isSel=ptId===pt.id;
+      const cntToday=gd(pt.id,TODAY).reduce((s,d)=>s+ccount(d.items),0);
+      const debt=ptDebt(pt.id);
+      const usageCnt=usageMap[pt.id]||0;
+      h+=`<div class="pt-btn ${isSel?'selected':''}" onclick="selPt('${pt.id}')" style="position:relative">
+        ${PT_SORT==='usage'&&usageCnt>0?`<span class="pt-btn-usage">${usageCnt}</span>`:''}
+        <div class="pt-btn-name">${pt.name}</div>
+        <div class="pt-btn-meta">${cntToday} خبزة اليوم</div>
+        ${debt>0?`<div class="pt-btn-debt">دين: ${debt.toFixed(2)} د.م</div>`:''}
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+
+  // ─── زرا التسليم/الفائض — أسفل النقاط مباشرة ───
+  h+=`<div class="mode-btns" style="margin-top:12px">
+    <div class="mode-btn on">🚚<br>تسليم خبز</div>
+    <div class="mode-btn" onclick="setMode(true)">📦<br>تسجيل فائض</div>
+  </div>`;
+
+  h+=`<div style="font-size:15px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em;margin:10px 0 10px">② الكميات حسب النوع</div>`;
+
+  // ─── بانر اسم النقطة المختارة ───────────────
+  if(ptId){
+    const pt=S.points.find(p=>p.id===ptId);
+    h+=`<div class="pt-selected-banner">
+      <div>
+        <div class="pt-selected-banner-lbl">📍 نقطة البيع المختارة</div>
+        <div class="pt-selected-banner-name">${pt?pt.name:'?'}</div>
+      </div>
+      <button onclick="DF.ptId='';renderDeliv()" style="background:rgba(255,255,255,.25);border:none;color:#fff;border-radius:8px;padding:6px 10px;font-size:13px;font-family:inherit;cursor:pointer">تغيير</button>
+    </div>`;
+  }
+
+  h+=bTGrid(items,ptId,'DF.items','updSum()');
+
+  // ─── الملخص الموسّع ───────────────────────────
+  if(hasQ){
+    const pr=gpr(ptId);
+    const lft=gl(ptId,TODAY);
+    const lftCnt=lft?ccount(lft.items):0;
+    const lftVal=lft?cval(lft.items,ptId):0;
+    const prevDelivs=gd(ptId,TODAY);
+    const prevCnt=prevDelivs.reduce((s,d)=>s+ccount(d.items),0);
+    const prevVal=prevDelivs.reduce((s,d)=>s+cval(d.items,ptId),0);
+    const netCnt=prevCnt+totalCnt-lftCnt;
+    const netVal=prevVal+total-lftVal;
+
+    h+=`<div class="sum-box" id="dsum">
+      <div style="font-size:13px;font-weight:700;color:var(--AD);margin-bottom:8px">📋 ملخص هذا التسليم</div>`;
+    TK.forEach(k=>{const q=parseInt(items[k])||0;if(!q)return;
+      h+=`<div class="sum-row"><span>${TM[k].icon} ${q} ${TM[k].label}</span><span>${(q*pr[k]).toFixed(2)} د.م</span></div>`;
+    });
+    h+=`<div class="sum-row sum-total"><span>هذه العملية: ${totalCnt} خبزة</span><span>${total.toFixed(2)} د.م</span></div>`;
+
+    // قسم حالة اليوم الكاملة
+    if(prevCnt>0||lftCnt>0){
+      h+=`<div class="sum-section">
+        <div class="sum-section-title">حالة هذه النقطة اليوم</div>`;
+      if(prevCnt>0){
+        h+=`<div class="sum-row"><span>✓ مسلَّم سابقاً اليوم</span><span>${prevCnt} خبزة</span></div>`;
+      }
+      h+=`<div class="sum-row"><span>🔄 هذه العملية</span><span>+ ${totalCnt} خبزة</span></div>`;
+      if(lftCnt>0){
+        h+=`<div class="sum-row" style="color:#D85A30"><span>↩ فائض مسجَّل</span><span>− ${lftCnt} خبزة</span></div>`;
+      }
+      h+=`<div class="sum-net ${netCnt<0?'sum-net-red':''}">
+        <span>🍞 الصافي اليوم</span>
+        <span>${netCnt} خبزة · ${netVal.toFixed(2)} د.م</span>
+      </div>`;
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+  }
+
+  h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div class="fg"><label class="fl">الساعة</label><input type="time" id="f-time" value="${DF.time}" autocomplete="off" oninput="DF.time=this.value"></div>
+    <div class="fg"><label class="fl">المسؤول</label>
+      <input type="text" id="f-drv" list="drvs" value="${DF.driver}" placeholder="الاسم" autocomplete="off" name="bread-driver-x7" oninput="DF.driver=this.value">
+      <datalist id="drvs">${S.drivers.map(d=>`<option value="${d}">`).join('')}</datalist>
+    </div></div>`;
+  h+=`<div class="fg"><label class="fl">🔒 ملاحظة داخلية <span style="font-size:12px;font-weight:400;color:var(--tx3)">(لا تظهر في الطباعة)</span></label>
+    <input type="text" id="f-note-priv" value="${DF.notePrivate||''}" placeholder="ملاحظة خاصة بالمخبزة..." autocomplete="off" name="np-x9" oninput="DF.notePrivate=this.value"></div>`;
+  h+=`<div class="fg"><label class="fl">📋 ملاحظة للمسؤول <span style="font-size:12px;font-weight:400;color:var(--tx3)">(تظهر في الطباعة)</span></label>
+    <input type="text" id="f-note-pub" value="${DF.notePublic||''}" placeholder="ملاحظة لمسؤول نقطة البيع..." autocomplete="off" name="npb-x9" oninput="DF.notePublic=this.value"></div>`;
+  // الزر يظهر فقط عند اختيار نقطة + إدخال كمية
+  if(ptId&&hasQ){
+    h+=`<div class="sticky-submit"><button class="btn btn-p" onclick="submitDeliv()" style="font-size:19px;padding:17px">✓ تسجيل التسليم</button></div>`;
+  }
+  return h;
+}
+
+function selPt(id){
+  DF.ptId=id;
+  renderDeliv();
+}
+
+function updSum(){
+  TK.forEach(k=>{const inp=document.getElementById('tc-'+k);if(inp)DF.items[k]=inp.value;});
+  const ptId=DF.ptId;if(!ptId)return;
+  const pr=gpr(ptId);const items=DF.items;
+  const total=cval(items,ptId);const totalCnt=ccount(items);const hasQ=hasI(items);
+
+  const lft=gl(ptId,TODAY);
+  const lftCnt=lft?ccount(lft.items):0;const lftVal=lft?cval(lft.items,ptId):0;
+  const prevDelivs=gd(ptId,TODAY);
+  const prevCnt=prevDelivs.reduce((s,d)=>s+ccount(d.items),0);
+  const prevVal=prevDelivs.reduce((s,d)=>s+cval(d.items,ptId),0);
+  const netCnt=prevCnt+totalCnt-lftCnt;
+  const netVal=prevVal+total-lftVal;
+
+  let box=document.getElementById('dsum');
+  if(hasQ){
+    let inner=`<div style="font-size:13px;font-weight:700;color:var(--AD);margin-bottom:8px">📋 ملخص هذا التسليم</div>`;
+    TK.forEach(k=>{const q=parseInt(items[k])||0;if(!q)return;
+      inner+=`<div class="sum-row"><span>${TM[k].icon} ${q} ${TM[k].label}</span><span>${(q*pr[k]).toFixed(2)} د.م</span></div>`;
+    });
+    inner+=`<div class="sum-row sum-total"><span>هذه العملية: ${totalCnt} خبزة</span><span>${total.toFixed(2)} د.م</span></div>`;
+    if(prevCnt>0||lftCnt>0){
+      inner+=`<div class="sum-section"><div class="sum-section-title">حالة هذه النقطة اليوم</div>`;
+      if(prevCnt>0)inner+=`<div class="sum-row"><span>✓ مسلَّم سابقاً اليوم</span><span>${prevCnt} خبزة</span></div>`;
+      inner+=`<div class="sum-row"><span>🔄 هذه العملية</span><span>+ ${totalCnt} خبزة</span></div>`;
+      if(lftCnt>0)inner+=`<div class="sum-row" style="color:#D85A30"><span>↩ فائض مسجَّل</span><span>− ${lftCnt} خبزة</span></div>`;
+      inner+=`<div class="sum-net ${netCnt<0?'sum-net-red':''}"><span>🍞 الصافي اليوم</span><span>${netCnt} خبزة · ${netVal.toFixed(2)} د.م</span></div></div>`;
+    }
+    if(!box){const d2=document.createElement('div');d2.className='sum-box';d2.id='dsum';d2.innerHTML=inner;document.querySelector('#scr-deliv .tgrid')?.after(d2);}
+    else box.innerHTML=inner;
+    // ── إظهار زر التسجيل ──
+    _showSubmitBtn();
+  }else{
+    if(box)box.remove();
+    // ── إخفاء زر التسجيل ──
+    _hideSubmitBtn();
+  }
+}
+
+function _showSubmitBtn(){
+  let sb=document.getElementById('sticky-submit-deliv');
+  if(!sb){
+    sb=document.createElement('div');
+    sb.id='sticky-submit-deliv';
+    sb.className='sticky-submit';
+    sb.innerHTML=`<button class="btn btn-p" onclick="submitDeliv()" style="font-size:19px;padding:17px">✓ تسجيل التسليم</button>`;
+    document.getElementById('scr-deliv')?.appendChild(sb);
+  }
+  sb.style.display='block';
+}
+function _hideSubmitBtn(){
+  const sb=document.getElementById('sticky-submit-deliv');
+  if(sb)sb.style.display='none';
+}
+
+function submitDeliv(){
+  const ptId=DF.ptId;
+  const time=document.getElementById('f-time')?.value||DF.time;
+  const driver=(document.getElementById('f-drv')?.value||DF.driver).trim();
+  const notePrivate=(document.getElementById('f-note-priv')?.value||DF.notePrivate||'').trim();
+  const notePublic=(document.getElementById('f-note-pub')?.value||DF.notePublic||'').trim();
+  const notes=notePublic||notePrivate;
+  const items=ei();
+  TK.forEach(k=>{const inp=document.getElementById('tc-'+k);if(inp)items[k]=inp.value||'0';});
+  if(!ptId){toast('اختر نقطة بيع','e');return;}
+  if(!hasI(items)){toast('أدخل كمية خبز','e');return;}
+  const cnt=ccount(items);const val=cval(items,ptId);
+  S.deliveries.push({id:Date.now()+'',ptId,date:TODAY,time:time||nstr(),items,driver,notes,notePrivate,notePublic});
+  if(driver&&!S.drivers.includes(driver))S.drivers.push(driver);
+  const pt=S.points.find(p=>p.id===ptId);
+  AFTER_SUBMIT={ptId,cnt,val,ptName:pt?pt.name:'?'};
+  DF={...DF,items:ei(),notes:'',notePrivate:'',notePublic:'',leftMode:false};
+  save();autoSync();toast(`✓ ${cnt} خبزة — ${val.toFixed(2)} د.م`);renderDeliv();scrollTop();
+}
+function goLeftSamePt(ptId){
+  AFTER_SUBMIT=null;
+  DF={...DF,leftMode:true,lPtId:ptId,lItems:ei()};
+  renderDeliv();scrollTop();
+}
+function goNewDeliv(){
+  AFTER_SUBMIT=null;
+  DF={...DF,leftMode:false,ptId:'',items:ei()};
+  renderDeliv();scrollTop();
+}
+
+function bLeftForm(){
+  const items=DF.lItems;const ptId=DF.lPtId;const lType=DF.lType||'yesterday';
+  const total=ptId?cval(items,ptId):0;const cnt=ccount(items);const hasQ=hasI(items)&&ptId;
+
+  const todayDelivs=ptId?gd(ptId,TODAY):[];
+  const todayCnt=todayDelivs.reduce((s,d)=>s+ccount(d.items),0);
+  const yestDelivs=ptId?S.deliveries.filter(d=>d.ptId===ptId&&d.date===YESTERDAY):[];
+  const yestCnt=yestDelivs.reduce((s,d)=>s+ccount(d.items),0);
+  const yestLeft=S.leftovers.find(l=>l.ptId===ptId&&l.date===YESTERDAY);
+  const yestLeftCnt=yestLeft?ccount(yestLeft.items):0;
+
+  let h=``;
+
+  // ─── STEP 1: اختر نقطة البيع ───────────────────
+  h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+    <div style="width:26px;height:26px;border-radius:50%;background:var(--A);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0">1</div>
+    <div style="font-size:15px;font-weight:800;color:var(--tx2)">اختر نقطة البيع</div>
+  </div>`;
+
+  if(!S.points.length){
+    h+=`<div class="alrt alrt-w">أضف نقطة بيع أولاً</div>`;
+  }else{
+    h+=`<div class="pt-btn-grid">`;
+    S.points.forEach(pt=>{
+      const isSel=ptId===pt.id;
+      const c=gd(pt.id,TODAY).reduce((s,d)=>s+ccount(d.items),0);
+      h+=`<div class="pt-btn ${isSel?'selected':''}" onclick="DF.lPtId='${pt.id}';DF.lType='yesterday';DF.lItems=ei();renderDeliv()">
+        <div class="pt-btn-name">${pt.name}</div>
+        <div class="pt-btn-meta">${c} خبزة اليوم</div>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+
+  // ─── زرا التسليم/الفائض ───
+  h+=`<div class="mode-btns" style="margin-top:12px">
+    <div class="mode-btn" onclick="setMode(false)">🚚<br>تسليم خبز</div>
+    <div class="mode-btn on">📦<br>تسجيل فائض</div>
+  </div>`;
+
+  // ─── STEP 2: نوع الفائض — يظهر فقط بعد اختيار النقطة ───
+  if(ptId){
+    h+=`<div style="display:flex;align-items:center;gap:8px;margin:16px 0 10px">
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--A);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0">2</div>
+      <div style="font-size:15px;font-weight:800;color:var(--tx2)">ما نوع الفائض؟</div>
+    </div>`;
+
+    // بطاقات النوع — أكبر وأوضح مع وصف عملي
+    h+=`<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">`;
+
+    const types=[
+      {v:'yesterday', icon:'📅', lbl:'فائض أمس',
+       desc:`خبز متبقي من أمس — يُطرح من مستحقات ${dl(YESTERDAY)}`,
+       color:'var(--c-sha-bd)', bg:'var(--c-sha-bg)',
+       extra: yestCnt>0?`وُزِّع أمس: ${yestCnt} خبزة${yestLeftCnt>0?' · مسجَّل سابقاً: '+yestLeftCnt:''}`:''
+      },
+      {v:'swap', icon:'🔄', lbl:'استبدال',
+       desc:`سحبت خبزاً يابساً ووضعت مكانه طازجاً — يُطرح من اليوم`,
+       color:'var(--c-qmh-bd)', bg:'var(--c-qmh-bg)',
+       extra: todayCnt>0?`وُزِّع اليوم: ${todayCnt} خبزة`:''
+      },
+      {v:'transfer', icon:'➡️', lbl:'نقل لنقطة أخرى',
+       desc:'سحبت خبزاً صالحاً لنقطة ذات رواج أعلى — يُطرح من اليوم',
+       color:'var(--c-dra-bd)', bg:'var(--c-dra-bg)',
+       extra:''
+      },
+    ];
+
+    types.forEach(tp=>{
+      const isOn=lType===tp.v;
+      h+=`<div onclick="DF.lType='${tp.v}';DF.lItems=ei();renderDeliv()"
+        style="border:3px solid ${isOn?'var(--A)':tp.color};background:${isOn?'var(--AL)':tp.bg};
+          border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:all .15s;
+          display:flex;align-items:center;gap:14px">
+        <div style="font-size:32px;flex-shrink:0">${tp.icon}</div>
+        <div style="flex:1">
+          <div style="font-size:16px;font-weight:800;color:${isOn?'var(--AD)':'var(--tx)'}">${tp.lbl}</div>
+          <div style="font-size:13px;color:${isOn?'var(--AD)':'var(--tx2)'};margin-top:3px">${tp.desc}</div>
+          ${tp.extra?`<div style="font-size:12px;color:var(--A);font-weight:700;margin-top:4px">📊 ${tp.extra}</div>`:''}
+        </div>
+        ${isOn?`<div style="font-size:22px">✓</div>`:''}
+      </div>`;
+    });
+    h+=`</div>`;
+
+    // ─── STEP 3: أدخل الكميات — يظهر فقط بعد اختيار النوع ───
+    h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--A);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0">3</div>
+      <div style="font-size:15px;font-weight:800;color:var(--tx2)">أدخل الكميات المسحوبة</div>
+    </div>`;
+
+    // ملاحظة تحذيرية للاستبدال
+    if(lType==='swap'){
+      h+=`<div class="alrt alrt-w" style="margin-bottom:12px;font-size:14px">
+        ⚠️ أدخل فقط عدد الخبز الذي <strong>سحبته</strong> — الخبز الجديد الذي وضعته بديلاً <strong>لا تُسجّله هنا</strong>
+      </div>`;
+    }else if(lType==='transfer'){
+      h+=`<div class="alrt alrt-s" style="margin-bottom:12px;font-size:14px">
+        💡 بعد التسجيل، سجّل هذا الخبز كـ <strong>تسليم جديد</strong> للنقطة التي نقلته إليها
+      </div>`;
+    }
+
+    // بانر اسم النقطة
+    const ptObj=S.points.find(p=>p.id===ptId);
+    const dateLabel=lType==='yesterday'?`أمس (${dl(YESTERDAY)})`:'اليوم';
+    h+=`<div class="pt-selected-banner">
+      <div>
+        <div class="pt-selected-banner-lbl">📍 ${lType==='yesterday'?'فائض أمس لـ':lType==='swap'?'استبدال لـ':'نقل من'} — ${dateLabel}</div>
+        <div class="pt-selected-banner-name">${ptObj?ptObj.name:'?'}</div>
+      </div>
+    </div>`;
+
+    h+=bTGrid(items,ptId,'DF.lItems',null);
+
+    // الملخص
+    if(hasQ){
+      const pr=gpr(ptId);
+      const targetDate=lType==='yesterday'?YESTERDAY:TODAY;
+      const targetDelivs=S.deliveries.filter(d=>d.ptId===ptId&&d.date===targetDate);
+      const targetCnt=targetDelivs.reduce((s,d)=>s+ccount(d.items),0);
+      const targetVal=targetDelivs.reduce((s,d)=>s+cval(d.items,ptId),0);
+      const netAfter=targetCnt-cnt;
+      const netValAfter=targetVal-total;
+      h+=`<div class="sum-box">
+        <div style="font-size:13px;font-weight:700;color:var(--AD);margin-bottom:8px">
+          📋 ${lType==='yesterday'?'يُطرح من أمس':'يُطرح من اليوم'}
+        </div>`;
+      TK.forEach(k=>{const q=parseInt(items[k])||0;if(!q)return;
+        h+=`<div class="sum-row"><span>${TM[k].icon} ${q} ${TM[k].label}</span><span>− ${(q*pr[k]).toFixed(2)} د.م</span></div>`;
+      });
+      h+=`<div class="sum-row sum-total"><span>مسحوب: ${cnt} خبزة</span><span>− ${total.toFixed(2)} د.م</span></div>`;
+      if(targetCnt>0){
+        h+=`<div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--AM)">
+          <div class="sum-row"><span>موزَّع ${lType==='yesterday'?'أمس':'اليوم'}</span><span>${targetCnt} خبزة</span></div>
+          <div class="sum-net ${netAfter<0?'sum-net-red':''}"><span>الصافي بعد الطرح</span><span>${netAfter} خبزة · ${netValAfter.toFixed(2)} د.م</span></div>
+        </div>`;
+      }
+      h+=`</div>`;
+    }
+
+    h+=`<div class="sticky-submit"><button class="btn btn-p" onclick="submitLeft()" style="font-size:19px;padding:17px">✓ تسجيل الفائض</button></div>`;
+  }
+
+  h+=`<button class="btn btn-s" style="margin-top:10px" onclick="setMode(false)">⬅ رجوع للتسليم</button>`;
+
+  // ─── الفائض المسجل ───
+  const allLeft=S.leftovers.filter(l=>l.date===TODAY||l.date===YESTERDAY).sort((a,b)=>b.date>a.date?1:-1);
+  if(allLeft.length){
+    h+=`<div class="slbl">الفائض المسجل</div><div class="card">`;
+    allLeft.forEach(l=>{
+      const pt=S.points.find(p=>p.id===l.ptId);
+      const isYest=l.date===YESTERDAY;
+      const lCnt=ccount(l.items);
+      h+=`<div class="ditem${lCnt===0?' ditem-zeroed':''}">
+        <div class="ditem-top">
+          <div>
+            <div style="font-size:15px;font-weight:700">${pt?pt.name:'?'}</div>
+            <div style="font-size:12px;color:${isYest?'#D85A30':'var(--T)'}">
+              ${isYest?`📅 أمس · ${getReason(l)}`:`${getReason(l)}`}
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span class="bdg ${isYest?'bdg-r':'bdg-t'}">${lCnt} خبزة</span>
+            <button class="edit-btn" onclick="openEditLeftModal('${l.ptId}')">✏️</button>
+          </div>
+        </div>
+        <div class="ditem-counts">${dcounts(l.items)}</div>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+  return h;
+}
+
+function getReason(l){
+  const t=l.lType||'yesterday';
+  if(t==='yesterday')return'📅 فائض أمس';
+  if(t==='swap')return'🔄 استبدال';
+  if(t==='transfer')return'➡️ نقل';
+  return'📦 فائض';
+}
+
+function submitLeft(){
+  const ptId=DF.lPtId;
+  let lType=DF.lType||'yesterday';
+  const items=ei();
+  TK.forEach(k=>{const inp=document.getElementById('tc-'+k);if(inp)items[k]=inp.value||'0';});
+  if(!ptId){toast('اختر نقطة بيع','e');return;}
+  if(!hasI(items)){toast('أدخل كمية الفائض','e');return;}
+
+  // ── منطق الدين الذكي مع تنبيه ──
+  if(lType==='yesterday'){
+    const currentDebt=ptOldDebt(ptId); // ديون الأيام السابقة فقط
+    if(currentDebt<=0){
+      // لا دين — اعرض تنبيهاً قبل التنفيذ
+      _showNoDebtWarning(ptId,items,lType);
+      return;
+    }
+    // يوجد دين → يُطرح من أمس مباشرة
+    _doSaveLeft(ptId,YESTERDAY,'yesterday',items);
+  }else{
+    _doSaveLeft(ptId,TODAY,lType,items);
+  }
+}
+
+function _showNoDebtWarning(ptId,items,lType){
+  const pt=S.points.find(p=>p.id===ptId);
+  const cnt=ccount(items);
+  const val=cval(items,ptId);
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;padding:8px 0 16px">
+      <div style="font-size:48px;margin-bottom:12px">⚠️</div>
+      <div style="font-size:18px;font-weight:900;color:var(--tx);margin-bottom:8px">هذه النقطة لا دين عليها</div>
+      <div style="font-size:14px;color:var(--tx2);margin-bottom:20px">
+        ${pt?pt.name:''} — مصفَّاة بالكامل
+      </div>
+    </div>
+    <div class="alrt alrt-w" style="margin-bottom:16px;font-size:15px">
+      الفائض سيُطرح من <strong>اليوم الجاري</strong> وليس من أمس
+      <div style="margin-top:6px;font-size:13px;color:var(--AD)">
+        ${cnt} خبزة · ${val.toFixed(2)} د.م ← مطروحة من ${dl(TODAY)}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <button class="btn btn-s" style="font-size:16px" onclick="closeModal()">
+        ← تغيير
+      </button>
+      <button class="btn btn-p" style="font-size:16px" onclick="closeModal();_doSaveLeft('${ptId}','${TODAY}','swap',null)">
+        ✓ موافق
+      </button>
+    </div>
+  </div>`;
+  // حفظ الكميات مؤقتاً لاستخدامها عند الموافقة
+  window._pendingLeftItems={ptId,items,lType};
+  document.body.appendChild(ov);
+}
+
+function _doSaveLeft(ptId,targetDate,lType,items){
+  // إذا استُدعيت من زر الموافقة — خذ الكميات المحفوظة
+  if(!items&&window._pendingLeftItems&&window._pendingLeftItems.ptId===ptId){
+    items=window._pendingLeftItems.items;
+    window._pendingLeftItems=null;
+  }
+  if(!items||!hasI(items)){toast('خطأ في الكميات','e');return;}
+  S.leftovers=S.leftovers.filter(l=>!(l.ptId===ptId&&l.date===targetDate));
+  S.leftovers.push({ptId,date:targetDate,items,lType});
+  const typeLabel=lType==='yesterday'?'فائض أمس':lType==='swap'?'استبدال':'نقل';
+  DF={...DF,lItems:ei(),leftMode:false,ptId:ptId};
+  save();autoSync();
+  toast(`✓ تم تسجيل ${typeLabel} — ${ccount(items)} خبزة`);
+  render();
+}
+function setMode(b){DF.leftMode=b;DF.lType='yesterday';if(b&&DF.ptId)DF.lPtId=DF.ptId;renderDeliv();}
+function delLeft(ptId,date){S.leftovers=S.leftovers.filter(l=>!(l.ptId===ptId&&l.date===date));save();autoSync();render();}
+
+// ═══════════════════════════════════════════════
+//  POINTS
+// ═══════════════════════════════════════════════
+function renderPts(){
+  let h=`<div class="slbl">إضافة نقطة جديدة</div>
+    <div class="card-flat">
+      <div class="fg"><label class="fl">اسم نقطة البيع</label>
+        <input type="text" id="np-n" placeholder="مثال: دكان الحي"></div>
+      <div class="fg" style="margin-bottom:8px"><label class="fl">الموقع / العنوان</label>
+        <input type="text" id="np-a" placeholder="اختياري"></div>
+      <button class="btn btn-p" onclick="addPt()">+ إضافة النقطة</button>
+    </div>
+    <div class="slbl">نقاط البيع (${S.points.length}) — اسحب ⠿ لإعادة الترتيب</div>`;
+
+  if(!S.points.length){
+    h+=`<div class="empty"><div class="empty-icon">📍</div>لم تضف أي نقطة بعد</div>`;
+  } else {
+    h+=`<div id="pt-drag-list">`;
+    S.points.forEach((pt,idx)=>{
+      const ds=gd(pt.id,TODAY);
+      const cnt=ds.reduce((s,d)=>s+ccount(d.items),0);
+      const debt=ptDebt(pt.id);
+      h+=`<div class="pt-list-item" id="pli-${pt.id}" draggable="true"
+            ondragstart="dragStart(event,'${pt.id}')"
+            ondragover="dragOver(event,'${pt.id}')"
+            ondragend="dragEnd(event)"
+            ondrop="dropPt(event,'${pt.id}')"
+            ontouchstart="touchStart(event,'${pt.id}')"
+            ontouchmove="touchMove(event)"
+            ontouchend="touchEnd(event,'${pt.id}')">
+        <div class="drag-handle" onclick="event.stopPropagation()">⠿</div>
+        <div class="pt-list-av">${pt.name.trim()[0]||'?'}</div>
+        <div style="flex:1;min-width:0;cursor:pointer" onclick="viewPt('${pt.id}')">
+          <div style="font-size:17px;font-weight:800;color:var(--tx)">${pt.name}</div>
+          <div style="font-size:13px;color:var(--tx2);margin-top:2px">${ds.length} مرور اليوم · ${cnt} خبزة${debt>0?` · <span style="color:#D85A30">دين: ${debt.toFixed(2)} د.م</span>`:''}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="icon-btn" onclick="event.stopPropagation();openEditPt('${pt.id}')" title="تعديل الاسم" style="font-size:18px">✏️</button>
+          <button class="del-btn" onclick="event.stopPropagation();delPtBtn(this,'${pt.id}')" style="font-size:12px">✕</button>
+        </div>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+  document.getElementById('scr-pts').innerHTML=h;
+}
+
+// ─── تعديل اسم نقطة البيع ───────────────────────
+function openEditPt(id){
+  const pt=S.points.find(p=>p.id===id);if(!pt)return;
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ تعديل نقطة البيع</div>
+    <div class="fg"><label class="fl">الاسم</label>
+      <input type="text" id="edit-pt-name" value="${pt.name}" placeholder="اسم النقطة" style="font-size:18px;font-weight:700">
+    </div>
+    <div class="fg"><label class="fl">الموقع / العنوان</label>
+      <input type="text" id="edit-pt-addr" value="${pt.address||''}" placeholder="اختياري">
+    </div>
+    <button class="btn btn-p" onclick="saveEditPt('${id}')">✓ حفظ التعديلات</button>
+    <button class="btn btn-s" style="margin-top:10px" onclick="closeModal()">إلغاء</button>
+  </div>`;
+  document.body.appendChild(ov);
+  setTimeout(()=>document.getElementById('edit-pt-name')?.focus(),100);
+}
+function saveEditPt(id){
+  const pt=S.points.find(p=>p.id===id);if(!pt)return;
+  const n=document.getElementById('edit-pt-name')?.value.trim();
+  const a=document.getElementById('edit-pt-addr')?.value.trim();
+  if(!n){toast('أدخل اسم النقطة','e');return;}
+  pt.name=n;pt.address=a||'';
+  save();autoSync();closeModal();toast('✓ تم حفظ التعديلات');render();
+}
+
+// ─── السحب والإفلات للترتيب (Desktop) ─────────────
+let _dragId=null;
+function dragStart(e,id){_dragId=id;e.currentTarget.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function dragOver(e,id){e.preventDefault();if(id===_dragId)return;document.querySelectorAll('.pt-list-item').forEach(el=>el.classList.remove('drag-over'));document.getElementById('pli-'+id)?.classList.add('drag-over');}
+function dragEnd(e){e.currentTarget.classList.remove('dragging');document.querySelectorAll('.pt-list-item').forEach(el=>el.classList.remove('drag-over'));}
+function dropPt(e,targetId){
+  e.preventDefault();
+  if(!_dragId||_dragId===targetId)return;
+  const fromIdx=S.points.findIndex(p=>p.id===_dragId);
+  const toIdx=S.points.findIndex(p=>p.id===targetId);
+  if(fromIdx<0||toIdx<0)return;
+  const moved=S.points.splice(fromIdx,1)[0];
+  S.points.splice(toIdx,0,moved);
+  _dragId=null;save();autoSync();renderPts();renderDeliv();
+}
+
+// ─── السحب اللمسي للترتيب (Mobile) ─────────────────
+let _touchId=null,_touchClone=null,_touchOriginIdx=-1;
+function touchStart(e,id){
+  if(!e.target.classList.contains('drag-handle'))return;
+  e.preventDefault();
+  _touchId=id;_touchOriginIdx=S.points.findIndex(p=>p.id===id);
+  const el=document.getElementById('pli-'+id);
+  const rect=el.getBoundingClientRect();
+  _touchClone=el.cloneNode(true);
+  Object.assign(_touchClone.style,{position:'fixed',top:rect.top+'px',left:rect.left+'px',
+    width:rect.width+'px',opacity:'.85',zIndex:'999',pointerEvents:'none',
+    background:'var(--AL)',border:'2px solid var(--A)',borderRadius:'12px'});
+  document.body.appendChild(_touchClone);
+  el.classList.add('dragging');
+}
+function touchMove(e){
+  if(!_touchId||!_touchClone)return;
+  e.preventDefault();
+  const t=e.touches[0];
+  _touchClone.style.top=(t.clientY-30)+'px';
+  // تحديد العنصر تحت الإصبع
+  _touchClone.style.display='none';
+  const under=document.elementFromPoint(t.clientX,t.clientY);
+  _touchClone.style.display='';
+  const overItem=under?.closest('.pt-list-item');
+  document.querySelectorAll('.pt-list-item').forEach(el=>el.classList.remove('drag-over'));
+  if(overItem&&overItem.id!=='pli-'+_touchId)overItem.classList.add('drag-over');
+}
+function touchEnd(e,id){
+  if(!_touchId)return;
+  _touchClone?.remove();_touchClone=null;
+  document.querySelectorAll('.pt-list-item').forEach(el=>{el.classList.remove('dragging','drag-over');});
+  const over=document.querySelector('.pt-list-item.drag-over');
+  if(over){
+    const targetId=over.id.replace('pli-','');
+    if(targetId&&targetId!==_touchId){
+      const fromIdx=S.points.findIndex(p=>p.id===_touchId);
+      const toIdx=S.points.findIndex(p=>p.id===targetId);
+      if(fromIdx>=0&&toIdx>=0){const m=S.points.splice(fromIdx,1)[0];S.points.splice(toIdx,0,m);}
+      save();autoSync();
+    }
+  }
+  _touchId=null;renderPts();renderDeliv();
+}
+function addPt(){
+  const n=document.getElementById('np-n')?.value.trim();const a=document.getElementById('np-a')?.value.trim();
+  if(!n){toast('أدخل اسم النقطة','e');return;}
+  S.points.push({id:Date.now()+'',name:n,address:a||'',prices:{...DP}});
+  save();autoSync();toast('✓ تمت إضافة النقطة');render();
+}
+function delPt(id){
+  if(!confirm('تأكيد حذف هذه النقطة وجميع بياناتها؟'))return;
+  S.points=S.points.filter(p=>p.id!==id);
+  S.deliveries=S.deliveries.filter(d=>d.ptId!==id);
+  S.leftovers=S.leftovers.filter(l=>l.ptId!==id);
+  S.settlements=S.settlements.filter(s=>s.ptId!==id);
+  save();autoSync();render();
+}
+function viewPt(id){
+  SEL_PT=id;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('scr-pts').classList.add('on');
+  document.getElementById('n-pts').classList.add('on');
+  CUR='pts';scrollTop();renderPtDetail();
+}
+
+function renderPtDetail(){
+  const pt=S.points.find(p=>p.id===SEL_PT);if(!pt){SEL_PT=null;renderPts();return;}
+  const pr=gpr(pt.id);
+  const ds=gd(pt.id,TODAY);
+  // ترتيب تصاعدي — الأقدم فوق، الأحدث في الأسفل
+  const dsSorted=[...ds].sort((a,b)=>a.time>b.time?1:-1);
+  const totCnt=ds.reduce((s,d)=>s+ccount(d.items),0);
+  const totVal=ds.reduce((s,d)=>s+cval(d.items,pt.id),0);
+  const lft=gl(pt.id,TODAY);
+  const lftCnt=lft?ccount(lft.items):0;const lftVal=lft?cval(lft.items,pt.id):0;
+  const netCnt=totCnt-lftCnt;const netVal=totVal-lftVal;
+  const bt=btTime(pt.id);const sbd=sByDay(pt.id);const mx=Math.max(...sbd.map(s=>s[1]),1);
+  const debt=ptDebt(pt.id);
+  const stl=calcSettlement(pt.id);
+  const ptSettlements=S.settlements.filter(s=>s.ptId===pt.id).sort((a,b)=>a.date>b.date?-1:1);
+
+  // حساب إجمالي كل نوع اليوم
+  const typeTotDay=ei();
+  ds.forEach(d=>TK.forEach(k=>{typeTotDay[k]=(parseInt(typeTotDay[k])||0)+(parseInt(d.items[k])||0)}));
+
+  let h=`<button class="back-btn" onclick="SEL_PT=null;renderPts()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    العودة للنقاط
+  </button>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+    <div>
+      <div style="font-size:21px;font-weight:800">${pt.name}</div>
+      <div style="font-size:14px;color:var(--tx2);margin-top:4px">${pt.address||'بدون عنوان'}</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-s btn-sm" onclick="printDailyLog('${pt.id}')" style="font-size:13px">🖨️ طباعة</button>
+      <button class="btn btn-s btn-sm" onclick="openPriceModal('${pt.id}')">⚙️ الأسعار</button>
+    </div>
+  </div>`;
+
+  // ── DEBT BANNER ──
+  h+=`<div class="debt-banner ${debt>0?'has-debt':'no-debt'}">
+    <div>
+      <div style="font-size:15px;font-weight:800;color:${debt>0?'#993C1D':'var(--TD)'}">${debt>0?'💰 الرصيد المستحق':'✅ لا يوجد دين'}</div>
+    </div>
+    <div style="font-size:28px;font-weight:800;color:${debt>0?'#D85A30':'var(--T)'}">
+      ${debt.toFixed(2)} <span style="font-size:15px;font-weight:600">د.م</span>
+    </div>
+  </div>`;
+
+  // ── SETTLEMENT BUTTON ──
+  if(stl&&stl.totalNetCount>0){
+    h+=`<button class="btn btn-teal" style="margin-bottom:16px" onclick="openSettleModal('${pt.id}')">
+      💵 التخليص — ${stl.totalNetCount} خبزة / ${stl.totalNet.toFixed(2)} د.م
+    </button>`;
+  }else{
+    h+=`<div class="alrt alrt-s" style="margin-bottom:14px">✅ لا توجد فترة مفتوحة للتخليص</div>`;
+  }
+
+  // ── مجموع الخبز اليوم تفصيلي ──
+  h+=`<div class="slbl">مجموع الخبز اليوم</div>`;
+  h+=`<div class="totals-box">`;
+  TK.forEach(k=>{
+    const q=parseInt(typeTotDay[k])||0;
+    const lftQ=lft?parseInt(lft.items[k])||0:0;
+    const netQ=q-lftQ;
+    if(!q)return;
+    h+=`<div class="totals-row">
+      <div class="totals-label">${TM[k].icon} ${TM[k].label}</div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <div class="totals-count">${netQ}</div>
+        <div class="totals-val">${(netQ*pr[k]).toFixed(2)} د.م</div>
+      </div>
+    </div>`;
+  });
+  h+=`<div class="totals-row totals-grand">
+    <div class="totals-label">🍞 المجموع</div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <div class="totals-count">${netCnt}</div>
+      <div class="totals-val">${netVal.toFixed(2)} د.م</div>
+    </div>
+  </div></div>`;
+
+  if(bt){h+=`<div class="best-time"><div><div style="font-size:15px;font-weight:700;color:var(--AD)">⏰ أنسب وقت للتوزيع</div><div style="font-size:13px;color:var(--A)">بناءً على سجل المبيعات</div></div><div style="font-size:24px;font-weight:800;color:var(--AX)">${bt}</div></div>`;}
+
+  // ── السجل التاريخي — كتل منفصلة لكل يوم ──
+  const allDelivDates=[...new Set([
+    ...S.deliveries.filter(d=>d.ptId===pt.id).map(d=>d.date),
+    ...S.leftovers.filter(l=>l.ptId===pt.id).map(l=>l.date)
+  ])].sort().reverse();
+
+  if(allDelivDates.length){
+    h+=`<div class="slbl">سجل التسليمات</div>`;
+    allDelivDates.forEach(date=>{
+      const isToday=date===TODAY;
+      const dayDelivs=S.deliveries.filter(d=>d.ptId===pt.id&&d.date===date).sort((a,b)=>a.time>b.time?1:-1);
+      // الفوائض التي تُحتسب على هذا اليوم
+      const dayLfts=S.leftovers.filter(l=>l.ptId===pt.id&&l.date===date);
+      // الفوائض التي سُجِّلت في يوم آخر لكن تُحتسب على هذا اليوم (مرتجع من اليوم التالي)
+      const nextDayLfts=S.leftovers.filter(l=>l.ptId===pt.id&&l.lType==='yesterday'&&
+        (()=>{const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+1);return d.toISOString().split('T')[0]===l.date;})()
+      );
+      const dayCnt=dayDelivs.reduce((s,d)=>s+ccount(d.items),0);
+      const dayVal=dayDelivs.reduce((s,d)=>s+cval(d.items,pt.id),0);
+      const dayLftCnt=dayLfts.reduce((s,l)=>s+ccount(l.items),0);
+      const dayLftVal=dayLfts.reduce((s,l)=>s+cval(l.items,pt.id),0);
+      const nextLftCnt=nextDayLfts.reduce((s,l)=>s+ccount(l.items),0);
+      const nextLftVal=nextDayLfts.reduce((s,l)=>s+cval(l.items,pt.id),0);
+      const netCnt=dayCnt-dayLftCnt-nextLftCnt;
+      const netVal=dayVal-dayLftVal-nextLftVal;
+
+      h+=`<div class="date-block">
+        <div class="date-block-header ${isToday?'today':''}">
+          <div class="date-block-header-date">${fdate(date)}</div>
+          <div class="date-block-header-badge">${dayDelivs.length} تسليم</div>
+        </div>
+        <div class="date-block-body">`;
+
+      // التسليمات
+      dayDelivs.forEach(d=>{
+        const totalD=ccount(d.items);const valD=cval(d.items,pt.id);
+        const isZeroed=totalD===0;
+        h+=`<div class="ditem" style="padding:10px 14px">
+          <div class="ditem-top">
+            <div class="ditem-time">${d.time}</div>
+            <div style="font-size:15px;font-weight:700;color:${isZeroed?'var(--tx3)':'var(--tx)'}">
+              ${isZeroed?'<span class="zeroed-badge">مُلغى</span>':`${totalD} خبزة`}
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              ${!isZeroed?`<span style="font-size:14px;font-weight:700;color:var(--A)">${valD.toFixed(2)} د.م</span>`:''}
+              <button class="edit-btn" onclick="openEditChoiceModal('${d.id}','${pt.id}')">✏️</button>
+            </div>
+          </div>
+          <div class="ditem-counts">${isZeroed?'<span style="font-size:13px;color:var(--tx3)">كمية = 0</span>':dcounts(d.items)}${d.driver?`<span style="font-size:13px;color:var(--tx2);margin-right:4px">· 👤 ${d.driver}</span>`:''}</div>
+          ${d.notePrivate?`<div class="note-private">🔒 ${d.notePrivate}</div>`:''}
+          ${d.notePublic?`<div class="note-public">📋 ${d.notePublic}</div>`:''}
+        </div>`;
+      });
+
+      // الفوائض المُحتسَبة على هذا اليوم (مسجَّلة نفس اليوم)
+      dayLfts.forEach(lf=>{
+        const lfCnt=ccount(lf.items);const lfVal=cval(lf.items,pt.id);
+        const regDate=lf.date; // مسجَّل نفس يوم الاحتساب
+        h+=`<div class="retour-row">
+          <div class="retour-left">
+            <div class="retour-tag">↩ مرتجع بتاريخ ${dl(regDate)}</div>
+            <div class="retour-dates">
+              ${getReason(lf)} · سُجِّل: ${fdate(regDate)}
+            </div>
+            <div class="ditem-counts" style="margin-top:6px">${dcounts(lf.items)}</div>
+          </div>
+          <div class="retour-right">
+            <div>${lfCnt} خبزة</div>
+            <div style="font-size:13px">− ${lfVal.toFixed(2)} د.م</div>
+            <button class="edit-btn" onclick="openEditLeftModal('${pt.id}')">✏️</button>
+          </div>
+        </div>`;
+      });
+
+      // الفوائض المسجَّلة في اليوم التالي لكن تُحتسب على هذا اليوم (مرتجع أمس)
+      nextDayLfts.forEach(lf=>{
+        const lfCnt=ccount(lf.items);const lfVal=cval(lf.items,pt.id);
+        const regDate=lf.date; // سُجِّل في اليوم التالي
+        h+=`<div class="retour-row">
+          <div class="retour-left">
+            <div class="retour-tag">↩ مرتجع بتاريخ ${dl(regDate)}</div>
+            <div class="retour-dates">
+              يُحتسب على: ${fdate(date)} · سُجِّل: ${fdate(regDate)}
+            </div>
+            <div class="ditem-counts" style="margin-top:6px">${dcounts(lf.items)}</div>
+          </div>
+          <div class="retour-right">
+            <div>${lfCnt} خبزة</div>
+            <div style="font-size:13px">− ${lfVal.toFixed(2)} د.م</div>
+            <button class="edit-btn" onclick="openEditLeftModal('${pt.id}')">✏️</button>
+          </div>
+        </div>`;
+      });
+
+      h+=`</div>
+        <div class="date-block-footer">
+          <div class="date-block-footer-lbl">🍞 الصافي</div>
+          <div class="date-block-footer-val ${netCnt<0?'negative':''}">
+            ${netCnt} خبزة · ${netVal.toFixed(2)} د.م
+          </div>
+        </div>
+      </div>`;
+    });
+  }
+
+  // ── الأشرطة — شريط مزدوج موزَّع + فائض ──
+  if(sbd.length){
+    const mxDel=Math.max(...sbd.map(([,v])=>v.del),1);
+    h+=`<div class="slbl">المبيعات آخر ${sbd.length} أيام</div><div class="card">`;
+    sbd.forEach(([date,v])=>{
+      const net=v.del-v.lft;
+      const delPct=Math.round(v.del/mxDel*100);
+      const lftPct=v.del>0?Math.round(v.lft/v.del*100):0;
+      h+=`<div class="bbar">
+        <div class="bbar-head">
+          <span>${dl(date)}</span>
+          <span style="display:flex;gap:10px">
+            <span style="color:var(--AD)">${v.del} موزَّع</span>
+            ${v.lft>0?`<span style="color:#D85A30">↩ ${v.lft} فائض</span>`:''}
+            <span style="color:var(--T);font-weight:700">${net} مباع</span>
+          </span>
+        </div>
+        <div class="btrack">
+          <div class="bfill" style="width:${delPct}%">
+            ${v.lft>0?`<div class="bfill-left" style="width:${lftPct}%"></div>`:''}
+          </div>
+        </div>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+
+  // ── سجل التخليص مع أرشيف التسليمات ──
+  if(ptSettlements.length){
+    h+=`<div class="slbl">سجل التخليص (${ptSettlements.length} عملية)</div>`;
+    ptSettlements.forEach(st=>{
+      const isPartial=st.paid<st.totalNet;
+      h+=`<div class="card" style="border-color:${isPartial?'#F0997B':'var(--TM)'}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div>
+            <div style="font-size:17px;font-weight:800">${dl(st.date)}</div>
+            <div style="font-size:13px;color:var(--tx2)">من ${dl(st.dateFrom)} إلى ${dl(st.dateTo)}</div>
+          </div>
+          <div style="text-align:left">
+            <span class="bdg ${isPartial?'bdg-r':'bdg-t'}" style="font-size:13px">${isPartial?'جزئي':'كامل'}</span>
+            <div style="font-size:22px;font-weight:800;color:var(--A);margin-top:3px">${st.paid.toFixed(2)} د.م</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <span class="bdg bdg-a">مزوّد: ${st.totalDelivCount} خبزة</span>
+          <span class="bdg bdg-p">مرتجع: ${st.totalLeftCount} خبزة</span>
+          <span class="bdg bdg-t">مباع: ${st.totalNetCount} خبزة</span>
+          ${isPartial?`<span class="bdg bdg-r">باقي: ${(st.totalNet-st.paid).toFixed(2)} د.م</span>`:''}
+        </div>`;
+
+      // أرشيف التسليمات التفصيلية داخل فترة التخليص
+      if(st.archivedDeliveries&&st.archivedDeliveries.length>0){
+        h+=`<details style="cursor:pointer">
+          <summary style="font-size:14px;font-weight:700;color:var(--tx2);padding:6px 0;list-style:none">
+            📋 تفاصيل التسليمات (${st.archivedDeliveries.length} عملية) ▼
+          </summary>
+          <div style="margin-top:8px;border-top:1px solid var(--br);padding-top:8px">`;
+        // ترتيب تصاعدي داخل الأرشيف
+        [...st.archivedDeliveries].sort((a,b)=>a.date>b.date?1:-1).forEach(d=>{
+          h+=`<div class="arch-item">
+            <div>
+              <div style="font-size:14px;font-weight:700">${dl(d.date)} — ${d.time}</div>
+              <div class="arch-counts">${dcounts(d.items)}</div>
+            </div>
+            <div style="text-align:left">
+              <div style="font-size:16px;font-weight:700;color:var(--tx)">${ccount(d.items)} خبزة</div>
+            </div>
+          </div>`;
+        });
+        h+=`</div></details>`;
+      }
+      h+=`</div>`;
+    });
+  }
+
+  document.getElementById('scr-pts').innerHTML=h;
+}
+function delDelivery(id){S.deliveries=S.deliveries.filter(d=>d.id!==id);save();autoSync();renderPtDetail();}
+
+// ═══════════════════════════════════════════════
+//  حذف بنقرتين — الأولى تحول الزر أحمر، الثانية تنفذ
+// ═══════════════════════════════════════════════
+let _delTimers={};
+function confirmDel(btnEl,action,key){
+  if(_delTimers[key]){
+    // النقرة الثانية — نفّذ الحذف
+    clearTimeout(_delTimers[key]);delete _delTimers[key];
+    action();
+  }else{
+    // النقرة الأولى — حوّل للأحمر
+    btnEl.classList.add('confirm');
+    btnEl.textContent='تأكيد ✕';
+    _delTimers[key]=setTimeout(()=>{
+      btnEl.classList.remove('confirm');
+      btnEl.textContent='✕';
+      delete _delTimers[key];
+    },3000);
+  }
+}
+function delDelivBtn(btnEl,id){confirmDel(btnEl,()=>delDelivery(id),'d'+id);}
+function delLeftBtn(btnEl,ptId,date){confirmDel(btnEl,()=>{S.leftovers=S.leftovers.filter(l=>!(l.ptId===ptId&&l.date===date));save();autoSync();renderPtDetail();},'l'+ptId+date);}
+function delPtBtn(btnEl,id){confirmDel(btnEl,()=>delPt(id),'p'+id);}
+
+// ═══════════════════════════════════════════════
+//  PRINT DAILY LOG
+// ═══════════════════════════════════════════════
+function printDailyLog(ptId){
+  const pt=S.points.find(p=>p.id===ptId);if(!pt)return;
+  const pr=gpr(ptId);
+  const allDates=[...new Set([
+    ...S.deliveries.filter(d=>d.ptId===ptId).map(d=>d.date),
+    ...S.leftovers.filter(l=>l.ptId===ptId).map(l=>l.date)
+  ])].sort().reverse();
+  let rows='';let grandTotal=0;let grandNet=0;
+
+  allDates.forEach(date=>{
+    const ds=S.deliveries.filter(d=>d.ptId===ptId&&d.date===date).sort((a,b)=>a.time>b.time?1:-1);
+    // الفوائض التي تُحتسب على هذا اليوم
+    const lfts=S.leftovers.filter(l=>l.ptId===ptId&&l.date===date);
+    const dayCnt=ds.reduce((s,d)=>s+ccount(d.items),0);
+    const dayVal=ds.reduce((s,d)=>s+cval(d.items,ptId),0);
+    const lftCnt=lfts.reduce((s,l)=>s+ccount(l.items),0);
+    const lftVal=lfts.reduce((s,l)=>s+cval(l.items,ptId),0);
+    const netCnt=dayCnt-lftCnt;const netVal=dayVal-lftVal;
+    grandTotal+=dayCnt;grandNet+=netCnt;
+
+    rows+=`<div style="margin-bottom:14px;border:1px solid #ccc;border-radius:8px;padding:10px">
+      <div style="font-size:15px;font-weight:800;border-bottom:1px solid #ddd;padding-bottom:6px;margin-bottom:8px">${dl(date)}</div>`;
+    ds.forEach(d=>{
+      const typesStr=TK.filter(k=>parseInt(d.items[k])>0).map(k=>`${TM[k].icon}${d.items[k]} ${TM[k].short}`).join(' + ');
+      rows+=`<div class="print-row"><span>${d.time} — ${typesStr}</span><span>${ccount(d.items)} خبزة</span></div>`;
+      const pubNote=d.notePublic||(d.notes&&!d.notePrivate?d.notes:'');
+      if(pubNote)rows+=`<div class="print-row" style="color:#085041;font-size:13px"><span>📋 ${pubNote}</span><span></span></div>`;
+    });
+    lfts.forEach(lf=>{
+      const lftTypesStr=TK.filter(k=>parseInt(lf.items[k])>0).map(k=>`${TM[k].icon}${lf.items[k]} ${TM[k].short}`).join(' + ');
+      const regDate=lf.date;
+      const isFromNextDay=lf.lType==='yesterday';
+      rows+=`<div class="print-row" style="color:#D85A30">
+        <span>
+          ↩ مرتجع بتاريخ ${dl(regDate)} — ${lftTypesStr}
+          ${isFromNextDay?`<br><small style="font-size:11px">يُحتسب على: ${dl(date)} · سُجِّل: ${dl(lf.date)}</small>`:''}
+        </span>
+        <span>− ${ccount(lf.items)} خبزة / − ${lftVal.toFixed(2)} د.م</span>
+      </div>`;
+    });
+    // الفوائض المسجَّلة في اليوم التالي لكن تُحتسب على هذا اليوم
+    const nextDayLftsP=S.leftovers.filter(l=>l.ptId===ptId&&l.lType==='yesterday'&&
+      (()=>{const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+1);return d.toISOString().split('T')[0]===l.date;})()
+    );
+    nextDayLftsP.forEach(lf=>{
+      const lftTypesStr=TK.filter(k=>parseInt(lf.items[k])>0).map(k=>`${TM[k].icon}${lf.items[k]} ${TM[k].short}`).join(' + ');
+      rows+=`<div class="print-row" style="color:#D85A30">
+        <span>↩ مرتجع بتاريخ ${dl(lf.date)} — ${lftTypesStr}<br>
+          <small style="font-size:11px">يُحتسب على: ${dl(date)} · سُجِّل: ${dl(lf.date)}</small>
+        </span>
+        <span>− ${ccount(lf.items)} خبزة / − ${cval(lf.items,ptId).toFixed(2)} د.م</span>
+      </div>`;
+    });
+    rows+=`<div class="print-row print-row-bold" style="border-top:1px dashed #aaa;margin-top:4px;padding-top:4px">
+      <span>صافي اليوم</span><span>${netCnt} خبزة · ${netVal.toFixed(2)} د.م</span>
+    </div></div>`;
+  });
+
+  const debt=ptDebt(ptId);
+  const printArea=document.createElement('div');
+  printArea.id='print-area';
+  printArea.innerHTML=`
+    <div class="print-header">
+      <div class="print-title">🍞 محسين للخبز التقليدي — سجل التوزيع</div>
+      <div class="print-sub">نقطة البيع: ${pt.name}${pt.address?' — '+pt.address:''}</div>
+      <div class="print-sub">تاريخ الطباعة: ${dl(TODAY)}</div>
+    </div>
+    ${rows}
+    <div class="print-total">
+      <div class="print-row"><span>إجمالي الخبز الموزع</span><span>${grandTotal} خبزة</span></div>
+      <div class="print-row"><span>إجمالي الخبز المباع (صافي)</span><span>${grandNet} خبزة</span></div>
+      <div class="print-row print-row-bold" style="font-size:17px;margin-top:6px">
+        <span>الرصيد المستحق</span><span>${debt.toFixed(2)} د.م</span>
+      </div>
+    </div>
+    <div class="print-footer">تم إنشاؤه بواسطة محسين للخبز التقليدي</div>
+  `;
+  document.getElementById('print-area')?.remove();
+  document.body.appendChild(printArea);
+  window.print();
+  setTimeout(()=>printArea.remove(),1000);
+}
+
+// ═══════════════════════════════════════════════
+//  EDIT CHOICE MODAL — اختيار تعديل تسليم أم فائض
+// ═══════════════════════════════════════════════
+function openEditChoiceModal(dId,ptId){
+  const d=S.deliveries.find(x=>x.id===dId);if(!d)return;
+  const pt=S.points.find(p=>p.id===ptId);
+  // فوائض موجودة لهذه النقطة
+  const existingLefts=S.leftovers.filter(l=>l.ptId===ptId);
+  let leftsHtml='';
+  if(existingLefts.length){
+    leftsHtml='<div style="font-size:13px;color:var(--tx2);margin-bottom:8px;font-weight:600">الفائض المسجَّل حالياً:</div>';
+    existingLefts.forEach(lf=>{
+      const isYest=lf.date===YESTERDAY;
+      leftsHtml+=`<div style="padding:6px 0;border-bottom:1px solid var(--br);font-size:13px">
+        ${getReason(lf)} — ${ccount(lf.items)} خبزة
+        ${isYest?`<span style="color:#D85A30;font-size:11px"> (يُحتسب على ${dl(lf.date)})</span>`:''}
+      </div>`;
+    });
+  }
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ تعديل — ${pt?pt.name:''}</div>
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:16px">${dl(d.date)} — ${d.time} · ${ccount(d.items)} خبزة</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <button class="btn btn-p" style="padding:20px 10px;font-size:16px;line-height:1.4"
+        onclick="closeModal();openEditDelivModal('${dId}')">
+        ✏️ تعديل<br><span style="font-size:13px;font-weight:500;opacity:.9">الكميات المسلَّمة</span>
+      </button>
+      <button class="btn btn-teal" style="padding:20px 10px;font-size:16px;line-height:1.4"
+        onclick="closeModal();openEditLeftModal('${ptId}')">
+        📦 الفائض<br><span style="font-size:13px;font-weight:500;opacity:.9">إضافة أو تعديل</span>
+      </button>    </div>
+    ${leftsHtml?`<div class="card-flat" style="margin-top:4px">${leftsHtml}</div>`:''}
+    <button class="btn btn-s" style="margin-top:10px" onclick="closeModal()">إلغاء</button>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+// فتح نموذج تعديل الفائض مباشرة لنقطة محددة
+function openEditLeftModal(ptId){
+  const pt=S.points.find(p=>p.id===ptId);if(!pt)return;
+  const pr=gpr(ptId);
+
+  // جلب الفوائض الحالية لهذه النقطة
+  const existing=S.leftovers.filter(l=>l.ptId===ptId);
+  // إذا يوجد فائض واحد — افتح تعديله مباشرة
+  // إذا يوجد أكثر — اعرض قائمة للاختيار
+  if(existing.length===0){
+    // لا يوجد فائض — إنشاء جديد
+    _openLeftEditor(ptId,null);
+  } else if(existing.length===1){
+    _openLeftEditor(ptId,existing[0]);
+  } else {
+    // اختيار أي فائض يريد تعديله
+    const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+    let rows='';
+    existing.forEach(lf=>{
+      const isYest=lf.date===YESTERDAY;
+      rows+=`<div class="ditem" style="cursor:pointer" onclick="closeModal();_openLeftEditor('${ptId}',null,'${lf.date}')">
+        <div class="ditem-top">
+          <div>
+            <div style="font-size:16px;font-weight:700">${getReason(lf)}</div>
+            <div style="font-size:13px;color:${isYest?'#D85A30':'var(--T)'}">
+              ${isYest?`يُحتسب على أمس (${dl(lf.date)})`:`اليوم (${dl(lf.date)})`}
+            </div>
+          </div>
+          <div style="font-size:20px;font-weight:800;color:var(--A)">${ccount(lf.items)} خبزة</div>
+        </div>
+        <div class="ditem-counts">${dcounts(lf.items)}</div>
+      </div>`;
+    });
+    ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-handle"></div>
+      <div class="modal-title">📦 اختر الفائض للتعديل — ${pt.name}</div>
+      <div class="card" style="padding:0">${rows}</div>
+      <button class="btn btn-s" style="margin-top:10px" onclick="closeModal()">إلغاء</button>
+    </div>`;
+    document.body.appendChild(ov);
+  }
+}
+
+function _openLeftEditor(ptId,lf,dateOverride){
+  const pt=S.points.find(p=>p.id===ptId);if(!pt)return;
+  const pr=gpr(ptId);
+  // إذا مُمرَّر كائن lf — استخدمه، إلا ابحث بالتاريخ
+  const existing=lf||(dateOverride?S.leftovers.find(l=>l.ptId===ptId&&l.date===dateOverride):null);
+  const curItems=existing?{...existing.items}:ei();
+  const curType=existing?.lType||'yesterday';
+  const curDate=existing?.date||YESTERDAY;
+  const isNew=!existing;
+
+  // حساب تسليمات اليوم المرجعي
+  const refDate=curType==='yesterday'?YESTERDAY:TODAY;
+  const refDelivs=S.deliveries.filter(d=>d.ptId===ptId&&d.date===refDate);
+  const refCnt=refDelivs.reduce((s,d)=>s+ccount(d.items),0);
+
+  let typeInputs='';
+  TK.forEach(k=>{
+    const t=TM[k];const v=parseInt(curItems[k])||0;
+    typeInputs+=`<div class="fg" style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:28px">${t.icon}</div>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:700">${t.label}</div>
+        <div style="font-size:13px;color:var(--tx2)">${pr[k].toFixed(2)} د.م / خبزة</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button type="button" onclick="adjEdL('${k}')" data-delta="-1"
+          style="width:40px;height:48px;border-radius:8px;border:2px solid var(--br2);background:var(--bg2);font-size:24px;font-weight:800;cursor:pointer;font-family:inherit">−</button>
+        <input type="number" id="el-${k}" min="0" step="1" value="${v}"
+          inputmode="numeric" autocomplete="off"
+          style="width:75px;text-align:center;font-size:26px;font-weight:900;border:2px solid var(--br2);border-radius:8px;padding:8px 2px"
+          oninput="updLeftSum()">
+        <button type="button" onclick="adjEdL('${k}')" data-delta="1"
+          style="width:40px;height:48px;border-radius:8px;border:2px solid var(--br2);background:var(--bg2);font-size:24px;font-weight:800;cursor:pointer;font-family:inherit">+</button>
+      </div>
+    </div>`;
+  });
+
+  // أزرار نوع الفائض
+  const typeOpts=[
+    {v:'yesterday',icon:'📅',lbl:'فائض أمس',sub:'يُطرح من أمس'},
+    {v:'swap',icon:'🔄',lbl:'استبدال',sub:'خبز أحدث'},
+    {v:'transfer',icon:'➡️',lbl:'نقل',sub:'لنقطة أخرى'},
+  ];
+  let typeHtml=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">`;
+  typeOpts.forEach(o=>{
+    typeHtml+=`<div class="ltype-btn ${curType===o.v?'on':''}" id="lt-${o.v}"
+      onclick="document.querySelectorAll('.ltype-btn').forEach(b=>b.classList.remove('on'));this.classList.add('on');document.getElementById('el-ltype').value='${o.v}'">
+      <span class="ltype-btn-icon">${o.icon}</span>${o.lbl}<br>
+      <small style="font-weight:400;font-size:11px">${o.sub}</small>
+    </div>`;
+  });
+  typeHtml+=`</div><input type="hidden" id="el-ltype" value="${curType}">`;
+
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📦 ${isNew?'إضافة':'تعديل'} فائض — ${pt.name}</div>
+    ${refCnt>0?`<div class="alrt alrt-s" style="margin-bottom:12px">
+      📋 ${curType==='yesterday'?'أمس':'اليوم'}: وُزِّع ${refCnt} خبزة لهذه النقطة
+    </div>`:''}
+    <div class="slbl">نوع الفائض</div>
+    ${typeHtml}
+    ${typeInputs}
+    <div class="sum-box" id="el-sum" style="margin-top:8px"></div>
+    <div id="el-zero-err" style="display:none;background:#FAECE7;border:1.5px solid #F0997B;border-radius:var(--r);padding:10px 14px;margin:8px 0;font-size:14px;color:#993C1D;font-weight:700">
+      ⚠️ الكمية = 0 — يجب كتابة سبب في الملاحظة
+    </div>
+    <div class="fg" style="margin-top:8px"><label class="fl">🔒 ملاحظة داخلية</label>
+      <input type="text" id="el-note-priv" value="${existing?.notePrivate||''}" placeholder="لا تظهر في الطباعة" autocomplete="off"></div>
+    <div class="fg"><label class="fl">📋 ملاحظة للمسؤول</label>
+      <input type="text" id="el-note-pub" value="${existing?.notePublic||''}" placeholder="تظهر في الطباعة" autocomplete="off"></div>
+    <button class="btn btn-p" style="margin-top:4px;font-size:17px" onclick="saveEditLeft('${ptId}','${curDate}')">✓ حفظ الفائض</button>
+    <button class="btn btn-s" style="margin-top:10px" onclick="closeModal()">إلغاء</button>
+  </div>`;
+  document.body.appendChild(ov);
+  updLeftSum();
+}
+
+function adjEdL(k){
+  // الزر يحتوي data-delta عبر الـ event
+  const btn=event.currentTarget||event.target;
+  const delta=parseInt(btn.getAttribute('data-delta'))||0;
+  const inp=document.getElementById('el-'+k);if(!inp)return;
+  inp.value=Math.max(0,(parseInt(inp.value)||0)+delta);
+  updLeftSum();
+}
+
+function updLeftSum(){
+  // قراءة ptId من زر الحفظ
+  const saveBtn=document.querySelector('#pm .btn-p[onclick^="saveEditLeft"]');
+  const onclickStr=saveBtn?.getAttribute('onclick')||'';
+  const mPt=onclickStr.match(/saveEditLeft\('([^']+)'/);
+  const ptId=mPt?mPt[1]:null;
+  const pr=ptId?gpr(ptId):DP;
+  let cnt=0,val=0;
+  TK.forEach(k=>{const q=parseInt(document.getElementById('el-'+k)?.value)||0;cnt+=q;val+=q*(pr[k]||2.5);});
+  const box=document.getElementById('el-sum');if(!box)return;
+  const errEl=document.getElementById('el-zero-err');
+  if(errEl)errEl.style.display=cnt===0?'block':'none';
+  let inner='';
+  TK.forEach(k=>{const q=parseInt(document.getElementById('el-'+k)?.value)||0;
+    if(q)inner+=`<div class="sum-row"><span>${TM[k].icon} ${q} ${TM[k].label}</span><span>${(q*(pr[k]||2.5)).toFixed(2)} د.م</span></div>`;
+  });
+  if(cnt===0)inner=`<div style="color:#D85A30;font-weight:700;font-size:14px">⚠️ الكمية = 0 — سيُعلَّم الفائض كمُلغى</div>`;
+  else inner+=`<div class="sum-row sum-total"><span>إجمالي الفائض</span><span>${cnt} خبزة · ${val.toFixed(2)} د.م</span></div>`;
+  box.innerHTML=inner;
+}
+
+function saveEditLeft(ptId,oldDate){
+  const lType=document.getElementById('el-ltype')?.value||'yesterday';
+  const items=ei();
+  TK.forEach(k=>{items[k]=document.getElementById('el-'+k)?.value||'0';});
+  const cnt=ccount(items);
+  const notePrivate=(document.getElementById('el-note-priv')?.value||'').trim();
+  const notePublic=(document.getElementById('el-note-pub')?.value||'').trim();
+  // إذا الكمية 0 يجب ملاحظة
+  if(cnt===0&&!notePrivate&&!notePublic){
+    const errEl=document.getElementById('el-zero-err');
+    if(errEl)errEl.style.display='block';
+    toast('يجب كتابة سبب التصفير في الملاحظة','e');
+    return;
+  }
+  // احذف الفائض القديم وأضف الجديد
+  const targetDate=lType==='yesterday'?YESTERDAY:TODAY;
+  S.leftovers=S.leftovers.filter(l=>!(l.ptId===ptId&&l.date===oldDate));
+  S.leftovers.push({ptId,date:targetDate,items,lType,notePrivate,notePublic});
+  save();autoSync();closeModal();
+  toast(`✓ تم تعديل الفائض — ${cnt} خبزة`);
+  renderPtDetail();
+}
+
+// ═══════════════════════════════════════════════
+//  EDIT DELIVERY MODAL
+// ═══════════════════════════════════════════════
+function openEditDelivModal(dId){
+  const d=S.deliveries.find(x=>x.id===dId);if(!d)return;
+  const pt=S.points.find(p=>p.id===d.ptId);const pr=gpr(d.ptId);
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  let typeInputs='';
+  TK.forEach(k=>{
+    const t=TM[k];const v=parseInt(d.items[k])||0;
+    typeInputs+=`<div class="fg" style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:28px">${t.icon}</div>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:700">${t.label}</div>
+        <div style="font-size:13px;color:var(--tx2)">${pr[k].toFixed(2)} د.م / خبزة</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button type="button" onclick="adjEd('${k}',-1)" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--br2);background:var(--bg2);font-size:22px;cursor:pointer;font-weight:700;font-family:inherit;color:var(--tx)">−</button>
+        <input type="number" id="ed-${k}" min="0" step="1" value="${v}" inputmode="numeric" autocomplete="off" style="width:70px;text-align:center;font-size:22px;font-weight:800" oninput="updEditSum('${dId}')">
+        <button type="button" onclick="adjEd('${k}',1)" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--br2);background:var(--bg2);font-size:22px;cursor:pointer;font-weight:700;font-family:inherit;color:var(--tx)">+</button>
+      </div>
+    </div>`;
+  });
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ تعديل التسليم — ${pt?pt.name:''}</div>
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:14px">${d.date} — ${d.time}</div>
+    ${typeInputs}
+    <div class="sum-box" id="edit-dsum" style="margin-top:8px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
+      <div class="fg"><label class="fl">الساعة</label><input type="time" id="ed-time" value="${d.time}"></div>
+      <div class="fg"><label class="fl">المسؤول</label><input type="text" id="ed-drv" value="${d.driver||''}" placeholder="الاسم"></div>
+    </div>
+    <div id="ed-zero-err" style="display:none;background:#FAECE7;border:1.5px solid #F0997B;border-radius:var(--r);padding:10px 14px;margin-bottom:10px;font-size:14px;color:#993C1D;font-weight:700">
+      ⚠️ الكمية = 0 — يجب كتابة سبب الإلغاء في إحدى خانتي الملاحظات
+    </div>
+    <div class="fg"><label class="fl">🔒 ملاحظة داخلية</label><input type="text" id="ed-note-priv" value="${d.notePrivate||''}" placeholder="لا تظهر في الطباعة" autocomplete="off"></div>
+    <div class="fg"><label class="fl">📋 ملاحظة للمسؤول</label><input type="text" id="ed-note-pub" value="${d.notePublic||d.notes||''}" placeholder="تظهر في الطباعة" autocomplete="off"></div>
+    <button class="btn btn-p" onclick="saveEditDeliv('${dId}')">✓ حفظ التعديلات</button>
+    <button class="btn btn-s" style="margin-top:10px" onclick="closeModal()">إلغاء</button>
+  </div>`;
+  document.body.appendChild(ov);
+  updEditSum(dId);
+}
+function adjEd(k,delta){
+  const inp=document.getElementById('ed-'+k);if(!inp)return;
+  inp.value=Math.max(0,(parseInt(inp.value)||0)+delta);
+  // find dId from active modal
+  const btn=document.querySelector('#pm .btn-p');
+  const onclick=btn?.getAttribute('onclick')||'';
+  const m=onclick.match(/'([^']+)'/);
+  if(m)updEditSum(m[1]);
+}
+function updEditSum(dId){
+  const d=S.deliveries.find(x=>x.id===dId);if(!d)return;
+  const pr=gpr(d.ptId);
+  let cnt=0,val=0;
+  TK.forEach(k=>{const q=parseInt(document.getElementById('ed-'+k)?.value)||0;cnt+=q;val+=q*pr[k];});
+  const box=document.getElementById('edit-dsum');if(!box)return;
+  // تحذير الكمية 0
+  const errEl=document.getElementById('ed-zero-err');
+  if(errEl)errEl.style.display=cnt===0?'block':'none';
+  let inner=`<div style="font-size:12px;font-weight:700;color:var(--AD);margin-bottom:6px">ملخص بعد التعديل</div>`;
+  TK.forEach(k=>{const q=parseInt(document.getElementById('ed-'+k)?.value)||0;if(!q)return;
+    inner+=`<div class="sum-row"><span>${TM[k].icon} ${q} ${TM[k].label}</span><span>${(q*pr[k]).toFixed(2)} د.م</span></div>`;
+  });
+  if(cnt===0){inner+=`<div class="sum-row" style="color:#D85A30;font-weight:700"><span>⚠️ الكمية = 0 — التسليم سيُعلَّم كمُلغى</span><span></span></div>`;}
+  else{inner+=`<div class="sum-row sum-total"><span>المجموع: ${cnt} خبزة</span><span>${val.toFixed(2)} د.م</span></div>`;}
+  box.innerHTML=inner;
+}
+function saveEditDeliv(dId){
+  const d=S.deliveries.find(x=>x.id===dId);if(!d)return;
+  TK.forEach(k=>{d.items[k]=document.getElementById('ed-'+k)?.value||'0';});
+  d.time=document.getElementById('ed-time')?.value||d.time;
+  d.driver=(document.getElementById('ed-drv')?.value||'').trim();
+  d.notePrivate=(document.getElementById('ed-note-priv')?.value||'').trim();
+  d.notePublic=(document.getElementById('ed-note-pub')?.value||'').trim();
+  d.notes=d.notePublic||d.notePrivate;
+  // إذا الكمية = 0 يجب وجود ملاحظة
+  if(!hasI(d.items)&&!d.notePrivate&&!d.notePublic){
+    const errEl=document.getElementById('ed-zero-err');
+    if(errEl){errEl.style.display='block';}
+    else toast('يجب إدخال سبب الإلغاء في الملاحظة','e');
+    return;
+  }
+  save();autoSync();closeModal();toast('✓ تم تعديل التسليم');renderPtDetail();
+}
+
+// ═══════════════════════════════════════════════
+//  SETTLE ALL POINTS
+// ═══════════════════════════════════════════════
+function settleAll(){
+  const pts=S.points.filter(p=>{const stl=calcSettlement(p.id);return stl&&stl.totalNetCount>0;});
+  if(!pts.length){toast('لا توجد نقاط للتخليص','e');return;}
+  if(!confirm(`تأكيد تخليص جميع نقاط البيع (${pts.length} نقطة) كاملاً؟`))return;
+  const base=Date.now();
+  pts.forEach((pt,i)=>{
+    const stl=calcSettlement(pt.id);if(!stl)return;
+    S.settlements.push({
+      id:(base+i)+'',ptId:pt.id,date:TODAY,dateFrom:stl.periodStart,dateTo:stl.periodEnd,
+      type:'full',paid:stl.totalNet,totalNet:stl.totalNet,
+      totalDelivCount:stl.totalDelivCount,totalLeftCount:stl.totalLeftCount,totalNetCount:stl.totalNetCount,
+      delivered:stl.delivered,leftover:stl.leftover,
+      archivedDeliveries:stl.delivsInPeriod.map(d=>({...d}))
+    });
+  });
+  save();autoSync();toast(`✓ تم تخليص ${pts.length} نقطة بيع`);render();
+}
+
+// ═══════════════════════════════════════════════
+//  SETTLEMENT MODAL — نظام الأيام
+// ═══════════════════════════════════════════════
+function openSettleModal(ptId){
+  const pt=S.points.find(p=>p.id===ptId);if(!pt)return;
+  const stl=calcSettlement(ptId);if(!stl)return;
+  const pr=gpr(ptId);
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+
+  // بناء صفوف الأيام — كل يوم مع تفصيل خبزه وقيمته
+  let dayRows='';
+  stl.days.forEach(([date,delivs])=>{
+    const dayLefts=S.leftovers.filter(l=>l.ptId===ptId&&l.date===date);
+    const dayDeliv=ei(),dayLeft=ei();
+    delivs.forEach(d=>TK.forEach(k=>{dayDeliv[k]=(parseInt(dayDeliv[k])||0)+(parseInt(d.items[k])||0)}));
+    dayLefts.forEach(l=>TK.forEach(k=>{dayLeft[k]=(parseInt(dayLeft[k])||0)+(parseInt(l.items[k])||0)}));
+    const dayCnt=TK.reduce((s,k)=>s+Math.max(0,(parseInt(dayDeliv[k])||0)-(parseInt(dayLeft[k])||0)),0);
+    const dayVal=Math.max(0,cval(dayDeliv,ptId)-cval(dayLeft,ptId));
+    const typesStr=TK.filter(k=>{const n=(parseInt(dayDeliv[k])||0)-(parseInt(dayLeft[k])||0);return n>0;})
+      .map(k=>`${TM[k].icon}${Math.max(0,(parseInt(dayDeliv[k])||0)-(parseInt(dayLeft[k])||0))}`).join(' ');
+    dayRows+=`<div class="day-row selected" id="dr-${date}" onclick="toggleDay('${date}',${dayVal},${dayCnt},'${ptId}')">
+      <input type="checkbox" id="cb-${date}" checked onclick="event.stopPropagation();toggleDay('${date}',${dayVal},${dayCnt},'${ptId}')">
+      <div class="day-row-info">
+        <div class="day-row-date">${dl(date)}</div>
+        <div class="day-row-detail">${typesStr} · ${delivs.length} عملية تسليم</div>
+      </div>
+      <div class="day-row-val">
+        <div class="day-row-count">${dayCnt}</div>
+        <div class="day-row-dh">${dayVal.toFixed(2)} د.م</div>
+      </div>
+    </div>`;
+  });
+
+  // رصيد متبقٍ من تخليصات سابقة جزئية
+  const prevRem=stl.prevRemaining||0;
+  const prevRemHtml=prevRem>0?`
+    <div class="settle-remaining" style="margin-bottom:14px">
+      <div class="settle-remaining-lbl">⚠️ رصيد متبقٍ من تخليصات سابقة</div>
+      <div class="settle-remaining-val">${prevRem.toFixed(2)} د.م</div>
+    </div>`:' ';
+
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💵 تخليص — ${pt.name}</div>
+
+    ${prevRemHtml}
+
+    <div class="slbl">اختر الأيام للتخليص</div>
+    <div style="display:flex;gap:10px;margin-bottom:12px">
+      <button class="btn btn-s btn-sm" onclick="selectAllDays('${ptId}',true)" style="flex:1">✓ تحديد الكل</button>
+      <button class="btn btn-s btn-sm" onclick="selectAllDays('${ptId}',false)" style="flex:1">✗ إلغاء الكل</button>
+    </div>
+
+    <div id="days-list">${dayRows}</div>
+
+    <div class="settle-live-total" id="settle-live">
+      <div style="font-size:13px;color:var(--tx2);margin-bottom:6px;font-weight:700">إجمالي الأيام المختارة</div>
+      <div class="settle-live-count" id="live-count">${stl.totalNetCount}</div>
+      <div class="settle-live-dh">خبزة — <span id="live-dh">${stl.totalNet.toFixed(2)}</span> د.م</div>
+    </div>
+
+    <div class="slbl">نوع الدفع</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div class="mode-btn on" id="stp-full" onclick="setSettleType('full','${ptId}')">💯<br>دفع كامل</div>
+      <div class="mode-btn" id="stp-partial" onclick="setSettleType('partial','${ptId}')">💸<br>دفع جزئي</div>
+    </div>
+
+    <div id="partial-input" style="display:none" class="fg">
+      <label class="fl">المبلغ المدفوع فعلياً (درهم)</label>
+      <input type="number" id="settle-paid-input" min="0" step="0.5" placeholder="0.00"
+        oninput="updSettleBalance('${ptId}')">
+      <div id="settle-balance-row" style="margin-top:10px;padding:12px 16px;background:#FAECE7;border-radius:var(--r);display:none">
+        <div style="font-size:14px;color:#993C1D;font-weight:700">الرصيد المتبقي (يُضاف للدين):</div>
+        <div style="font-size:26px;font-weight:800;color:#D85A30;margin-top:3px"><span id="settle-balance-val">0.00</span> د.م</div>
+      </div>
+    </div>
+
+    <input type="hidden" id="settle-type-val" value="full">
+
+    <button class="btn btn-teal" style="margin-top:10px;font-size:18px" id="confirm-settle-btn" onclick="previewSettle('${ptId}')">
+      🔍 مراجعة والتأكيد
+    </button>
+    <button class="btn btn-s" style="margin-top:10px" onclick="closeModal()">إلغاء</button>
+  </div>`;
+  document.body.appendChild(ov);
+  // تهيئة الحالة
+  window._settleState={ptId,selectedDates:new Set(stl.days.map(([d])=>d)),type:'full'};
+  updSettleLive();
+}
+
+function toggleDay(date,val,cnt,ptId){
+  const cb=document.getElementById('cb-'+date);
+  const row=document.getElementById('dr-'+date);
+  const sel=window._settleState.selectedDates;
+  if(sel.has(date)){sel.delete(date);row.classList.remove('selected');cb.checked=false;}
+  else{sel.add(date);row.classList.add('selected');cb.checked=true;}
+  updSettleLive();
+}
+function selectAllDays(ptId,selectAll){
+  const stl=calcSettlement(ptId);if(!stl)return;
+  window._settleState.selectedDates=selectAll?new Set(stl.days.map(([d])=>d)):new Set();
+  stl.days.forEach(([date])=>{
+    const cb=document.getElementById('cb-'+date);const row=document.getElementById('dr-'+date);
+    if(cb){cb.checked=selectAll;}if(row){row.classList.toggle('selected',selectAll);}
+  });
+  updSettleLive();
+}
+function updSettleLive(){
+  const {ptId,selectedDates,type}=window._settleState||{};
+  if(!ptId)return;
+  const {cnt,val}=calcForDays(ptId,[...selectedDates]);
+  document.getElementById('live-count').textContent=cnt;
+  document.getElementById('live-dh').textContent=val.toFixed(2);
+  // تحديث زر التأكيد
+  const btn=document.getElementById('confirm-settle-btn');
+  if(btn){
+    const nSel=selectedDates.size;
+    btn.textContent=nSel===0?'اختر يوماً أولاً':'🔍 مراجعة والتأكيد';
+    btn.disabled=nSel===0;
+    btn.style.opacity=nSel===0?'0.5':'1';
+  }
+  if(type==='partial')updSettleBalance(ptId);
+}
+function setSettleType(type,ptId){
+  window._settleState.type=type;
+  document.getElementById('stp-full')?.classList.toggle('on',type==='full');
+  document.getElementById('stp-partial')?.classList.toggle('on',type==='partial');
+  document.getElementById('partial-input').style.display=type==='partial'?'block':'none';
+  document.getElementById('settle-type-val').value=type;
+  if(type==='full'){document.getElementById('settle-balance-row').style.display='none';}
+  updSettleLive();
+}
+function updSettleBalance(ptId){
+  const {cnt,val}=calcForDays(ptId,[...window._settleState.selectedDates]);
+  const paid=parseFloat(document.getElementById('settle-paid-input')?.value)||0;
+  const rem=val-paid;
+  const row=document.getElementById('settle-balance-row');const balVal=document.getElementById('settle-balance-val');
+  if(row&&balVal){
+    if(rem>0.01){row.style.display='block';balVal.textContent=rem.toFixed(2);}
+    else{row.style.display='none';}
+  }
+}
+function previewSettle(ptId){
+  const {selectedDates,type}=window._settleState||{};
+  if(!selectedDates||selectedDates.size===0){toast('اختر يوماً واحداً على الأقل','e');return;}
+  const {cnt,val}=calcForDays(ptId,[...selectedDates]);
+  if(cnt===0){toast('لا يوجد خبز مخلَّص في الأيام المختارة','e');return;}
+
+  const type2=document.getElementById('settle-type-val')?.value||'full';
+  let paid=val;let remaining=0;
+  if(type2==='partial'){
+    paid=parseFloat(document.getElementById('settle-paid-input')?.value)||0;
+    if(paid<=0){toast('أدخل المبلغ المدفوع','e');return;}
+    if(paid>val){toast(`المبلغ لا يمكن أن يتجاوز ${val.toFixed(2)} د.م`,'e');return;}
+    paid=Math.min(paid,val);
+    remaining=parseFloat((val-paid).toFixed(2));
+  }
+
+  const selDates=[...selectedDates].sort();
+  const pt=S.points.find(p=>p.id===ptId);
+  const isPartial=type2==='partial';
+
+  // إظهار طبقة التأكيد فوق المحتوى الحالي
+  const modal=document.querySelector('#pm .modal');if(!modal)return;
+  const overlay=document.createElement('div');
+  overlay.className='settle-confirm-overlay';
+  overlay.id='settle-confirm-ov';
+  overlay.innerHTML=`
+    <div class="settle-confirm-icon">💵</div>
+    <div class="settle-confirm-title">تأكيد التخليص</div>
+    <div class="settle-confirm-sub">${pt?pt.name:''}</div>
+    <div class="settle-confirm-box">
+      <div class="settle-confirm-amount">${paid.toFixed(2)} <span style="font-size:18px;font-weight:600">د.م</span></div>
+      <div class="settle-confirm-detail">${cnt} خبزة مباعة</div>
+      <div class="settle-confirm-detail" style="margin-top:4px">
+        من ${dl(selDates[0])} إلى ${dl(selDates[selDates.length-1])}
+      </div>
+      ${isPartial?`<div style="margin-top:10px;padding:8px 12px;background:#FAECE7;border-radius:8px;font-size:14px;color:#993C1D;font-weight:700">
+        رصيد متبقٍ: ${remaining.toFixed(2)} د.م
+      </div>`:''}
+      <div style="margin-top:10px;display:inline-block;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:700;background:${isPartial?'#FAECE7':'var(--TL)'};color:${isPartial?'#993C1D':'var(--TD)'}">
+        ${isPartial?'💸 دفع جزئي':'💯 دفع كامل'}
+      </div>
+    </div>
+    <div style="width:100%;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <button class="btn btn-s" style="font-size:16px" onclick="document.getElementById('settle-confirm-ov').remove()">
+        ← تعديل
+      </button>
+      <button class="btn btn-p" style="font-size:16px;background:#1D9E75" onclick="confirmSettle('${ptId}')">
+        ✓ تأكيد نهائي
+      </button>
+    </div>
+  `;
+  modal.appendChild(overlay);
+}
+
+function confirmSettle(ptId){
+  const {selectedDates,type}=window._settleState||{};
+  if(!selectedDates||selectedDates.size===0){toast('اختر يوماً واحداً على الأقل','e');return;}
+  const {cnt,val,delivIds,delivs}=calcForDays(ptId,[...selectedDates]);
+  if(cnt===0){toast('لا يوجد خبز مخلَّص في الأيام المختارة','e');return;}
+  const type2=document.getElementById('settle-type-val')?.value||'full';
+  let paid=val;let remaining=0;
+  if(type2==='partial'){
+    paid=parseFloat(document.getElementById('settle-paid-input')?.value)||0;
+    if(paid<=0){toast('أدخل المبلغ المدفوع','e');return;}
+    if(paid>val){toast(`المبلغ لا يمكن أن يتجاوز ${val.toFixed(2)} د.م`,'e');return;}
+    paid=Math.min(paid,val);
+    remaining=parseFloat((val-paid).toFixed(2));
+  }
+  const selDates=[...selectedDates].sort();
+  // تجميع التسليمات المختارة للأرشيف
+  const archivedDeliveries=delivs.map(d=>({...d}));
+  S.settlements.push({
+    id:Date.now()+'',ptId,
+    date:TODAY,
+    dateFrom:selDates[0],dateTo:selDates[selDates.length-1],
+    type:type2,paid,totalNet:val,remainingBalance:remaining,
+    settledDeliveryIds:delivIds, // ← المفتاح — تتبع التسليمات المخلَّصة
+    totalDelivCount:delivs.reduce((s,d)=>s+ccount(d.items),0),
+    totalLeftCount:S.leftovers.filter(l=>l.ptId===ptId&&selectedDates.has(l.date)).reduce((s,l)=>s+ccount(l.items),0),
+    totalNetCount:cnt,
+    archivedDeliveries
+  });
+  save();autoSync();closeModal();
+  const remMsg=remaining>0?` · رصيد متبقٍ: ${remaining.toFixed(2)} د.م`:'';
+  toast(`✓ ${cnt} خبزة — ${paid.toFixed(2)} د.م${remMsg}`);
+  renderPtDetail();
+}
+function closeModal(){document.getElementById('pm')?.remove();window._settleState=null;}
+
+// ═══════════════════════════════════════════════
+//  PRICE MODAL
+// ═══════════════════════════════════════════════
+function openPriceModal(ptId){
+  const pt=S.points.find(p=>p.id===ptId);if(!pt)return;const pr=gpr(ptId);
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⚙️ أسعار — ${pt.name}</div>
+    ${TK.map(k=>`
+      <div class="fg" style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:32px">${TM[k].icon}</div>
+        <div style="flex:1"><div style="font-size:16px;font-weight:700">${TM[k].label}</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="number" id="pr-${k}" min="0" step="0.25" value="${pr[k]}" style="width:90px">
+          <span style="font-size:15px;color:var(--tx2)">د.م</span>
+        </div>
+      </div>`).join('')}
+    <button class="btn btn-p" style="margin-top:8px" onclick="savePrices('${ptId}')">✓ حفظ الأسعار</button>
+    <button class="btn btn-s" style="margin-top:10px" onclick="resetPrices('${ptId}')">↩ الأسعار الافتراضية</button>
+    <button class="btn btn-d" style="margin-top:10px" onclick="closeModal()">إلغاء</button>
+  </div>`;
+  document.body.appendChild(ov);
+}
+function savePrices(ptId){
+  const pt=S.points.find(p=>p.id===ptId);if(!pt)return;
+  const prices={};TK.forEach(k=>{const v=parseFloat(document.getElementById('pr-'+k)?.value);prices[k]=isNaN(v)?DP[k]:Math.max(0,v);});
+  pt.prices=prices;save();autoSync();closeModal();toast('✓ تم حفظ الأسعار');render();
+}
+function resetPrices(ptId){
+  const pt=S.points.find(p=>p.id===ptId);if(!pt)return;pt.prices={...DP};save();closeModal();toast('↩ الأسعار الافتراضية');render();
+}
+
+// ═══════════════════════════════════════════════
+//  STATS
+// ═══════════════════════════════════════════════
+function renderStats(){
+  if(!S.points.length){document.getElementById('scr-stats').innerHTML=`<div class="empty"><div class="empty-icon">📊</div>أضف نقاط بيع وسجل توزيعات</div>`;return;}
+
+  // ── فلتر الموزع ──
+  const allDrivers=[...new Set(S.deliveries.map(d=>d.driver).filter(Boolean))];
+  const selDriver=window._statsDriver||'all';
+  const filteredDelivs=selDriver==='all'?S.deliveries:S.deliveries.filter(d=>d.driver===selDriver);
+
+  let h=``;
+  if(allDrivers.length>1||SESSION.role==='manager'){
+    h+=`<div class="slbl">👤 عرض حسب الموزع</div>
+    <div class="driver-filter">
+      <button class="driver-pill ${selDriver==='all'?'on':''}" onclick="window._statsDriver='all';renderStats()">الكل</button>
+      ${allDrivers.map(d=>`<button class="driver-pill ${selDriver===d?'on':''}" onclick="window._statsDriver='${d}';renderStats()">${d}</button>`).join('')}
+    </div>`;
+  }
+
+  const allDates=[...new Set(filteredDelivs.map(d=>d.date))].sort().reverse().slice(0,10);
+  const byPt=S.points.map(pt=>{
+    const cnt=filteredDelivs.filter(d=>d.ptId===pt.id).reduce((s,d)=>s+ccount(d.items),0)
+             -S.leftovers.filter(l=>l.ptId===pt.id).reduce((s,l)=>s+ccount(l.items),0);
+    const val=filteredDelivs.filter(d=>d.ptId===pt.id).reduce((s,d)=>s+cval(d.items,pt.id),0)
+             -S.leftovers.filter(l=>l.ptId===pt.id).reduce((s,l)=>s+cval(l.items,pt.id),0);
+    return{pt,cnt:Math.max(0,cnt),val:Math.max(0,val),debt:ptDebt(pt.id)};
+  }).sort((a,b)=>b.cnt-a.cnt);
+  const mx=Math.max(...byPt.map(x=>x.cnt),1);
+  const typeTot={}; TK.forEach(k=>typeTot[k]=0);
+  filteredDelivs.forEach(d=>TK.forEach(k=>{typeTot[k]+=(parseInt(d.items[k])||0)}));
+  const lftTot={}; TK.forEach(k=>lftTot[k]=0);
+  S.leftovers.forEach(l=>TK.forEach(k=>{lftTot[k]+=(parseInt(l.items[k])||0)}));
+  const totalDebt=S.points.reduce((s,pt)=>s+ptDebt(pt.id),0);
+  const totalPaid=S.settlements.reduce((s,st)=>s+st.paid,0);
+
+  h+=`<div class="mgrid">
+    <div class="met"><div class="met-lbl">إجمالي الديون</div><div class="met-val" style="${totalDebt>0?'color:#D85A30':''}">${totalDebt.toFixed(2)}</div><div class="met-sub">درهم مستحق</div></div>
+    <div class="met"><div class="met-lbl">إجمالي التخليص</div><div class="met-val" style="color:var(--T)">${totalPaid.toFixed(2)}</div><div class="met-sub">درهم تم تحصيله</div></div>
+  </div>`;
+
+  h+=`<div class="slbl">إجمالي حسب نوع الخبز${selDriver!=='all'?' — '+selDriver:''}</div>`;
+  h+=`<div class="totals-box">`;
+  TK.forEach(k=>{
+    const net=typeTot[k]-lftTot[k];
+    h+=`<div class="totals-row">
+      <div class="totals-label">${TM[k].icon} ${TM[k].label}</div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <div class="totals-count">${net}</div>
+        <div class="totals-val">${(net*DP[k]).toFixed(2)} د.م</div>
+      </div>
+    </div>`;
+  });
+  const grandCnt=TK.reduce((s,k)=>s+typeTot[k]-lftTot[k],0);
+  h+=`<div class="totals-row totals-grand">
+    <div class="totals-label">🍞 المجموع الإجمالي</div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <div class="totals-count">${grandCnt}</div>
+      <div class="totals-val">${byPt.reduce((s,x)=>s+x.val,0).toFixed(2)} د.م</div>
+    </div>
+  </div></div>`;
+
+  h+=`<div class="slbl">ترتيب نقاط البيع</div><div class="card">`;
+  byPt.forEach(({pt,cnt,val,debt})=>{
+    const bt=btTime(pt.id);
+    h+=`<div style="margin-bottom:14px;cursor:pointer" onclick="viewPt('${pt.id}')">
+      <div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:4px">
+        <span style="font-weight:800;color:var(--A)">${pt.name}</span>
+        <span style="font-weight:700">${cnt} خبزة <span style="font-weight:600;color:var(--tx2)">/ ${val.toFixed(2)} د.م</span></span>
+      </div>
+      <div class="btrack"><div class="bfill" style="width:${Math.round(cnt/mx*100)}%"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px">
+        ${bt?`<span style="font-size:13px;color:var(--A);font-weight:600">⏰ أنسب وقت: ${bt}</span>`:'<span></span>'}
+        <span style="font-size:13px;color:${debt>0?'#D85A30':'var(--T)'};font-weight:700">${debt>0?'دين: '+debt.toFixed(2)+' د.م':'✓ مصفى'}</span>
+      </div>
+    </div>`;
+  });
+  h+=`</div>`;
+
+  if(allDates.length){
+    h+=`<div class="slbl">تطور المبيعات اليومية</div><div class="card">`;
+    allDates.forEach(date=>{
+      const cnt=filteredDelivs.filter(d=>d.date===date).reduce((s,d)=>s+ccount(d.items),0)
+               -S.leftovers.filter(l=>l.date===date).reduce((s,l)=>s+ccount(l.items),0);
+      const val=filteredDelivs.filter(d=>d.date===date).reduce((s,d)=>s+cval(d.items,d.ptId),0)
+               -S.leftovers.filter(l=>l.date===date).reduce((s,l)=>s+cval(l.items,l.ptId),0);
+      h+=`<div class="hrow"><span style="font-size:15px;font-weight:600">${dl(date)}</span><span style="font-weight:800;color:var(--A)">${Math.max(0,cnt)} خبزة <span style="font-size:13px;font-weight:600;color:var(--tx2)">/ ${Math.max(0,val).toFixed(2)} د.م</span></span></div>`;
+    });
+    h+=`</div>`;
+  }
+  document.getElementById('scr-stats').innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════
+//  SETTINGS
+// ═══════════════════════════════════════════════
+function renderSettings(){
+  const connected=!!GD.token;const t=CFG.theme||'auto';
+  const hasPin=CFG.managerPin&&CFG.managerPin.length>=4;
+
+  let h=`<div class="slbl">🔐 الصلاحيات والأمان</div>
+    <div class="card">
+      <div class="srow">
+        <div>
+          <div class="srow-lbl">PIN محسين</div>
+          <div class="srow-sub">${hasPin?'✅ مُفعَّل — الموزع يرى تسليماته فقط':'غير مُفعَّل — الكل يرى كل شيء'}</div>
+        </div>
+        <button class="btn btn-s btn-sm" onclick="openPinSetup()">${hasPin?'تغيير':'تفعيل'}</button>
+      </div>
+      ${hasPin?`<div class="srow">
+        <div><div class="srow-lbl">الجلسة الحالية</div>
+          <div class="srow-sub">${SESSION.role==='manager'?'👑 مدير':'🚚 موزع: '+SESSION.driverName}</div>
+        </div>
+        <button class="btn btn-s btn-sm" onclick="switchRole()">تبديل الدور</button>
+      </div>`:''}
+      ${hasPin?`<button class="btn btn-d btn-sm" style="margin-top:10px" onclick="if(confirm('حذف PIN؟')){CFG.managerPin='';save();renderSettings();}">🗑️ حذف PIN</button>`:''}
+    </div>`;
+
+  h+=`<div class="slbl">🎨 Thème de l'application</div>
+    <div class="card-flat">
+      <div class="theme-pills">
+        <div class="theme-pill ${t==='light'?'on':''}" onclick="setTheme('light')">☀️<br><span style="font-size:13px">Clair</span></div>
+        <div class="theme-pill ${t==='auto'?'on':''}" onclick="setTheme('auto')">⚙️<br><span style="font-size:13px">Auto</span></div>
+        <div class="theme-pill ${t==='dark'?'on':''}" onclick="setTheme('dark')">🌙<br><span style="font-size:13px">Sombre</span></div>
+      </div>
+    </div>`;
+
+  h+=`<div class="slbl">☁️ المزامنة مع Google Drive</div>
+    ${syncStatusHtml()}`;
+  if(!connected){
+    h+=`<div class="alrt alrt-w" style="margin-bottom:12px;font-size:14px">
+      <strong>خطوات الإعداد:</strong><br>
+      ١. console.cloud.google.com → مشروع جديد<br>
+      ٢. Enable "Google Drive API"<br>
+      ٣. OAuth consent screen → External<br>
+      ٤. Credentials → OAuth 2.0 Client ID → Web application<br>
+      ٥. Authorized JavaScript origins: <strong>https://اسمك.github.io</strong><br>
+      ٦. انسخ Client ID وضعه أدناه
+    </div>`;
+  }
+  h+=`<div class="card">
+    <div class="fg"><label class="fl">Google Client ID</label>
+      <input type="text" id="gcid" value="${CFG.googleClientId}" placeholder="123456-abc.apps.googleusercontent.com"
+        oninput="CFG.googleClientId=this.value.trim();save();renderSettings()">
+    </div>
+    <div class="srow">
+      <div><div class="srow-lbl">مزامنة تلقائية</div><div class="srow-sub">يحتاج اتصال وربط نشط</div></div>
+      <button class="switch ${CFG.autoSync?'on':''}" onclick="CFG.autoSync=!CFG.autoSync;save();renderSettings()"></button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+      <button class="btn ${connected?'btn-s':'btn-g'}" onclick="${connected?'syncDrive()':'googleSignIn()'}">
+        ${connected?'🔄 مزامنة الآن':'🔗 ربط Google Drive'}
+      </button>
+      ${connected?`<button class="btn btn-d" onclick="GD.token=null;GD.fileId=null;GD.tokenExpiry=null;setSync('idle');renderSettings();toast('تم قطع ربط Google')">🔌 قطع الربط</button>`:'<div></div>'}
+    </div>
+    ${connected?`<div style="font-size:13px;color:var(--T);margin-top:10px;text-align:center;font-weight:600">✅ Google Drive مربوط</div>`:''}
+  </div>`;
+
+  h+=`<div class="slbl">💾 النسخ الاحتياطي اليدوي</div><div class="card">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <button class="btn btn-s" onclick="shareBackup()" style="background:var(--TL);color:var(--TD);border-color:var(--TM)">📤 مشاركة النسخة</button>
+      <button class="btn btn-s" onclick="document.getElementById('imp-f').click()">📥 استيراد</button>
+    </div>
+    <button class="btn btn-s" onclick="exportData()" style="margin-bottom:10px">💾 تحميل JSON (محلي)</button>
+    <button class="btn btn-s" onclick="exportExcel()" style="background:var(--GL);color:var(--GD);border-color:var(--GD)">📊 تصدير Excel (كل البيانات)</button>
+    <input type="file" id="imp-f" accept=".json" style="display:none" onchange="importData(this)">
+    <div style="font-size:12px;color:var(--tx3);margin-top:10px;text-align:center">📤 المشاركة تفتح: واتساب · تيليغرام · ميسنجر · وغيرها</div>
+  </div>`;
+
+  h+=`<div class="slbl">📊 البيانات</div><div class="card">
+    <div class="srow"><div class="srow-lbl">نقاط البيع</div><span class="bdg bdg-a">${S.points.length}</span></div>
+    <div class="srow"><div class="srow-lbl">إجمالي التسليمات</div><span class="bdg bdg-t">${S.deliveries.length}</span></div>
+    <div class="srow"><div class="srow-lbl">سجلات الفائض</div><span class="bdg bdg-g">${S.leftovers.length}</span></div>
+    <div class="srow"><div class="srow-lbl">عمليات التخليص</div><span class="bdg bdg-p">${S.settlements.length}</span></div>
+    <div style="margin-top:16px">
+      <button class="btn btn-d" onclick="openDeleteConfirm()" style="font-size:15px">🗑️ حذف جميع البيانات</button>
+    </div>
+  </div>
+  <div style="text-align:center;padding:16px 0;font-size:13px;color:var(--tx3)">محسين للخبز التقليدي · يعمل بدون اتصال</div>`;
+  document.getElementById('scr-settings').innerHTML=h;
+}
+
+function exportData(){
+  const a=document.createElement('a');
+  a.href='data:application/json,'+encodeURIComponent(dataForSync());
+  a.download='makhbaza_backup_'+TODAY+'.json';a.click();toast('✓ تم تصدير البيانات');
+}
+
+// ─── مشاركة النسخة الاحتياطية عبر واتساب / تيليغرام / ميسنجر ─────
+async function shareBackup(){
+  const json=dataForSync();
+  const fileName='محسين_نسخة_احتياطية_'+TODAY+'.json';
+
+  // حاول Web Share API (مدعوم على الهواتف)
+  if(navigator.share){
+    try{
+      // إنشاء File object قابل للمشاركة
+      const blob=new Blob([json],{type:'application/json'});
+      const file=new File([blob],fileName,{type:'application/json'});
+
+      // تحقق من دعم مشاركة الملفات
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        await navigator.share({
+          title:'محسين — نسخة احتياطية '+TODAY,
+          text:'ملف النسخ الاحتياطي لمحسين للخبز التقليدي — استورده من الإعدادات',
+          files:[file]
+        });
+        toast('✓ تمت المشاركة بنجاح');
+        return;
+      }
+
+      // مشاركة النص مباشرة إن لم تُدعم الملفات
+      await navigator.share({
+        title:'محسين — نسخة احتياطية '+TODAY,
+        text:json
+      });
+      toast('✓ تمت المشاركة بنجاح');
+      return;
+    }catch(err){
+      if(err.name==='AbortError')return; // المستخدم أغلق القائمة
+    }
+  }
+
+  // Fallback: تحميل الملف + نص توضيحي
+  toast('المشاركة المباشرة غير مدعومة — سيُحمَّل الملف','s');
+  setTimeout(()=>{
+    const a=document.createElement('a');
+    a.href='data:application/json,'+encodeURIComponent(json);
+    a.download=fileName;a.click();
+  },500);
+}
+
+// ─── تصدير Excel (CSV بترميز UTF-8) ───────────────────
+function exportExcel(){
+  const BOM='\uFEFF'; // BOM لدعم العربية في Excel
+  let csv=BOM;
+
+  // ─ ورقة التسليمات ─
+  csv+='=== تسليمات الخبز ===\n';
+  csv+='التاريخ,نقطة البيع,الساعة,'+TK.map(k=>TM[k].label).join(',')+',إجمالي الخبز,القيمة (د.م),المسؤول,ملاحظات\n';
+  [...S.deliveries].sort((a,b)=>a.date>b.date?1:a.date<b.date?-1:a.time>b.time?1:-1).forEach(d=>{
+    const pt=S.points.find(p=>p.id===d.ptId);
+    const pr=gpr(d.ptId);
+    const row=[
+      dl(d.date),
+      `"${pt?pt.name:''}"`,
+      d.time,
+      ...TK.map(k=>parseInt(d.items[k])||0),
+      ccount(d.items),
+      cval(d.items,d.ptId).toFixed(2),
+      `"${d.driver||''}"`,
+      `"${d.notes||''}"`
+    ];
+    csv+=row.join(',')+'\n';
+  });
+
+  csv+='\n=== الفائض / المرتجع ===\n';
+  csv+='التاريخ,نقطة البيع,'+TK.map(k=>TM[k].label).join(',')+',إجمالي الفائض,القيمة (د.م)\n';
+  [...S.leftovers].sort((a,b)=>a.date>b.date?1:-1).forEach(l=>{
+    const pt=S.points.find(p=>p.id===l.ptId);
+    const row=[
+      dl(l.date),
+      `"${pt?pt.name:''}"`,
+      ...TK.map(k=>parseInt(l.items[k])||0),
+      ccount(l.items),
+      cval(l.items,l.ptId).toFixed(2)
+    ];
+    csv+=row.join(',')+'\n';
+  });
+
+  csv+='\n=== عمليات التخليص ===\n';
+  csv+='تاريخ التخليص,نقطة البيع,من تاريخ,إلى تاريخ,النوع,المزوّد,المرتجع,الصافي,المستحق (د.م),المدفوع (د.م),الرصيد (د.م)\n';
+  [...S.settlements].sort((a,b)=>a.date>b.date?1:-1).forEach(st=>{
+    const pt=S.points.find(p=>p.id===st.ptId);
+    const row=[
+      dl(st.date),
+      `"${pt?pt.name:''}"`,
+      dl(st.dateFrom),
+      dl(st.dateTo),
+      st.type==='full'?'كامل':'جزئي',
+      st.totalDelivCount,
+      st.totalLeftCount,
+      st.totalNetCount,
+      st.totalNet.toFixed(2),
+      st.paid.toFixed(2),
+      (st.totalNet-st.paid).toFixed(2)
+    ];
+    csv+=row.join(',')+'\n';
+  });
+
+  csv+='\n=== نقاط البيع ===\n';
+  csv+='الاسم,العنوان,'+TK.map(k=>'سعر '+TM[k].label+' (د.م)').join(',')+'\n';
+  S.points.forEach(pt=>{
+    const pr=gpr(pt.id);
+    const row=[`"${pt.name}"`,`"${pt.address||''}"`, ...TK.map(k=>pr[k].toFixed(2))];
+    csv+=row.join(',')+'\n';
+  });
+
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='محسين_'+TODAY+'.csv';a.click();
+  toast('✓ تم تصدير ملف Excel');
+}
+function importData(inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();r.onload=e=>{try{mergeFromSync(e.target.result);}catch(err){toast('خطأ في قراءة الملف','e');}};
+  r.readAsText(f);inp.value='';
+}
+function openDeleteConfirm(){
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="color:#993C1D">⚠️ حذف جميع البيانات</div>
+    <div class="alrt alrt-e" style="margin-bottom:16px">
+      <strong>تحذير:</strong> سيتم حذف جميع البيانات نهائياً بما فيها:<br>
+      نقاط البيع · التسليمات · الفوائض · سجل التخليص<br><br>
+      <strong>لا يمكن التراجع عن هذا الإجراء.</strong>
+    </div>
+    <div class="fg">
+      <label class="fl">اكتب كلمة <strong style="color:#D85A30">حذف</strong> للتأكيد</label>
+      <input type="text" id="del-confirm-inp" placeholder='اكتب "حذف" هنا'
+        class="delete-confirm-input" oninput="updDelBtn()" autocomplete="off">
+    </div>
+    <button class="btn btn-d" id="del-confirm-btn" disabled style="opacity:.4;font-size:16px"
+      onclick="clearData()">
+      🗑️ تأكيد الحذف النهائي
+    </button>
+    <button class="btn btn-s" style="margin-top:10px" onclick="closeModal()">إلغاء — أنا غلطت</button>
+  </div>`;
+  document.body.appendChild(ov);
+}
+function updDelBtn(){
+  const v=document.getElementById('del-confirm-inp')?.value.trim();
+  const btn=document.getElementById('del-confirm-btn');
+  if(!btn)return;
+  const ok=(v==='حذف'||v==='delete'||v==='DELETE');
+  btn.disabled=!ok;btn.style.opacity=ok?'1':'0.4';
+}
+function clearData(){
+  const v=document.getElementById('del-confirm-inp')?.value.trim();
+  if(v!=='حذف'&&v!=='delete'&&v!=='DELETE'){toast('اكتب كلمة "حذف" أولاً','e');return;}
+  S={points:[],deliveries:[],leftovers:[],drivers:[],settlements:[]};
+  save();closeModal();toast('تم مسح جميع البيانات');render();
+}
+
+// ═══════════════════════════════════════════════
+//  HISTORY SCREEN
+// ═══════════════════════════════════════════════
+let HF={period:'day',ptId:'',dateFrom:TODAY,dateTo:TODAY};
+
+function renderHistory(){
+  const sc=document.getElementById('scr-history');if(!sc)return;
+  if(!S.points.length){sc.innerHTML=`<div class="empty"><div class="empty-icon">📋</div>لا توجد بيانات بعد</div>`;return;}
+
+  // حساب نطاق التاريخ حسب الفلتر
+  const now=new Date(TODAY+'T12:00:00');
+  let dFrom=TODAY,dTo=TODAY;
+  if(HF.period==='day'){dFrom=TODAY;dTo=TODAY;}
+  else if(HF.period==='week'){const d=new Date(now);d.setDate(d.getDate()-6);dFrom=d.toISOString().split('T')[0];dTo=TODAY;}
+  else if(HF.period==='month'){const d=new Date(now);d.setDate(1);dFrom=d.toISOString().split('T')[0];dTo=TODAY;}
+  else if(HF.period==='custom'){dFrom=HF.dateFrom;dTo=HF.dateTo;}
+
+  const ptFilter=HF.ptId;
+  const filtDelivs=S.deliveries.filter(d=>d.date>=dFrom&&d.date<=dTo&&(!ptFilter||d.ptId===ptFilter));
+  const filtLefts=S.leftovers.filter(l=>l.date>=dFrom&&l.date<=dTo&&(!ptFilter||l.ptId===ptFilter));
+
+  // إجماليات
+  const totDelivCnt=filtDelivs.reduce((s,d)=>s+ccount(d.items),0);
+  const totDelivVal=filtDelivs.reduce((s,d)=>s+cval(d.items,d.ptId),0);
+  const totLeftCnt=filtLefts.reduce((s,l)=>s+ccount(l.items),0);
+  const totLeftVal=filtLefts.reduce((s,l)=>s+cval(l.items,l.ptId),0);
+  const netCnt=totDelivCnt-totLeftCnt;const netVal=totDelivVal-totLeftVal;
+
+  let h=``;
+
+  // فلتر الفترة
+  h+=`<div class="filter-bar">
+    <button class="fpill ${HF.period==='day'?'on':''}" onclick="HF.period='day';renderHistory()">📅 اليوم</button>
+    <button class="fpill ${HF.period==='week'?'on':''}" onclick="HF.period='week';renderHistory()">📆 الأسبوع</button>
+    <button class="fpill ${HF.period==='month'?'on':''}" onclick="HF.period='month';renderHistory()">🗓️ الشهر</button>
+    <button class="fpill ${HF.period==='custom'?'on':''}" onclick="HF.period='custom';renderHistory()">🔎 نطاق</button>
+  </div>`;
+
+  if(HF.period==='custom'){
+    h+=`<div class="card-flat" style="margin-bottom:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label class="fl">من</label><input type="date" value="${HF.dateFrom}" oninput="HF.dateFrom=this.value;renderHistory()"></div>
+        <div class="fg"><label class="fl">إلى</label><input type="date" value="${HF.dateTo}" oninput="HF.dateTo=this.value;renderHistory()"></div>
+      </div>
+    </div>`;
+  }
+
+  // فلتر نقطة البيع
+  h+=`<div class="fg" style="margin-bottom:14px"><label class="fl">نقطة البيع</label>
+    <select onchange="HF.ptId=this.value;renderHistory()">
+      <option value="">📍 جميع النقاط</option>
+      ${S.points.map(p=>`<option value="${p.id}" ${HF.ptId===p.id?'selected':''}>${p.name}</option>`).join('')}
+    </select></div>`;
+
+  // بطاقة الملخص
+  h+=`<div class="mgrid" style="margin-bottom:14px">
+    <div class="met"><div class="met-lbl">إجمالي الخبز</div><div class="met-val">${totDelivCnt}</div><div class="met-sub">${totDelivVal.toFixed(2)} د.م</div></div>
+    <div class="met"><div class="met-lbl">صافي المبيعات</div><div class="met-val" style="color:var(--T)">${Math.max(0,netCnt)}</div><div class="met-sub">${Math.max(0,netVal).toFixed(2)} د.م</div></div>
+    <div class="met"><div class="met-lbl">الفائض / المرتجع</div><div class="met-val" style="color:#D85A30">${totLeftCnt}</div><div class="met-sub">${totLeftVal.toFixed(2)} د.م</div></div>
+    <div class="met"><div class="met-lbl">عدد التسليمات</div><div class="met-val">${filtDelivs.length}</div><div class="met-sub">${[...new Set(filtDelivs.map(d=>d.ptId))].length} نقطة</div></div>
+  </div>`;
+
+  // أزرار الطباعة والتصدير
+  h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <button class="btn btn-s" onclick="printReport('${ptFilter}','${dFrom}','${dTo}')">🖨️ طباعة</button>
+    <button class="btn btn-s" style="background:var(--GL);color:var(--GD);border-color:var(--GD)" onclick="exportExcelFiltered('${ptFilter}','${dFrom}','${dTo}')">📊 Excel</button>
+  </div>`;
+
+  // تفاصيل حسب اليوم
+  const days=[...new Set(filtDelivs.map(d=>d.date))].sort().reverse();
+  if(!days.length){h+=`<div class="empty"><div class="empty-icon">📭</div>لا توجد تسليمات في هذه الفترة</div>`;}
+  else{
+    // إجمالي حسب نقطة البيع (إذا "كل النقاط")
+    if(!ptFilter){
+      h+=`<div class="slbl">إجمالي حسب نقطة البيع</div><div class="card">`;
+      S.points.forEach(pt=>{
+        const pds=filtDelivs.filter(d=>d.ptId===pt.id);
+        if(!pds.length)return;
+        const pCnt=pds.reduce((s,d)=>s+ccount(d.items),0);
+        const pVal=pds.reduce((s,d)=>s+cval(d.items,pt.id),0);
+        const pLeft=filtLefts.filter(l=>l.ptId===pt.id).reduce((s,l)=>s+ccount(l.items),0);
+        const pLeftVal=filtLefts.filter(l=>l.ptId===pt.id).reduce((s,l)=>s+cval(l.items,pt.id),0);
+        h+=`<div style="padding:10px 0;border-bottom:1px solid var(--br);display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:800;font-size:16px;color:var(--A)">${pt.name}</div>
+          <div style="text-align:left">
+            <div style="font-size:17px;font-weight:800">${pCnt-pLeft} خبزة</div>
+            <div style="font-size:13px;color:var(--tx2)">${(pVal-pLeftVal).toFixed(2)} د.م</div>
+          </div>
+        </div>`;
+      });
+      h+=`</div>`;
+    }
+
+    // تفاصيل يومية
+    h+=`<div class="slbl">تفاصيل التسليمات</div>`;
+    days.forEach(date=>{
+      const dayDelivs=filtDelivs.filter(d=>d.date===date).sort((a,b)=>a.time>b.time?1:-1);
+      const dayLeft=filtLefts.filter(l=>l.date===date);
+      const dayCnt=dayDelivs.reduce((s,d)=>s+ccount(d.items),0);
+      const dayVal=dayDelivs.reduce((s,d)=>s+cval(d.items,d.ptId),0);
+      const dayLeftCnt=dayLeft.reduce((s,l)=>s+ccount(l.items),0);
+      h+=`<div class="card" style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--br)">
+          <div style="font-size:16px;font-weight:800">${dl(date)} · ${fdate(date).split(' ')[0]}</div>
+          <div style="text-align:left">
+            <div style="font-size:17px;font-weight:800;color:var(--A)">${dayCnt-dayLeftCnt} خبزة</div>
+            <div style="font-size:13px;color:var(--tx2)">${(dayVal).toFixed(2)} د.م موزع</div>
+          </div>
+        </div>`;
+      dayDelivs.forEach(d=>{
+        const pt=S.points.find(p=>p.id===d.ptId);
+        h+=`<div class="hist-entry">
+          <div class="hist-entry-head">
+            <div style="font-size:15px;font-weight:800;color:var(--A)">${d.time} · ${pt?pt.name:'?'}</div>
+            <div style="font-size:15px;font-weight:700">${ccount(d.items)} خبزة · ${cval(d.items,d.ptId).toFixed(2)} د.م</div>
+          </div>
+          <div class="ditem-counts">${dcounts(d.items)}${d.driver?`<span style="font-size:13px;color:var(--tx2);margin-right:4px">· 👤 ${d.driver}</span>`:''}</div>
+        </div>`;
+      });
+      if(dayLeft.length){
+        dayLeft.forEach(l=>{
+          const pt=S.points.find(p=>p.id===l.ptId);
+          h+=`<div class="hist-entry">
+            <div class="hist-entry-head">
+              <div style="font-size:14px;font-weight:700;color:#D85A30">📦 فائض — ${pt?pt.name:'?'}</div>
+              <div style="font-size:14px;font-weight:700;color:#D85A30">${ccount(l.items)} مرتجع</div>
+            </div>
+            <div class="ditem-counts">${dcounts(l.items)}</div>
+          </div>`;
+        });
+      }
+      h+=`</div>`;
+    });
+  }
+  sc.innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════
+//  PRINT REPORT
+// ═══════════════════════════════════════════════
+function exportExcelFiltered(ptId,dFrom,dTo){
+  const BOM='\uFEFF';
+  const ptName=ptId?(S.points.find(p=>p.id===ptId)?.name||''):'جميع النقاط';
+  let csv=BOM;
+  csv+='=== تقرير محسين — '+ptName+' — من '+dl(dFrom)+' إلى '+dl(dTo)+' ===\n\n';
+  csv+='=== التسليمات ===\n';
+  csv+='التاريخ,نقطة البيع,الساعة,'+TK.map(k=>TM[k].label).join(',')+',إجمالي الخبز,القيمة (د.م),المسؤول\n';
+  S.deliveries.filter(d=>d.date>=dFrom&&d.date<=dTo&&(!ptId||d.ptId===ptId))
+    .sort((a,b)=>a.date>b.date?1:a.date<b.date?-1:a.time>b.time?1:-1)
+    .forEach(d=>{
+      const pt=S.points.find(p=>p.id===d.ptId);
+      csv+=[dl(d.date),`"${pt?pt.name:''}"`,d.time,...TK.map(k=>parseInt(d.items[k])||0),ccount(d.items),cval(d.items,d.ptId).toFixed(2),`"${d.driver||''}"`].join(',')+'\n';
+    });
+  csv+='\n=== الفائض ===\n';
+  csv+='التاريخ,نقطة البيع,'+TK.map(k=>TM[k].label).join(',')+',إجمالي,القيمة (د.م)\n';
+  S.leftovers.filter(l=>l.date>=dFrom&&l.date<=dTo&&(!ptId||l.ptId===ptId))
+    .sort((a,b)=>a.date>b.date?1:-1)
+    .forEach(l=>{
+      const pt=S.points.find(p=>p.id===l.ptId);
+      csv+=[dl(l.date),`"${pt?pt.name:''}"`, ...TK.map(k=>parseInt(l.items[k])||0),ccount(l.items),cval(l.items,l.ptId).toFixed(2)].join(',')+'\n';
+    });
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='تقرير_محسين_'+dFrom+'_'+dTo+'.csv';a.click();
+  toast('✓ تم تصدير ملف Excel');
+}
+
+function printReport(ptId,dFrom,dTo){
+  const filtDelivs=S.deliveries.filter(d=>d.date>=dFrom&&d.date<=dTo&&(!ptId||d.ptId===ptId)).sort((a,b)=>a.date>b.date?1:a.date<b.date?-1:a.time>b.time?1:-1);
+  const filtLefts=S.leftovers.filter(l=>l.date>=dFrom&&l.date<=dTo&&(!ptId||l.ptId===ptId));
+  const ptName=ptId?(S.points.find(p=>p.id===ptId)?.name||'نقطة مجهولة'):'جميع النقاط';
+  const totDelivCnt=filtDelivs.reduce((s,d)=>s+ccount(d.items),0);
+  const totDelivVal=filtDelivs.reduce((s,d)=>s+cval(d.items,d.ptId),0);
+  const totLeftCnt=filtLefts.reduce((s,l)=>s+ccount(l.items),0);
+  const totLeftVal=filtLefts.reduce((s,l)=>s+cval(l.items,l.ptId),0);
+  const netCnt=totDelivCnt-totLeftCnt;const netVal=totDelivVal-totLeftVal;
+
+  let rows='';
+  filtDelivs.forEach(d=>{
+    const pt=S.points.find(p=>p.id===d.ptId);
+    rows+=`<tr>
+      <td>${dl(d.date)}</td>
+      <td>${d.time}</td>
+      <td>${pt?pt.name:''}</td>
+      <td>${TK.filter(k=>parseInt(d.items[k])>0).map(k=>`${d.items[k]} ${TM[k].short}`).join(' + ')}</td>
+      <td>${ccount(d.items)}</td>
+      <td>${cval(d.items,d.ptId).toFixed(2)}</td>
+      <td>${d.driver||''}</td>
+    </tr>`;
+  });
+
+  const w=window.open('','_print_','width=900,height=700');
+  w.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+  <title>تقرير محسين — ${ptName}</title>
+  <style>
+    body{font-family:Arial,sans-serif;padding:20px;color:#111;font-size:13px}
+    h1{font-size:20px;color:#C27A1A;margin-bottom:4px}
+    .sub{font-size:14px;color:#666;margin-bottom:16px}
+    .summary{display:flex;gap:20px;background:#faeeda;padding:12px 16px;border-radius:8px;margin-bottom:16px;flex-wrap:wrap}
+    .sm{text-align:center}.sm-v{font-size:22px;font-weight:800;color:#C27A1A}.sm-l{font-size:12px;color:#666}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{background:#C27A1A;color:#fff;padding:8px 10px;text-align:right}
+    td{padding:7px 10px;border-bottom:1px solid #ddd}
+    tr:nth-child(even) td{background:#fafafa}
+    .footer{margin-top:20px;font-size:12px;color:#999;text-align:center}
+    @media print{body{padding:0}}
+  </style></head><body>
+  <h1>🍞 محسين للخبز التقليدي — تقرير التسليمات</h1>
+  <div class="sub">نقطة البيع: <strong>${ptName}</strong> · من ${dl(dFrom)} إلى ${dl(dTo)} · طُبع بتاريخ ${dl(TODAY)}</div>
+  <div class="summary">
+    <div class="sm"><div class="sm-v">${totDelivCnt}</div><div class="sm-l">إجمالي الخبز الموزع</div></div>
+    <div class="sm"><div class="sm-v" style="color:#1D9E75">${netCnt}</div><div class="sm-l">صافي المبيعات</div></div>
+    <div class="sm"><div class="sm-v" style="color:#D85A30">${totLeftCnt}</div><div class="sm-l">الفائض / المرتجع</div></div>
+    <div class="sm"><div class="sm-v">${totDelivVal.toFixed(2)} د.م</div><div class="sm-l">إجمالي القيمة</div></div>
+    <div class="sm"><div class="sm-v" style="color:#1D9E75">${Math.max(0,netVal).toFixed(2)} د.م</div><div class="sm-l">صافي القيمة</div></div>
+    <div class="sm"><div class="sm-v">${filtDelivs.length}</div><div class="sm-l">عدد التسليمات</div></div>
+  </div>
+  <table>
+    <thead><tr><th>التاريخ</th><th>الساعة</th><th>نقطة البيع</th><th>التفاصيل</th><th>الكمية</th><th>القيمة (د.م)</th><th>المسؤول</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <div class="footer">محسين للخبز التقليدي · تقرير تلقائي</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+//  PIN SYSTEM — نظام الصلاحيات
+// ═══════════════════════════════════════════════
+let _pinBuffer='';
+
+function showPinScreen(){
+  const sc=document.getElementById('pin-screen');
+  sc.style.display='flex';
+  _renderPinStep1();
+}
+function hidePinScreen(){
+  document.getElementById('pin-screen').style.display='none';
+}
+
+function _renderPinStep1(){
+  _pinBuffer='';
+  const hasPin=CFG.managerPin&&CFG.managerPin.length>=4;
+  const sc=document.getElementById('pin-screen');
+  sc.innerHTML=`
+    <div style="font-size:60px;margin-bottom:16px">🍞</div>
+    <div class="pin-title">محسين للخبز التقليدي</div>
+    <div class="pin-sub">من أنت؟</div>
+    <div class="pin-grid">
+      <div class="pin-role-btn manager" onclick="_pinSelectManager()">
+        <div class="pin-role-btn-icon">👑</div>
+        <div class="pin-role-btn-name">محسين</div>
+        <div class="pin-role-btn-sub">${hasPin?'يحتاج PIN':'كل الصلاحيات'}</div>
+      </div>
+      <div class="pin-role-btn" onclick="_pinSelectDriver()">
+        <div class="pin-role-btn-icon">🚚</div>
+        <div class="pin-role-btn-name">موزع</div>
+        <div class="pin-role-btn-sub">يرى تسليماته فقط</div>
+      </div>
+    </div>`;
+}
+
+function _pinSelectManager(){
+  if(!CFG.managerPin||CFG.managerPin.length<4){
+    // لا يوجد PIN — دخول مباشر
+    SESSION={role:'manager',driverName:''};
+    hidePinScreen();render();return;
+  }
+  _renderPinEntry('manager');
+}
+
+function _pinSelectDriver(){
+  _renderDriverName();
+}
+
+function _renderDriverName(){
+  const drivers=[...new Set(S.deliveries.map(d=>d.driver).filter(Boolean))];
+  const sc=document.getElementById('pin-screen');
+  sc.innerHTML=`
+    <button onclick="_renderPinStep1()" style="position:absolute;top:20px;right:20px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--tx2)">←</button>
+    <div style="font-size:44px;margin-bottom:16px">🚚</div>
+    <div class="pin-title">ادخل اسمك</div>
+    <div class="pin-sub">سيظهر فقط ما تم توزيعه باسمك</div>
+    <div style="width:100%;max-width:320px;margin-bottom:16px">
+      <input type="text" id="pin-driver-name" placeholder="اسم الموزع" autocomplete="off"
+        style="font-size:20px;font-weight:700;text-align:center;padding:16px;border-radius:var(--r);border:2.5px solid var(--A);background:var(--bg);color:var(--tx);width:100%;font-family:inherit"
+        oninput="this.value=this.value" list="pin-drv-list">
+      <datalist id="pin-drv-list">${drivers.map(d=>`<option value="${d}">`).join('')}</datalist>
+    </div>
+    ${drivers.length?`<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px;max-width:320px">
+      ${drivers.map(d=>`<button onclick="document.getElementById('pin-driver-name').value='${d}'" 
+        style="padding:8px 14px;border-radius:20px;border:2px solid var(--br2);background:var(--bg2);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">${d}</button>`).join('')}
+    </div>`:''}
+    <button class="btn btn-p" style="max-width:320px;font-size:17px" onclick="_confirmDriver()">✓ دخول</button>`;
+  setTimeout(()=>document.getElementById('pin-driver-name')?.focus(),100);
+}
+
+function _confirmDriver(){
+  const name=document.getElementById('pin-driver-name')?.value.trim();
+  if(!name){document.getElementById('pin-driver-name')?.style.setProperty('border-color','#F0997B');return;}
+  SESSION={role:'driver',driverName:name};
+  hidePinScreen();render();
+}
+
+function _renderPinEntry(role){
+  _pinBuffer='';
+  const sc=document.getElementById('pin-screen');
+  sc.innerHTML=`
+    <button onclick="_renderPinStep1()" style="position:absolute;top:20px;right:20px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--tx2)">←</button>
+    <div style="font-size:44px;margin-bottom:16px">🔐</div>
+    <div class="pin-title">PIN محسين</div>
+    <div class="pin-sub">أدخل الرمز السري</div>
+    <div class="pin-dots" id="pd">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div id="pin-err" style="color:#D85A30;font-size:14px;font-weight:700;min-height:20px;margin-bottom:12px"></div>
+    <div class="pin-numpad">
+      ${[1,2,3,4,5,6,7,8,9,'','0','⌫'].map(n=>
+        n===''?'<div></div>':`<button class="pin-num" onclick="_pinPress('${n}')">${n}</button>`
+      ).join('')}
+    </div>`;
+  window._pinRole=role;
+}
+
+function _pinPress(k){
+  if(k==='⌫'){
+    _pinBuffer=_pinBuffer.slice(0,-1);
+  }else if(_pinBuffer.length<4){
+    _pinBuffer+=k;
+  }
+  // تحديث النقاط
+  for(let i=0;i<4;i++){
+    const d=document.getElementById('pd'+i);
+    if(d)d.classList.toggle('filled',i<_pinBuffer.length);
+  }
+  if(_pinBuffer.length===4){
+    setTimeout(()=>{
+      if(_pinBuffer===CFG.managerPin){
+        SESSION={role:'manager',driverName:''};
+        hidePinScreen();render();
+      }else{
+        document.getElementById('pin-err').textContent='❌ رمز خاطئ — حاول مرة أخرى';
+        _pinBuffer='';
+        for(let i=0;i<4;i++){const d=document.getElementById('pd'+i);if(d)d.classList.remove('filled');}
+      }
+    },200);
+  }
+}
+
+function switchRole(){showPinScreen();}
+
+function openPinSetup(){
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  let buf='';
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🔐 تعيين PIN محسين</div>
+    <p style="font-size:14px;color:var(--tx2);margin-bottom:16px">سيُطلب هذا الرمز عند دخول محسين. الموزعون يدخلون بأسمائهم.</p>
+    <div class="pin-dots" id="spd">
+      <div class="pin-dot" id="spd0"></div><div class="pin-dot" id="spd1"></div>
+      <div class="pin-dot" id="spd2"></div><div class="pin-dot" id="spd3"></div>
+    </div>
+    <div id="spin-err" style="color:#D85A30;font-size:14px;min-height:18px;text-align:center;margin-bottom:10px"></div>
+    <div class="pin-numpad">
+      ${[1,2,3,4,5,6,7,8,9,'','0','⌫'].map(n=>
+        n===''?'<div></div>':`<button class="pin-num" onclick="_spPress('${n}')">${n}</button>`
+      ).join('')}
+    </div>
+    <button class="btn btn-s" style="margin-top:14px" onclick="closeModal()">إلغاء</button>
+  </div>`;
+  document.body.appendChild(ov);
+  window._spBuf='';
+}
+function _spPress(k){
+  if(k==='⌫')window._spBuf=(window._spBuf||'').slice(0,-1);
+  else if((window._spBuf||'').length<4)window._spBuf=(window._spBuf||'')+k;
+  for(let i=0;i<4;i++){const d=document.getElementById('spd'+i);if(d)d.classList.toggle('filled',i<(window._spBuf||'').length);}
+  if((window._spBuf||'').length===4){
+    setTimeout(()=>{
+      CFG.managerPin=window._spBuf;save();closeModal();
+      toast('✅ تم تعيين PIN بنجاح');renderSettings();
+    },200);
+  }
+}
+
+injectManifest();
+regSW();
+loadLocal();
+applyTheme();
+if(!DF.time)DF.time=nstr();
+// إظهار شاشة اختيار الدور فقط إذا تم تفعيل الميزة
+if(CFG.managerPin&&CFG.managerPin.length>=4){
+  showPinScreen();
+}else{
+  render();
+}
+
+// ═══════════════════════════════════════════════
+//  VISUAL VIEWPORT — الزر يلتصق فوق لوحة المفاتيح
+// ═══════════════════════════════════════════════
+(function(){
+  if(!window.visualViewport)return;
+
+  function onViewportChange(){
+    const btns=document.querySelectorAll('.sticky-submit');
+    if(!btns.length)return;
+    const vv=window.visualViewport;
+    const winH=window.innerHeight;
+    const navH=document.querySelector('.nav')?.offsetHeight||62;
+    // ارتفاع لوحة المفاتيح
+    const kbHeight=Math.max(0,winH-vv.height-vv.offsetTop);
+    btns.forEach(btn=>{
+      if(kbHeight>50){
+        // لوحة المفاتيح مفتوحة → الزر يلتصق فوقها
+        btn.style.bottom=kbHeight+'px';
+      }else{
+        // لوحة المفاتيح مغلقة → الزر فوق شريط التنقل
+        btn.style.bottom=(navH)+'px';
+      }
+    });
+  }
+
+  window.visualViewport.addEventListener('resize',onViewportChange);
+  window.visualViewport.addEventListener('scroll',onViewportChange);
+})();
+</script>
+</body>
+</html>
