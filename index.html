@@ -669,14 +669,20 @@ function cval(items,ptId){ const pr=gpr(ptId); return TK.reduce((s,k)=>s+(parseI
 function ccount(items){ return TK.reduce((s,k)=>s+(parseInt(items[k])||0),0) }
 function hasI(items){ return TK.some(k=>parseInt(items[k])>0) }
 function gd(ptId,date){ return S.deliveries.filter(d=>d.ptId===ptId&&d.date===date) }
-function gl(ptId,date){ return S.leftovers.find(l=>l.ptId===ptId&&l.date===date)||null }
+// إرجاع كل الفوائض لنقطة وتاريخ (مصفوفة بدل سجل واحد)
+function gls(ptId,date){ return S.leftovers.filter(l=>l.ptId===ptId&&l.date===date); }
+// للتوافق مع الكود القديم — أول فائض فقط (نادراً ما يُستخدم)
+function gl(ptId,date){ return S.leftovers.find(l=>l.ptId===ptId&&l.date===date)||null; }
+// مجموع كمية الفوائض لنقطة ويوم
+function glCount(ptId,date){ return gls(ptId,date).reduce((s,l)=>s+ccount(l.items),0); }
+function glVal(ptId,date,pr){ return gls(ptId,date).reduce((s,l)=>s+cval(l.items,ptId),0); }
 function ptNet(ptId,date){
   const t=gd(ptId,date).reduce((s,d)=>s+cval(d.items,ptId),0);
-  const l=gl(ptId,date); return t-(l?cval(l.items,ptId):0);
+  return t-glVal(ptId,date);
 }
 function ptNetCount(ptId,date){
   const t=gd(ptId,date).reduce((s,d)=>s+ccount(d.items),0);
-  const l=gl(ptId,date); return t-(l?ccount(l.items):0);
+  return t-glCount(ptId,date);
 }
 function todayCA(){
   const t=S.deliveries.filter(d=>d.date===TODAY).reduce((s,d)=>s+cval(d.items,d.ptId),0);
@@ -1188,9 +1194,8 @@ function bDelivForm(){
   // ─── الملخص الموسّع ───────────────────────────
   if(hasQ){
     const pr=gpr(ptId);
-    const lft=gl(ptId,TODAY);
-    const lftCnt=lft?ccount(lft.items):0;
-    const lftVal=lft?cval(lft.items,ptId):0;
+    const lftCnt=glCount(ptId,TODAY);
+    const lftVal=glVal(ptId,TODAY);
     const prevDelivs=gd(ptId,TODAY);
     const prevCnt=prevDelivs.reduce((s,d)=>s+ccount(d.items),0);
     const prevVal=prevDelivs.reduce((s,d)=>s+cval(d.items,ptId),0);
@@ -1252,8 +1257,7 @@ function updSum(){
   const pr=gpr(ptId);const items=DF.items;
   const total=cval(items,ptId);const totalCnt=ccount(items);const hasQ=hasI(items);
 
-  const lft=gl(ptId,TODAY);
-  const lftCnt=lft?ccount(lft.items):0;const lftVal=lft?cval(lft.items,ptId):0;
+  const lftCnt=glCount(ptId,TODAY);const lftVal=glVal(ptId,TODAY);
   const prevDelivs=gd(ptId,TODAY);
   const prevCnt=prevDelivs.reduce((s,d)=>s+ccount(d.items),0);
   const prevVal=prevDelivs.reduce((s,d)=>s+cval(d.items,ptId),0);
@@ -1339,8 +1343,7 @@ function bLeftForm(){
   const todayCnt=todayDelivs.reduce((s,d)=>s+ccount(d.items),0);
   const yestDelivs=ptId?S.deliveries.filter(d=>d.ptId===ptId&&d.date===YESTERDAY):[];
   const yestCnt=yestDelivs.reduce((s,d)=>s+ccount(d.items),0);
-  const yestLeft=S.leftovers.find(l=>l.ptId===ptId&&l.date===YESTERDAY);
-  const yestLeftCnt=yestLeft?ccount(yestLeft.items):0;
+  const yestLeftCnt=glCount(ptId,YESTERDAY);
 
   let h=``;
 
@@ -1477,9 +1480,10 @@ function bLeftForm(){
   h+=`<button class="btn btn-s" style="margin-top:10px" onclick="setMode(false)">⬅ رجوع للتسليم</button>`;
 
   // ─── الفائض المسجل ───
-  const allLeft=S.leftovers.filter(l=>l.date===TODAY||l.date===YESTERDAY).sort((a,b)=>b.date>a.date?1:-1);
+  const allLeft=S.leftovers.filter(l=>l.date===TODAY||l.date===YESTERDAY)
+    .sort((a,b)=>b.date>a.date?1:b.date<a.date?-1:(b.time||'')>(a.time||'')?1:-1);
   if(allLeft.length){
-    h+=`<div class="slbl">الفائض المسجل</div><div class="card">`;
+    h+=`<div class="slbl">الفائض المسجل (${allLeft.length} عملية)</div><div class="card">`;
     allLeft.forEach(l=>{
       const pt=S.points.find(p=>p.id===l.ptId);
       const isYest=l.date===YESTERDAY;
@@ -1489,12 +1493,12 @@ function bLeftForm(){
           <div>
             <div style="font-size:15px;font-weight:700">${pt?pt.name:'?'}</div>
             <div style="font-size:12px;color:${isYest?'#D85A30':'var(--T)'}">
-              ${isYest?`📅 أمس · ${getReason(l)}`:`${getReason(l)}`}
+              ${isYest?`📅 أمس`:`📅 اليوم`} · ${getReason(l)}${l.time?` · ${l.time}`:''}
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:6px">
             <span class="bdg ${isYest?'bdg-r':'bdg-t'}">${lCnt} خبزة</span>
-            <button class="edit-btn" onclick="openEditLeftModal('${l.ptId}')">✏️</button>
+            <button class="edit-btn" onclick="openEditLeftById('${l.id||''}','${l.ptId}')">✏️</button>
           </div>
         </div>
         <div class="ditem-counts">${dcounts(l.items)}</div>
@@ -1577,8 +1581,8 @@ function _doSaveLeft(ptId,targetDate,lType,items){
     window._pendingLeftItems=null;
   }
   if(!items||!hasI(items)){toast('خطأ في الكميات','e');return;}
-  S.leftovers=S.leftovers.filter(l=>!(l.ptId===ptId&&l.date===targetDate));
-  S.leftovers.push({ptId,date:targetDate,items,lType});
+  // ← كل فائض سجل مستقل بـ ID وساعة
+  S.leftovers.push({id:Date.now()+'',ptId,date:targetDate,time:nstr(),items,lType});
   const typeLabel=lType==='yesterday'?'فائض أمس':lType==='swap'?'استبدال':'نقل';
   DF={...DF,lItems:ei(),leftMode:false,ptId:ptId};
   save();autoSync();
@@ -1586,6 +1590,9 @@ function _doSaveLeft(ptId,targetDate,lType,items){
   render();
 }
 function setMode(b){DF.leftMode=b;DF.lType='yesterday';if(b&&DF.ptId)DF.lPtId=DF.ptId;renderDeliv();}
+// حذف فائض بالـ ID
+function delLeftById(id){S.leftovers=S.leftovers.filter(l=>l.id!==id);save();autoSync();renderPtDetail();}
+// للتوافق مع الكود القديم
 function delLeft(ptId,date){S.leftovers=S.leftovers.filter(l=>!(l.ptId===ptId&&l.date===date));save();autoSync();render();}
 
 // ═══════════════════════════════════════════════
@@ -1754,8 +1761,7 @@ function renderPtDetail(){
   const dsSorted=[...ds].sort((a,b)=>a.time>b.time?1:-1);
   const totCnt=ds.reduce((s,d)=>s+ccount(d.items),0);
   const totVal=ds.reduce((s,d)=>s+cval(d.items,pt.id),0);
-  const lft=gl(pt.id,TODAY);
-  const lftCnt=lft?ccount(lft.items):0;const lftVal=lft?cval(lft.items,pt.id):0;
+  const lftCnt=glCount(pt.id,TODAY);const lftVal=glVal(pt.id,TODAY);
   const netCnt=totCnt-lftCnt;const netVal=totVal-lftVal;
   const bt=btTime(pt.id);const sbd=sByDay(pt.id);const mx=Math.max(...sbd.map(s=>s[1]),1);
   const debt=ptDebt(pt.id);
@@ -1883,19 +1889,17 @@ function renderPtDetail(){
       // الفوائض المُحتسَبة على هذا اليوم (مسجَّلة نفس اليوم)
       dayLfts.forEach(lf=>{
         const lfCnt=ccount(lf.items);const lfVal=cval(lf.items,pt.id);
-        const regDate=lf.date; // مسجَّل نفس يوم الاحتساب
+        const lfId=lf.id||'';
         h+=`<div class="retour-row">
           <div class="retour-left">
-            <div class="retour-tag">↩ مرتجع بتاريخ ${dl(regDate)}</div>
-            <div class="retour-dates">
-              ${getReason(lf)} · سُجِّل: ${fdate(regDate)}
-            </div>
+            <div class="retour-tag">↩ مرتجع بتاريخ ${dl(lf.date)}${lf.time?` · ${lf.time}`:''}</div>
+            <div class="retour-dates">${getReason(lf)}</div>
             <div class="ditem-counts" style="margin-top:6px">${dcounts(lf.items)}</div>
           </div>
           <div class="retour-right">
             <div>${lfCnt} خبزة</div>
             <div style="font-size:13px">− ${lfVal.toFixed(2)} د.م</div>
-            <button class="edit-btn" onclick="openEditLeftModal('${pt.id}')">✏️</button>
+            <button class="edit-btn" onclick="openEditLeftById('${lfId}','${pt.id}')">✏️</button>
           </div>
         </div>`;
       });
@@ -1903,19 +1907,17 @@ function renderPtDetail(){
       // الفوائض المسجَّلة في اليوم التالي لكن تُحتسب على هذا اليوم (مرتجع أمس)
       nextDayLfts.forEach(lf=>{
         const lfCnt=ccount(lf.items);const lfVal=cval(lf.items,pt.id);
-        const regDate=lf.date; // سُجِّل في اليوم التالي
+        const lfId=lf.id||'';
         h+=`<div class="retour-row">
           <div class="retour-left">
-            <div class="retour-tag">↩ مرتجع بتاريخ ${dl(regDate)}</div>
-            <div class="retour-dates">
-              يُحتسب على: ${fdate(date)} · سُجِّل: ${fdate(regDate)}
-            </div>
+            <div class="retour-tag">↩ مرتجع بتاريخ ${dl(lf.date)}${lf.time?` · ${lf.time}`:''}</div>
+            <div class="retour-dates">يُحتسب على: ${fdate(date)} · سُجِّل: ${fdate(lf.date)}</div>
             <div class="ditem-counts" style="margin-top:6px">${dcounts(lf.items)}</div>
           </div>
           <div class="retour-right">
             <div>${lfCnt} خبزة</div>
             <div style="font-size:13px">− ${lfVal.toFixed(2)} د.م</div>
-            <button class="edit-btn" onclick="openEditLeftModal('${pt.id}')">✏️</button>
+            <button class="edit-btn" onclick="openEditLeftById('${lfId}','${pt.id}')">✏️</button>
           </div>
         </div>`;
       });
@@ -2211,6 +2213,8 @@ function _openLeftEditor(ptId,lf,dateOverride){
   const curType=existing?.lType||'yesterday';
   const curDate=existing?.date||YESTERDAY;
   const isNew=!existing;
+  // حفظ ID السجل المُعدَّل
+  window._editingLeftId=existing?.id||null;
 
   // حساب تسليمات اليوم المرجعي
   const refDate=curType==='yesterday'?YESTERDAY:TODAY;
@@ -2324,13 +2328,26 @@ function saveEditLeft(ptId,oldDate){
     toast('يجب كتابة سبب التصفير في الملاحظة','e');
     return;
   }
-  // احذف الفائض القديم وأضف الجديد
   const targetDate=lType==='yesterday'?YESTERDAY:TODAY;
-  S.leftovers=S.leftovers.filter(l=>!(l.ptId===ptId&&l.date===oldDate));
-  S.leftovers.push({ptId,date:targetDate,items,lType,notePrivate,notePublic});
+  // عدّل بالـ ID إن وجد، وإلا أضف جديداً
+  const editingId=window._editingLeftId;
+  if(editingId){
+    const idx=S.leftovers.findIndex(l=>l.id===editingId);
+    if(idx>=0) S.leftovers[idx]={...S.leftovers[idx],date:targetDate,items,lType,notePrivate,notePublic};
+    window._editingLeftId=null;
+  }else{
+    S.leftovers.push({id:Date.now()+'',ptId,date:targetDate,time:nstr(),items,lType,notePrivate,notePublic});
+  }
   save();autoSync();closeModal();
   toast(`✓ تم تعديل الفائض — ${cnt} خبزة`);
   renderPtDetail();
+}
+
+// فتح محرر فائض محدد بالـ ID
+function openEditLeftById(lfId,ptId){
+  const lf=S.leftovers.find(l=>l.id===lfId);
+  if(lf)_openLeftEditor(ptId,lf);
+  else openEditLeftModal(ptId);
 }
 
 // ═══════════════════════════════════════════════
