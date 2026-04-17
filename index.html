@@ -1026,7 +1026,7 @@ function renderHome(){
       const ds=gd(pt.id,TODAY);
       const cnt=ds.reduce((s,d)=>s+ccount(d.items),0);
       const val=ds.reduce((s,d)=>s+cval(d.items,pt.id),0);
-      const lft=gl(pt.id,TODAY);const lftC=lft?ccount(lft.items):0;const lftV=lft?cval(lft.items,pt.id):0;
+      const lftC=glCount(pt.id,TODAY);const lftV=glVal(pt.id,TODAY);
       const debt=ptDebt(pt.id);
       h+=`<div class="card" style="cursor:pointer" onclick="viewPt('${pt.id}')">
         <div style="display:flex;justify-content:space-between;align-items:center">
@@ -1771,6 +1771,9 @@ function renderPtDetail(){
   // حساب إجمالي كل نوع اليوم
   const typeTotDay=ei();
   ds.forEach(d=>TK.forEach(k=>{typeTotDay[k]=(parseInt(typeTotDay[k])||0)+(parseInt(d.items[k])||0)}));
+  // فائض اليوم مجمَّع حسب النوع
+  const lftTotDay=ei();
+  gls(pt.id,TODAY).forEach(lf=>TK.forEach(k=>{lftTotDay[k]=(parseInt(lftTotDay[k])||0)+(parseInt(lf.items[k])||0)}));
 
   let h=`<button class="back-btn" onclick="SEL_PT=null;renderPts()">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -1811,7 +1814,7 @@ function renderPtDetail(){
   h+=`<div class="totals-box">`;
   TK.forEach(k=>{
     const q=parseInt(typeTotDay[k])||0;
-    const lftQ=lft?parseInt(lft.items[k])||0:0;
+    const lftQ=parseInt(lftTotDay[k])||0;
     const netQ=q-lftQ;
     if(!q)return;
     h+=`<div class="totals-row">
