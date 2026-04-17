@@ -453,6 +453,16 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
 .after-submit-title{font-size:16px;font-weight:800;color:var(--TD);margin-bottom:4px}
 .after-submit-cnt{font-size:28px;font-weight:800;color:var(--T);margin-bottom:14px}
 .after-submit-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* شريط ما بعد الفائض — ألوان حسب النوع */
+.after-left{border-radius:var(--rl);padding:16px;margin-bottom:16px;border:2px solid}
+.after-left.swap{background:#FFF4E5;border-color:#E8A040;color:#7A4A08}
+.after-left.transfer{background:#E8F4FD;border-color:#5BA4D4;color:#1A4A6E}
+.after-left.yesterday{background:var(--TL);border-color:var(--TM);color:var(--TD)}
+.after-left-icon{font-size:28px;margin-bottom:8px}
+.after-left-title{font-size:16px;font-weight:800;margin-bottom:4px}
+.after-left-summary{font-size:14px;margin-bottom:14px;line-height:1.7}
+.after-left-summary strong{font-size:17px}
+.after-left-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 /* ─── طباعة ─── */
 @media print{
   body *{visibility:hidden}
@@ -646,7 +656,8 @@ let SESSION = {role:'manager', driverName:''}; // الجلسة الحالية
 let CUR='home', SEL_PT=null;
 let DF = {ptId:'', items:ei(), time:nstr(), driver:'', notes:'', notePrivate:'', notePublic:'', leftMode:false, lPtId:'', lItems:ei(), lType:'yesterday'};
 let PT_SORT = 'manual'; // 'manual' | 'usage'
-let AFTER_SUBMIT = null; // {ptId, cnt, val, ptName} — حالة الاختيار بعد التسليم
+let AFTER_SUBMIT = null; // {ptId, cnt, val, ptName}
+let AFTER_LEFT = null;  // {ptId, ptName, lType, cnt, val, delivCnt, delivVal}
 let GD = {token:null, fileId:null, tokenExpiry:null, status:'idle'};
 let deferredInstall=null;
 
@@ -963,7 +974,7 @@ function toast(msg,type='s'){
 function scrollTop(){document.getElementById('content').scrollTop=0;}
 function go(name){
   CUR=name;SEL_PT=null;
-  if(name!=='deliv')AFTER_SUBMIT=null; // مسح حالة الاختيار عند مغادرة تبويب التسليم
+  if(name!=='deliv'){AFTER_SUBMIT=null;AFTER_LEFT=null;}
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   document.getElementById('scr-'+name).classList.add('on');
@@ -1071,8 +1082,55 @@ function renderHome(){
 function renderDeliv(){
   let h='';
 
-  // ─── لوحة الاختيار بعد التسليم ───────────────
-  if(AFTER_SUBMIT&&!DF.leftMode){
+  // ─── شريط ما بعد الفائض ───────────────────────
+  if(AFTER_LEFT&&!DF.leftMode){
+    const {ptId,ptName,lType,cnt,val,delivCnt,delivVal}=AFTER_LEFT;
+    const net=delivCnt-cnt;const netVal=delivVal-val;
+
+    let icon='📦',title='',summary='',btnRight='',btnLeft='';
+    const clr=lType==='swap'?'swap':lType==='transfer'?'transfer':'yesterday';
+
+    if(lType==='swap'){
+      icon='🔄';
+      title='تم تسجيل الاستبدال';
+      summary=`
+        🚚 سلّمت: <strong>${delivCnt} خبزة</strong><br>
+        🔄 استبدلت: <strong>${cnt} خبزة</strong><br>
+        🍞 المحتسب: <strong>${net} خبزة · ${netVal.toFixed(2)} د.م</strong>
+      `;
+    }else if(lType==='transfer'){
+      icon='➡️';
+      title='تم تسجيل النقل';
+      summary=`
+        🚚 سلّمت: <strong>${delivCnt} خبزة</strong><br>
+        ➡️ نقلت: <strong>${cnt} خبزة</strong><br>
+        🍞 المحتسب: <strong>${net} خبزة · ${netVal.toFixed(2)} د.م</strong>
+      `;
+    }else{
+      icon='📅';
+      title='تم تسجيل المرتجع';
+      summary=`
+        📅 مرتجع أمس: <strong>${cnt} خبزة · ${val.toFixed(2)} د.م</strong><br>
+        🍞 صافي اليوم: <strong>${net} خبزة · ${netVal.toFixed(2)} د.م</strong>
+      `;
+    }
+
+    h+=`<div class="after-left ${clr}">
+      <div class="after-left-icon">${icon}</div>
+      <div class="after-left-title">✅ ${title}</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:10px">📍 ${ptName}</div>
+      <div class="after-left-summary">${summary}</div>
+      <div class="after-left-btns">
+        <button class="btn btn-s" style="font-size:15px;padding:14px 8px"
+          onclick="AFTER_LEFT=null;goLeftSamePt('${ptId}')">
+          📦 فائض آخر<br><span style="font-size:12px;font-weight:500">لنفس النقطة</span>
+        </button>
+        <button class="btn btn-p" style="font-size:15px;padding:14px 8px"
+          onclick="AFTER_LEFT=null;goNewDeliv()">
+          🏭 رجع لشاحنة الموزع<br><span style="font-size:12px;font-weight:500">نقطة جديدة</span>
+        </button>
+      </div>
+    </div>`;
     const {ptId,cnt,val,ptName}=AFTER_SUBMIT;
     h+=`<div class="after-submit">
       <div class="after-submit-title">✅ تم تسجيل التسليم</div>
@@ -1325,12 +1383,12 @@ function submitDeliv(){
   save();autoSync();toast(`✓ ${cnt} خبزة — ${val.toFixed(2)} د.م`);renderDeliv();scrollTop();
 }
 function goLeftSamePt(ptId){
-  AFTER_SUBMIT=null;
+  AFTER_SUBMIT=null;AFTER_LEFT=null;
   DF={...DF,leftMode:true,lPtId:ptId,lItems:ei()};
   renderDeliv();scrollTop();
 }
 function goNewDeliv(){
-  AFTER_SUBMIT=null;
+  AFTER_SUBMIT=null;AFTER_LEFT=null;
   DF={...DF,leftMode:false,ptId:'',items:ei()};
   renderDeliv();scrollTop();
 }
@@ -1581,13 +1639,16 @@ function _doSaveLeft(ptId,targetDate,lType,items){
     window._pendingLeftItems=null;
   }
   if(!items||!hasI(items)){toast('خطأ في الكميات','e');return;}
-  // ← كل فائض سجل مستقل بـ ID وساعة
   S.leftovers.push({id:Date.now()+'',ptId,date:targetDate,time:nstr(),items,lType});
-  const typeLabel=lType==='yesterday'?'فائض أمس':lType==='swap'?'استبدال':'نقل';
-  DF={...DF,lItems:ei(),leftMode:false,ptId:ptId};
+  const cnt=ccount(items);const val=cval(items,ptId);
+  const pt=S.points.find(p=>p.id===ptId);
+  const todayDelivs=S.deliveries.filter(d=>d.ptId===ptId&&d.date===TODAY);
+  const delivCnt=todayDelivs.reduce((s,d)=>s+ccount(d.items),0);
+  const delivVal=todayDelivs.reduce((s,d)=>s+cval(d.items,ptId),0);
+  AFTER_LEFT={ptId,ptName:pt?pt.name:'?',lType,cnt,val,delivCnt,delivVal};
+  DF={...DF,lItems:ei(),leftMode:false,lType:'yesterday'};
   save();autoSync();
-  toast(`✓ تم تسجيل ${typeLabel} — ${ccount(items)} خبزة`);
-  render();
+  renderDeliv();scrollTop();
 }
 function setMode(b){DF.leftMode=b;DF.lType='yesterday';if(b&&DF.ptId)DF.lPtId=DF.ptId;renderDeliv();}
 // حذف فائض بالـ ID
