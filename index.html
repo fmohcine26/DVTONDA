@@ -1083,54 +1083,56 @@ function renderDeliv(){
   let h='';
 
   // ─── شريط ما بعد الفائض ───────────────────────
+  // ─── شريط ما بعد الفائض ───────────────────────
   if(AFTER_LEFT&&!DF.leftMode){
     const {ptId,ptName,lType,cnt,val,delivCnt,delivVal}=AFTER_LEFT;
     const net=delivCnt-cnt;const netVal=delivVal-val;
-
-    let icon='📦',title='',summary='',btnRight='',btnLeft='';
     const clr=lType==='swap'?'swap':lType==='transfer'?'transfer':'yesterday';
-
+    let icon='',title='',summary='';
     if(lType==='swap'){
-      icon='🔄';
-      title='تم تسجيل الاستبدال';
-      summary=`
-        🚚 سلّمت: <strong>${delivCnt} خبزة</strong><br>
-        🔄 استبدلت: <strong>${cnt} خبزة</strong><br>
-        🍞 المحتسب: <strong>${net} خبزة · ${netVal.toFixed(2)} د.م</strong>
-      `;
+      icon='🔄';title='تم تسجيل الاستبدال';
+      summary=`<div style="font-size:26px;font-weight:900;margin:6px 0">${cnt} خبزة · ${val.toFixed(2)} د.م</div>
+        <div style="font-size:14px;line-height:2">
+          🚚 سلّمت: <strong>${delivCnt} خبزة</strong> &nbsp;·&nbsp;
+          🔄 استبدلت: <strong>${cnt} خبزة</strong><br>
+          🍞 المحتسب: <strong>${net} خبزة · ${netVal.toFixed(2)} د.م</strong>
+        </div>`;
     }else if(lType==='transfer'){
-      icon='➡️';
-      title='تم تسجيل النقل';
-      summary=`
-        🚚 سلّمت: <strong>${delivCnt} خبزة</strong><br>
-        ➡️ نقلت: <strong>${cnt} خبزة</strong><br>
-        🍞 المحتسب: <strong>${net} خبزة · ${netVal.toFixed(2)} د.م</strong>
-      `;
+      icon='➡️';title='تم تسجيل النقل';
+      summary=`<div style="font-size:26px;font-weight:900;margin:6px 0">${cnt} خبزة · ${val.toFixed(2)} د.م</div>
+        <div style="font-size:14px;line-height:2">
+          🚚 سلّمت: <strong>${delivCnt} خبزة</strong> &nbsp;·&nbsp;
+          ➡️ نقلت: <strong>${cnt} خبزة</strong><br>
+          🍞 المحتسب: <strong>${net} خبزة · ${netVal.toFixed(2)} د.م</strong>
+        </div>`;
     }else{
-      icon='📅';
-      title='تم تسجيل المرتجع';
-      summary=`
-        📅 مرتجع أمس: <strong>${cnt} خبزة · ${val.toFixed(2)} د.م</strong><br>
-        🍞 صافي اليوم: <strong>${net} خبزة · ${netVal.toFixed(2)} د.م</strong>
-      `;
+      icon='📅';title='تم تسجيل المرتجع';
+      summary=`<div style="font-size:26px;font-weight:900;margin:6px 0">${cnt} خبزة · ${val.toFixed(2)} د.م</div>
+        <div style="font-size:14px;line-height:2">
+          📅 مرتجع أمس: <strong>${cnt} خبزة</strong><br>
+          🍞 صافي اليوم: <strong>${net} خبزة · ${netVal.toFixed(2)} د.م</strong>
+        </div>`;
     }
-
     h+=`<div class="after-left ${clr}">
-      <div class="after-left-icon">${icon}</div>
-      <div class="after-left-title">✅ ${title}</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:10px">📍 ${ptName}</div>
-      <div class="after-left-summary">${summary}</div>
+      <div class="after-left-title">${icon} ✅ ${title}</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">📍 ${ptName}</div>
+      ${summary}
+      <div style="font-size:15px;font-weight:700;margin:14px 0 10px">ماذا تريد الآن؟</div>
       <div class="after-left-btns">
-        <button class="btn btn-s" style="font-size:15px;padding:14px 8px"
+        <button class="btn btn-s" style="padding:16px 10px;font-size:15px"
           onclick="AFTER_LEFT=null;goLeftSamePt('${ptId}')">
           📦 فائض آخر<br><span style="font-size:12px;font-weight:500">لنفس النقطة</span>
         </button>
-        <button class="btn btn-p" style="font-size:15px;padding:14px 8px"
+        <button class="btn btn-p" style="padding:16px 10px;font-size:15px"
           onclick="AFTER_LEFT=null;goNewDeliv()">
-          🏭 رجع لشاحنة الموزع<br><span style="font-size:12px;font-weight:500">نقطة جديدة</span>
+          ➡️ نقطة بيع أخرى<br><span style="font-size:12px;font-weight:500">تسليم جديد</span>
         </button>
       </div>
     </div>`;
+  }
+
+  // ─── شريط ما بعد التسليم ───────────────────────
+  if(AFTER_SUBMIT&&!DF.leftMode){
     const {ptId,cnt,val,ptName}=AFTER_SUBMIT;
     h+=`<div class="after-submit">
       <div class="after-submit-title">✅ تم تسجيل التسليم</div>
