@@ -1106,10 +1106,10 @@ function renderDeliv(){
           🍞 المحتسب: <strong>${net} خبزة · ${netVal.toFixed(2)} د.م</strong>
         </div>`;
     }else{
-      icon='📅';title='تم تسجيل المرتجع';
+      icon='📅';title='تم تسجيل الخبز البارد';
       summary=`<div style="font-size:26px;font-weight:900;margin:6px 0">${cnt} خبزة · ${val.toFixed(2)} د.م</div>
         <div style="font-size:14px;line-height:2">
-          📅 مرتجع أمس: <strong>${cnt} خبزة</strong><br>
+          🥖 الخبز البارد: <strong>${cnt} خبزة</strong><br>
           🍞 صافي اليوم: <strong>${net} خبزة · ${netVal.toFixed(2)} د.م</strong>
         </div>`;
     }
@@ -1445,7 +1445,7 @@ function bLeftForm(){
     h+=`<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">`;
 
     const types=[
-      {v:'yesterday', icon:'📅', lbl:'فائض أمس',
+      {v:'yesterday', icon:'🥖', lbl:'الخبز البارد',
        desc:`خبز متبقي من أمس — يُطرح من مستحقات ${dl(YESTERDAY)}`,
        color:'var(--c-sha-bd)', bg:'var(--c-sha-bg)',
        extra: yestCnt>0?`وُزِّع أمس: ${yestCnt} خبزة${yestLeftCnt>0?' · مسجَّل سابقاً: '+yestLeftCnt:''}`:''
@@ -1501,7 +1501,7 @@ function bLeftForm(){
     const dateLabel=lType==='yesterday'?`أمس (${dl(YESTERDAY)})`:'اليوم';
     h+=`<div class="pt-selected-banner">
       <div>
-        <div class="pt-selected-banner-lbl">📍 ${lType==='yesterday'?'فائض أمس لـ':lType==='swap'?'استبدال لـ':'نقل من'} — ${dateLabel}</div>
+        <div class="pt-selected-banner-lbl">📍 ${lType==='yesterday'?'الخبز البارد لـ':lType==='swap'?'استبدال لـ':'نقل من'} — ${dateLabel}</div>
         <div class="pt-selected-banner-name">${ptObj?ptObj.name:'?'}</div>
       </div>
     </div>`;
@@ -1571,7 +1571,7 @@ function bLeftForm(){
 
 function getReason(l){
   const t=l.lType||'yesterday';
-  if(t==='yesterday')return'📅 فائض أمس';
+  if(t==='yesterday')return'📅 الخبز البارد';
   if(t==='swap')return'🔄 استبدال';
   if(t==='transfer')return'➡️ نقل';
   return'📦 فائض';
@@ -1911,18 +1911,12 @@ function renderPtDetail(){
       const dayDelivs=S.deliveries.filter(d=>d.ptId===pt.id&&d.date===date).sort((a,b)=>a.time>b.time?1:-1);
       // الفوائض التي تُحتسب على هذا اليوم
       const dayLfts=S.leftovers.filter(l=>l.ptId===pt.id&&l.date===date);
-      // الفوائض التي سُجِّلت في يوم آخر لكن تُحتسب على هذا اليوم (مرتجع من اليوم التالي)
-      const nextDayLfts=S.leftovers.filter(l=>l.ptId===pt.id&&l.lType==='yesterday'&&
-        (()=>{const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+1);return d.toISOString().split('T')[0]===l.date;})()
-      );
       const dayCnt=dayDelivs.reduce((s,d)=>s+ccount(d.items),0);
       const dayVal=dayDelivs.reduce((s,d)=>s+cval(d.items,pt.id),0);
       const dayLftCnt=dayLfts.reduce((s,l)=>s+ccount(l.items),0);
       const dayLftVal=dayLfts.reduce((s,l)=>s+cval(l.items,pt.id),0);
-      const nextLftCnt=nextDayLfts.reduce((s,l)=>s+ccount(l.items),0);
-      const nextLftVal=nextDayLfts.reduce((s,l)=>s+cval(l.items,pt.id),0);
-      const netCnt=dayCnt-dayLftCnt-nextLftCnt;
-      const netVal=dayVal-dayLftVal-nextLftVal;
+      const netCnt=dayCnt-dayLftCnt;
+      const netVal=dayVal-dayLftVal;
 
       h+=`<div class="date-block">
         <div class="date-block-header ${isToday?'today':''}">
@@ -1960,24 +1954,6 @@ function renderPtDetail(){
           <div class="retour-left">
             <div class="retour-tag">↩ مرتجع بتاريخ ${dl(lf.date)}${lf.time?` · ${lf.time}`:''}</div>
             <div class="retour-dates">${getReason(lf)}</div>
-            <div class="ditem-counts" style="margin-top:6px">${dcounts(lf.items)}</div>
-          </div>
-          <div class="retour-right">
-            <div>${lfCnt} خبزة</div>
-            <div style="font-size:13px">− ${lfVal.toFixed(2)} د.م</div>
-            <button class="edit-btn" onclick="openEditLeftById('${lfId}','${pt.id}')">✏️</button>
-          </div>
-        </div>`;
-      });
-
-      // الفوائض المسجَّلة في اليوم التالي لكن تُحتسب على هذا اليوم (مرتجع أمس)
-      nextDayLfts.forEach(lf=>{
-        const lfCnt=ccount(lf.items);const lfVal=cval(lf.items,pt.id);
-        const lfId=lf.id||'';
-        h+=`<div class="retour-row">
-          <div class="retour-left">
-            <div class="retour-tag">↩ مرتجع بتاريخ ${dl(lf.date)}${lf.time?` · ${lf.time}`:''}</div>
-            <div class="retour-dates">يُحتسب على: ${fdate(date)} · سُجِّل: ${fdate(lf.date)}</div>
             <div class="ditem-counts" style="margin-top:6px">${dcounts(lf.items)}</div>
           </div>
           <div class="retour-right">
@@ -2145,19 +2121,6 @@ function printDailyLog(ptId){
         <span>− ${ccount(lf.items)} خبزة / − ${lftVal.toFixed(2)} د.م</span>
       </div>`;
     });
-    // الفوائض المسجَّلة في اليوم التالي لكن تُحتسب على هذا اليوم
-    const nextDayLftsP=S.leftovers.filter(l=>l.ptId===ptId&&l.lType==='yesterday'&&
-      (()=>{const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+1);return d.toISOString().split('T')[0]===l.date;})()
-    );
-    nextDayLftsP.forEach(lf=>{
-      const lftTypesStr=TK.filter(k=>parseInt(lf.items[k])>0).map(k=>`${TM[k].icon}${lf.items[k]} ${TM[k].short}`).join(' + ');
-      rows+=`<div class="print-row" style="color:#D85A30">
-        <span>↩ مرتجع بتاريخ ${dl(lf.date)} — ${lftTypesStr}<br>
-          <small style="font-size:11px">يُحتسب على: ${dl(date)} · سُجِّل: ${dl(lf.date)}</small>
-        </span>
-        <span>− ${ccount(lf.items)} خبزة / − ${cval(lf.items,ptId).toFixed(2)} د.م</span>
-      </div>`;
-    });
     rows+=`<div class="print-row print-row-bold" style="border-top:1px dashed #aaa;margin-top:4px;padding-top:4px">
       <span>صافي اليوم</span><span>${netCnt} خبزة · ${netVal.toFixed(2)} د.م</span>
     </div></div>`;
@@ -2311,7 +2274,7 @@ function _openLeftEditor(ptId,lf,dateOverride){
 
   // أزرار نوع الفائض
   const typeOpts=[
-    {v:'yesterday',icon:'📅',lbl:'فائض أمس',sub:'يُطرح من أمس'},
+    {v:'yesterday',icon:'📅',lbl:'الخبز البارد',sub:'يُطرح من أمس'},
     {v:'swap',icon:'🔄',lbl:'استبدال',sub:'خبز أحدث'},
     {v:'transfer',icon:'➡️',lbl:'نقل',sub:'لنقطة أخرى'},
   ];
