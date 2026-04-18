@@ -1331,12 +1331,19 @@ function selPt(id){
 }
 
 function updSum(){
-  TK.forEach(k=>{const inp=document.getElementById('tc-'+k);if(inp)DF.items[k]=inp.value;});
-  const ptId=DF.ptId;if(!ptId)return;
+  // قراءة مباشرة من DOM بدون تخزين مؤقت
+  TK.forEach(k=>{
+    const inp=document.getElementById('tc-'+k);
+    if(inp) DF.items[k]=inp.value||'0';
+  });
+  const ptId=DF.ptId;if(!ptId){_hideSubmitBtn();return;}
   const pr=gpr(ptId);const items=DF.items;
-  const total=cval(items,ptId);const totalCnt=ccount(items);const hasQ=hasI(items);
+  // حساب مباشر بدون الاعتماد على DF.items المحفوظة
+  const totalCnt=TK.reduce((s,k)=>s+(parseInt(document.getElementById('tc-'+k)?.value)||0),0);
+  const hasQ=totalCnt>0;
 
   const lftCnt=glCount(ptId,TODAY);const lftVal=glVal(ptId,TODAY);
+  const total=cval(items,ptId);
   const prevDelivs=gd(ptId,TODAY);
   const prevCnt=prevDelivs.reduce((s,d)=>s+ccount(d.items),0);
   const prevVal=prevDelivs.reduce((s,d)=>s+cval(d.items,ptId),0);
@@ -1665,6 +1672,24 @@ function _doSaveLeft(ptId,targetDate,lType,items){
   renderDeliv();scrollTop();
 }
 function setMode(b){DF.leftMode=b;DF.lType='yesterday';if(b&&DF.ptId)DF.lPtId=DF.ptId;renderDeliv();}
+
+// ─── كتيب جهات الاتصال ───────────────────────
+async function pickContact(inputId){
+  const inp=document.getElementById(inputId);if(!inp)return;
+  if('contacts' in navigator && 'ContactsManager' in window){
+    try{
+      const contacts=await navigator.contacts.select(['tel'],{multiple:false});
+      if(contacts.length&&contacts[0].tel?.length){
+        inp.value=contacts[0].tel[0];
+        inp.dispatchEvent(new Event('input'));
+      }
+    }catch(e){inp.focus();}
+  }else{
+    // المتصفح لا يدعم API — الكتابة اليدوية
+    inp.focus();
+    toast('اكتب الرقم يدوياً أو افتح جهات الاتصال','s');
+  }
+}
 // حذف فائض بالـ ID
 function delLeftById(id){S.leftovers=S.leftovers.filter(l=>l.id!==id);save();autoSync();renderPtDetail();}
 // للتوافق مع الكود القديم
@@ -1681,7 +1706,13 @@ function renderPts(){
       <div class="fg"><label class="fl">الموقع / العنوان</label>
         <input type="text" id="np-a" placeholder="اختياري"></div>
       <div class="fg" style="margin-bottom:8px"><label class="fl">📞 رقم هاتف المسؤول</label>
-        <input type="tel" id="np-phone" placeholder="اختياري" inputmode="numeric" autocomplete="off"></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="tel" id="np-phone" placeholder="0600 000 000" inputmode="numeric" autocomplete="tel"
+            style="font-size:18px;font-weight:700;letter-spacing:1px;flex:1">
+          <button type="button" onclick="pickContact('np-phone')"
+            style="width:48px;height:48px;border-radius:var(--r);border:2px solid var(--A);background:var(--AL);font-size:22px;cursor:pointer;flex-shrink:0">👤</button>
+        </div>
+      </div>
       <button class="btn btn-p" onclick="addPt()">+ إضافة النقطة</button>
     </div>
     <div class="slbl">نقاط البيع (${S.points.length}) — اسحب ⠿ لإعادة الترتيب</div>`;
@@ -1733,7 +1764,12 @@ function openEditPt(id){
       <input type="text" id="edit-pt-addr" value="${pt.address||''}" placeholder="اختياري">
     </div>
     <div class="fg"><label class="fl">📞 رقم هاتف المسؤول</label>
-      <input type="tel" id="edit-pt-phone" value="${pt.phone||''}" placeholder="اختياري" inputmode="numeric" autocomplete="off">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="tel" id="edit-pt-phone" value="${pt.phone||''}" placeholder="0600 000 000"
+          inputmode="numeric" autocomplete="tel" style="font-size:18px;font-weight:700;letter-spacing:1px;flex:1">
+        <button type="button" onclick="pickContact('edit-pt-phone')"
+          style="width:48px;height:48px;border-radius:var(--r);border:2px solid var(--A);background:var(--AL);font-size:22px;cursor:pointer;flex-shrink:0">👤</button>
+      </div>
     </div>
     <button class="btn btn-p" onclick="saveEditPt('${id}')">✓ حفظ التعديلات</button>
     <button class="btn btn-s" style="margin-top:10px" onclick="closeModal()">إلغاء</button>
@@ -3582,15 +3618,13 @@ if(CFG.managerPin&&CFG.managerPin.length>=4){
     const vv=window.visualViewport;
     const winH=window.innerHeight;
     const navH=document.querySelector('.nav')?.offsetHeight||62;
-    // ارتفاع لوحة المفاتيح
-    const kbHeight=Math.max(0,winH-vv.height-vv.offsetTop);
+    // الحساب الصحيح — بدون vv.offsetTop الذي يسبب مشاكل
+    const kbHeight=Math.max(0,winH-vv.height);
     btns.forEach(btn=>{
-      if(kbHeight>50){
-        // لوحة المفاتيح مفتوحة → الزر يلتصق فوقها
+      if(kbHeight>80){
         btn.style.bottom=kbHeight+'px';
       }else{
-        // لوحة المفاتيح مغلقة → الزر فوق شريط التنقل
-        btn.style.bottom=(navH)+'px';
+        btn.style.bottom=navH+'px';
       }
     });
   }
