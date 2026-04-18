@@ -467,7 +467,7 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
 @media print{
   body *{visibility:hidden}
   #print-area,#print-area *{visibility:visible}
-  #print-area{position:fixed;top:0;right:0;width:100%;font-family:'Cairo',Arial,sans-serif;direction:rtl;padding:0}
+  #print-area{position:absolute;top:0;right:0;left:0;width:100%;font-family:'Cairo',Arial,sans-serif;direction:rtl}
   @page{margin:12mm 10mm;size:A4}
   .p-header{border-bottom:3px solid #8B5E1A;padding-bottom:10px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:flex-start}
   .p-header-logo{font-size:20px;font-weight:900;color:#8B5E1A}
@@ -480,8 +480,6 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
   .p-row:last-child{border-bottom:none}
   .p-row-ret{color:#C05000!important;font-size:11px}
   .p-row-net{font-weight:800;border-top:1.5px dashed #aaa!important;margin-top:2px;padding-top:4px!important;font-size:13px}
-  .p-page-footer{font-size:10px;color:#888;text-align:center;border-top:1px solid #ddd;padding-top:5px;margin-top:8px;display:flex;justify-content:space-between}
-  .p-debt-note{color:#C05000;font-weight:600}
   .p-total-box{border:2px solid #8B5E1A;border-radius:5px;padding:10px 14px;margin-top:10px;page-break-inside:avoid;break-inside:avoid}
   .p-total-row{display:flex;justify-content:space-between;padding:3px 0;font-size:13px}
   .p-debt-big{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:2px solid #8B5E1A}
@@ -615,6 +613,10 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
   <div class="content" id="content">
     <div class="screen on" id="scr-home"></div>
     <div class="screen" id="scr-deliv"></div>
+    <!-- زر التسليم الثابت — دائماً في الـ DOM -->
+    <div id="sticky-submit-deliv" class="sticky-submit" style="display:none">
+      <button class="btn btn-p" onclick="submitDeliv()" style="font-size:19px;padding:17px">✓ تسجيل التسليم</button>
+    </div>
     <div class="screen" id="scr-pts"></div>
     <div class="screen" id="scr-stats"></div>
     <div class="screen" id="scr-history"></div>
@@ -1367,19 +1369,12 @@ function updSum(){
 }
 
 function _showSubmitBtn(){
-  let sb=document.getElementById('sticky-submit-deliv');
-  if(!sb){
-    sb=document.createElement('div');
-    sb.id='sticky-submit-deliv';
-    sb.className='sticky-submit';
-    sb.innerHTML=`<button class="btn btn-p" onclick="submitDeliv()" style="font-size:19px;padding:17px">✓ تسجيل التسليم</button>`;
-    document.getElementById('scr-deliv')?.appendChild(sb);
-  }
-  sb.style.display='block';
+  const sb=document.getElementById('sticky-submit-deliv');
+  if(sb){sb.style.display='block';sb.style.opacity='1';}
 }
 function _hideSubmitBtn(){
   const sb=document.getElementById('sticky-submit-deliv');
-  if(sb)sb.style.display='none';
+  if(sb){sb.style.display='none';}
 }
 
 function submitDeliv(){
@@ -1683,8 +1678,10 @@ function renderPts(){
     <div class="card-flat">
       <div class="fg"><label class="fl">اسم نقطة البيع</label>
         <input type="text" id="np-n" placeholder="مثال: دكان الحي"></div>
-      <div class="fg" style="margin-bottom:8px"><label class="fl">الموقع / العنوان</label>
+      <div class="fg"><label class="fl">الموقع / العنوان</label>
         <input type="text" id="np-a" placeholder="اختياري"></div>
+      <div class="fg" style="margin-bottom:8px"><label class="fl">📞 رقم هاتف المسؤول</label>
+        <input type="tel" id="np-phone" placeholder="اختياري" inputmode="numeric" autocomplete="off"></div>
       <button class="btn btn-p" onclick="addPt()">+ إضافة النقطة</button>
     </div>
     <div class="slbl">نقاط البيع (${S.points.length}) — اسحب ⠿ لإعادة الترتيب</div>`;
@@ -1735,6 +1732,9 @@ function openEditPt(id){
     <div class="fg"><label class="fl">الموقع / العنوان</label>
       <input type="text" id="edit-pt-addr" value="${pt.address||''}" placeholder="اختياري">
     </div>
+    <div class="fg"><label class="fl">📞 رقم هاتف المسؤول</label>
+      <input type="tel" id="edit-pt-phone" value="${pt.phone||''}" placeholder="اختياري" inputmode="numeric" autocomplete="off">
+    </div>
     <button class="btn btn-p" onclick="saveEditPt('${id}')">✓ حفظ التعديلات</button>
     <button class="btn btn-s" style="margin-top:10px" onclick="closeModal()">إلغاء</button>
   </div>`;
@@ -1745,8 +1745,9 @@ function saveEditPt(id){
   const pt=S.points.find(p=>p.id===id);if(!pt)return;
   const n=document.getElementById('edit-pt-name')?.value.trim();
   const a=document.getElementById('edit-pt-addr')?.value.trim();
+  const phone=document.getElementById('edit-pt-phone')?.value.trim();
   if(!n){toast('أدخل اسم النقطة','e');return;}
-  pt.name=n;pt.address=a||'';
+  pt.name=n;pt.address=a||'';pt.phone=phone||'';
   save();autoSync();closeModal();toast('✓ تم حفظ التعديلات');render();
 }
 
@@ -1811,9 +1812,11 @@ function touchEnd(e,id){
   _touchId=null;renderPts();renderDeliv();
 }
 function addPt(){
-  const n=document.getElementById('np-n')?.value.trim();const a=document.getElementById('np-a')?.value.trim();
+  const n=document.getElementById('np-n')?.value.trim();
+  const a=document.getElementById('np-a')?.value.trim();
+  const phone=document.getElementById('np-phone')?.value.trim();
   if(!n){toast('أدخل اسم النقطة','e');return;}
-  S.points.push({id:Date.now()+'',name:n,address:a||'',prices:{...DP}});
+  S.points.push({id:Date.now()+'',name:n,address:a||'',phone:phone||'',prices:{...DP}});
   save();autoSync();toast('✓ تمت إضافة النقطة');render();
 }
 function delPt(id){
@@ -1862,7 +1865,7 @@ function renderPtDetail(){
   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
     <div>
       <div style="font-size:21px;font-weight:800">${pt.name}</div>
-      <div style="font-size:14px;color:var(--tx2);margin-top:4px">${pt.address||'بدون عنوان'}</div>
+      <div style="font-size:14px;color:var(--tx2);margin-top:4px">${pt.address||'بدون عنوان'}${pt.phone?` · 📞 ${pt.phone}`:''}</div>
     </div>
     <div style="display:flex;gap:8px">
       <button class="btn btn-s btn-sm" onclick="printDailyLog('${pt.id}')" style="font-size:13px">🖨️ طباعة</button>
@@ -2172,7 +2175,7 @@ function printDailyLog(ptId){
     <div class="p-header">
       <div>
         <div class="p-header-logo">🍞 محسين للخبز التقليدي</div>
-        <div class="p-header-sub">نقطة البيع: <strong>${pt.name}</strong>${pt.address?' · '+pt.address:''}</div>
+        <div class="p-header-sub">نقطة البيع: <strong>${pt.name}</strong>${pt.address?' · '+pt.address:''}${pt.phone?` · 📞 ${pt.phone}`:''}</div>
         <div class="p-header-sub">الفترة: ${dateRange}</div>
       </div>
       <div class="p-header-right">
