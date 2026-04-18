@@ -1331,6 +1331,7 @@ function bDelivForm(){
 
 function selPt(id){
   DF.ptId=id;
+  DF.time=nstr(); // تحديث الساعة عند اختيار النقطة
   renderDeliv();
 }
 
@@ -1404,7 +1405,7 @@ function submitDeliv(){
   if(driver&&!S.drivers.includes(driver))S.drivers.push(driver);
   const pt=S.points.find(p=>p.id===ptId);
   AFTER_SUBMIT={ptId,cnt,val,ptName:pt?pt.name:'?'};
-  DF={...DF,items:ei(),notes:'',notePrivate:'',notePublic:'',leftMode:false};
+  DF={...DF,items:ei(),notes:'',notePrivate:'',notePublic:'',leftMode:false,time:nstr()};
   save();autoSync();toast(`✓ ${cnt} خبزة — ${val.toFixed(2)} د.م`);renderDeliv();scrollTop();
 }
 function goLeftSamePt(ptId){
