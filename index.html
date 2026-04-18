@@ -995,7 +995,7 @@ function toast(msg,type='s'){
 function scrollTop(){document.getElementById('content').scrollTop=0;}
 function go(name){
   CUR=name;SEL_PT=null;
-  if(name!=='deliv'){AFTER_SUBMIT=null;AFTER_LEFT=null;}
+  if(name!=='deliv'){AFTER_SUBMIT=null;AFTER_LEFT=null;_hideSubmitBtn();}
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   document.getElementById('scr-'+name).classList.add('on');
@@ -1101,6 +1101,8 @@ function renderHome(){
 //  DELIVERY
 // ═══════════════════════════════════════════════
 function renderDeliv(){
+  // إخفاء الزر فوراً — يُظهر فقط إذا توفرت الشروط في updSum
+  if(DF.leftMode) _hideSubmitBtn();
   let h='';
 
   // ─── شريط ما بعد الفائض ───────────────────────
@@ -1410,6 +1412,7 @@ function submitDeliv(){
 }
 function goLeftSamePt(ptId){
   AFTER_SUBMIT=null;AFTER_LEFT=null;
+  _hideSubmitBtn();
   DF={...DF,leftMode:true,lPtId:ptId,lItems:ei()};
   renderDeliv();scrollTop();
 }
@@ -1676,7 +1679,7 @@ function _doSaveLeft(ptId,targetDate,lType,items){
   save();autoSync();
   renderDeliv();scrollTop();
 }
-function setMode(b){DF.leftMode=b;DF.lType='yesterday';if(b&&DF.ptId)DF.lPtId=DF.ptId;renderDeliv();}
+function setMode(b){DF.leftMode=b;DF.lType='yesterday';if(b&&DF.ptId)DF.lPtId=DF.ptId;if(b)_hideSubmitBtn();renderDeliv();}
 
 // ─── كتيب جهات الاتصال ───────────────────────
 async function pickContact(inputId){
