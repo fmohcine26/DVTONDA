@@ -2278,31 +2278,56 @@ function printDailyLog(ptId){
     const netCnt=dayCnt-lftCnt;const netVal=dayVal-lftVal;
     grandTotal+=dayCnt;grandNet+=netCnt;
 
-    let rows='';
+    // رأس الجدول
+    let rows=`<div style="display:grid;grid-template-columns:1fr 28px 42px;gap:2px;padding:2px 0 3px;border-bottom:2px solid #8B5E1A;font-size:9px;font-weight:800;color:#8B5E1A">
+      <span>التوقيت والتفاصيل</span><span style="text-align:center">عدد</span><span style="text-align:left">د.م</span>
+    </div>`;
+
+    // التسليمات
     ds.forEach(d=>{
       const isZ=ccount(d.items)===0;
       const typesStr=TK.filter(k=>parseInt(d.items[k])>0).map(k=>`${TM[k].icon}${d.items[k]}`).join(' ');
-      rows+=`<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #F0E8D0;font-size:11px;${isZ?'opacity:.5':''}">
+      rows+=`<div style="display:grid;grid-template-columns:1fr 28px 42px;gap:2px;padding:2px 0;border-bottom:1px solid #F0E8D0;font-size:10px;${isZ?'opacity:.5':''}">
         <span style="color:#5A3000">${d.time} ${typesStr}${d.driver?` 👤${d.driver}`:''}</span>
-        <span style="font-weight:700;color:#8B5E1A">${isZ?'ملغى':`${ccount(d.items)} · ${cval(d.items,ptId).toFixed(1)}`}</span>
+        <span style="text-align:center;font-weight:700;color:#8B5E1A">${isZ?'—':ccount(d.items)}</span>
+        <span style="text-align:left;font-weight:700;color:#8B5E1A">${isZ?'ملغى':cval(d.items,ptId).toFixed(1)}</span>
       </div>`;
       const pub=d.notePublic||(d.notes&&!d.notePrivate?d.notes:'');
-      if(pub)rows+=`<div style="font-size:10px;color:#085041;padding:2px 0 3px;border-bottom:1px solid #F0E8D0">📋 ${pub}</div>`;
+      if(pub)rows+=`<div style="font-size:9px;color:#085041;padding:1px 0 2px;border-bottom:1px solid #F0E8D0">📋 ${pub}</div>`;
     });
+
+    // الفوائض مع شرح
     lfts.forEach(lf=>{
-      const lc=ccount(lf.items);if(!lc&&lf.lType!=='yesterday')return;
-      const lbl=lf.lType==='yesterday'?'🥖':lf.lType==='swap'?'🔄':'➡️';
+      const lc=ccount(lf.items);
+      if(!lc)return;
       const ts=TK.filter(k=>parseInt(lf.items[k])>0).map(k=>`${TM[k].icon}${lf.items[k]}`).join(' ');
-      rows+=`<div style="display:flex;justify-content:space-between;padding:3px 0;border-top:2px dashed #F0997B;font-size:11px">
-        <span style="color:#C05000">${lbl} ${lf.time||''} ${ts}</span>
-        <span style="color:#C05000;font-weight:700">−${lc} · −${cval(lf.items,ptId).toFixed(1)}</span>
+      let lbl='',desc='';
+      if(lf.lType==='yesterday'){
+        lbl='🥖 الخبز البارد';
+        desc='خبز أمس مُسترجَع — يُطرح من الحساب';
+      }else if(lf.lType==='swap'){
+        lbl='🔄 استبدال';
+        desc='خبز جديد وُضع بدل البارد المأخوذ';
+      }else{
+        lbl='➡️ نقل';
+        desc='خرج من هذه النقطة إلى نقطة أخرى';
+      }
+      const timeStr=lf.time?` · ${lf.time}`:'';
+      rows+=`<div style="border-top:2px dashed #F0997B;margin-top:2px;padding-top:2px">
+        <div style="display:grid;grid-template-columns:1fr 28px 42px;gap:2px;font-size:10px">
+          <span style="color:#C05000;font-weight:700">${lbl}${timeStr} ${ts}</span>
+          <span style="text-align:center;font-weight:700;color:#C05000">−${lc}</span>
+          <span style="text-align:left;font-weight:700;color:#C05000">−${cval(lf.items,ptId).toFixed(1)}</span>
+        </div>
+        <div style="font-size:9px;color:#993C1D;padding:1px 0 2px">${desc}</div>
       </div>`;
     });
-    // إشارة مرجعية في يوم التسجيل
+
+    // إشارة مرجعية
     const coldHere=S.leftovers.filter(l=>l.ptId===ptId&&l.date<date&&l.lType==='yesterday'&&ccount(l.items)>0&&l.id&&new Date(parseInt(l.id)).toISOString().split('T')[0]===date);
     coldHere.forEach(l=>{
-      rows+=`<div style="background:#EFF6FF;border-top:1.5px dashed #3B82F6;padding:3px 4px;font-size:10px;color:#1E40AF">
-        🔔 ${ccount(l.items)} خبزة ← يُطرح من ${dl(l.date)}
+      rows+=`<div style="background:#EFF6FF;border-top:1.5px dashed #3B82F6;padding:2px 4px;font-size:9px;color:#1E40AF;margin-top:2px">
+        🔔 خبز بارد مسجَّل اليوم — ${ccount(l.items)} خبزة تُطرح من ${dl(l.date)}
       </div>`;
     });
 
@@ -2313,9 +2338,10 @@ function printDailyLog(ptId){
       </div>
       <div style="padding:4px 8px;border:1.5px solid #D4B483;border-top:none;border-radius:0 0 4px 4px;background:#fff">
         ${rows}
-        <div style="display:flex;justify-content:space-between;padding:4px 0 2px;border-top:1.5px solid #8B5E1A;margin-top:3px;font-size:12px;font-weight:900;color:${netCnt<0?'#C05000':'#1D7A4A'}">
-          <span>🍞 الصافي</span>
-          <span>${netCnt} · ${netVal.toFixed(2)} د.م</span>
+        <div style="display:grid;grid-template-columns:1fr 28px 42px;gap:2px;padding:3px 0 2px;border-top:2px solid #8B5E1A;margin-top:3px;font-size:11px;font-weight:900;color:${netCnt<0?'#C05000':'#1D7A4A'}">
+          <span>🍞 الصافي المحتسب</span>
+          <span style="text-align:center">${netCnt}</span>
+          <span style="text-align:left">${netVal.toFixed(1)}</span>
         </div>
       </div>
     </div>`;
@@ -2328,14 +2354,15 @@ function printDailyLog(ptId){
   const printEl=document.getElementById('print-area');
   printEl.innerHTML=`
   <style>
-        @page{size:A4;margin:10mm}
+        @page{size:A4;margin:10mm;-webkit-print-color-adjust:exact}
+    @page:first{margin-top:8mm}
     .pd-wrap{font-family:'Cairo',sans-serif;direction:rtl;color:#222;background:#fff}
     .pd-header{text-align:center;margin-bottom:8px;padding-bottom:8px;border-bottom:3px solid #8B5E1A}
     .pd-title{font-size:22px;font-weight:900;color:#8B5E1A;font-family:'Cairo',sans-serif}
     .pd-aya{font-family:'Scheherazade New','Traditional Arabic','Arabic Typesetting','Times New Roman',serif;font-size:15px;color:#3A2000;margin:5px 0;line-height:2.0}
     .pd-meta{font-size:11px;color:#666;margin-top:5px;display:flex;justify-content:space-between}
-    .pd-cols{columns:3;column-gap:8mm;column-rule:1.5px dashed #C4A35A;margin-bottom:8mm}
-    .pd-day{break-inside:avoid;margin-bottom:6px}
+    .pd-cols{columns:3;column-gap:8mm;column-rule:1.5px dashed #C4A35A;margin-bottom:8mm;direction:rtl;column-fill:auto}
+    .pd-day{break-inside:avoid;margin-bottom:6px;direction:rtl}
     .pd-footer-box{border:2px solid #8B5E1A;border-radius:6px;padding:8px 14px;break-inside:avoid;margin-bottom:6mm}
     .pd-tot-row{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
     .pd-debt{display:flex;justify-content:space-between;align-items:center;border-top:2px solid #8B5E1A;margin-top:6px;padding-top:6px}
@@ -2353,7 +2380,7 @@ function printDailyLog(ptId){
       <div class="pd-title">🍞 محسين للخبز التقليدي 🍞</div>
       <div class="pd-aya">وَآيَةٌ لَّهُمُ الْأَرْضُ الْمَيْتَةُ أَحْيَيْنَاهَا وَأَخْرَجْنَا مِنْهَا حَبًّا فَمِنْهُ يَأْكُلُونَ</div>
       <div class="pd-meta">
-        <span>نقطة البيع: <strong>${pt.name}</strong>${pt.address?' · '+pt.address:''}${pt.phone?` · 📞 ${pt.phone}`:''}</span>
+        <span>نقطة البيع: <strong>${pt.name}</strong>${pt.address?' · '+pt.address:''}${pt.phone?` · <span dir="ltr">📞 ${pt.phone}</span>`:''}</span>
         <span>الفترة: ${dateRange} · طُبع: ${dl(TODAY)} ${printTime}</span>
       </div>
     </div>
