@@ -2371,7 +2371,7 @@ function printDailyLog(ptId,selectedDates){
 
   let grandTotal=0;let grandNet=0;
   const debt=ptDebt(ptId);
-  let daysHtml='';
+  const dayBlocksMap={}; // date → html block
 
   allDates.forEach(date=>{
     const ds=S.deliveries.filter(d=>d.ptId===ptId&&d.date===date).sort((a,b)=>a.time>b.time?1:-1);
@@ -2424,7 +2424,7 @@ function printDailyLog(ptId,selectedDates){
       </div>`;
     });
 
-    daysHtml+=`<div style="break-inside:avoid;-webkit-column-break-inside:avoid;margin-bottom:6px">
+    dayBlocksMap[date]=`<div style="margin-bottom:6px">
       <div style="background:#8B5E1A;color:#fff;padding:4px 8px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;font-size:11px;font-weight:800">
         <span>${fdate(date)}</span><span>${ds.length} تسليم</span>
       </div>
@@ -2442,6 +2442,15 @@ function printDailyLog(ptId,selectedDates){
   const now=new Date();
   const printTime=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
   const dateRange=`${dl(allDates[allDates.length-1])} ← ${dl(allDates[0])}`;
+
+  // تقسيم الأيام على 3 أعمدة — الأقدم يسار، الأحدث يمين
+  const sortedAsc=allDates.slice().reverse(); // الأقدم أولاً
+  const n=sortedAsc.length;
+  const s1=Math.ceil(n/3);
+  const s2=Math.ceil((n-s1)/2);
+  const col1html=sortedAsc.slice(0,s1).map(d=>dayBlocksMap[d]||'').join('');
+  const col2html=sortedAsc.slice(s1,s1+s2).map(d=>dayBlocksMap[d]||'').join('');
+  const col3html=sortedAsc.slice(s1+s2).map(d=>dayBlocksMap[d]||'').join('');
 
   const w=window.open('','_print_','width=950,height=750');
   if(!w){toast('اسمح بالنوافذ المنبثقة في إعدادات المتصفح','e');return;}
@@ -2474,7 +2483,11 @@ function printDailyLog(ptId,selectedDates){
       <span>الفترة: ${dateRange} · طُبع: ${dl(TODAY)} ${printTime}</span>
     </div>
   </div>
-  <div class="cols">${daysHtml}</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-bottom:8mm;border-top:1.5px solid #C4A35A">
+    <div style="padding:0 4mm 0 0;border-left:1.5px dashed #C4A35A">${col1html}</div>
+    <div style="padding:0 4mm;border-left:1.5px dashed #C4A35A">${col2html}</div>
+    <div style="padding:0 0 0 4mm">${col3html}</div>
+  </div>
   <div class="totbox">
     <div class="trow"><span>🚚 إجمالي الموزَّع</span><span><strong>${grandTotal} خبزة</strong></span></div>
     <div class="trow"><span>↩ إجمالي المرتجع</span><span><strong>${grandTotal-grandNet} خبزة</strong></span></div>
