@@ -2261,8 +2261,7 @@ function printDailyLog(ptId){
     ...S.deliveries.filter(d=>d.ptId===ptId).map(d=>d.date),
     ...S.leftovers.filter(l=>l.ptId===ptId).map(l=>l.date)
   ])].sort().reverse();
-
-  // الطباعة متاحة دائماً مهما كان عدد الأيام
+  if(!allDates.length){toast('لا توجد بيانات للطباعة','e');return;}
 
   let grandTotal=0;let grandNet=0;
   const debt=ptDebt(ptId);
@@ -2278,16 +2277,14 @@ function printDailyLog(ptId){
     const netCnt=dayCnt-lftCnt;const netVal=dayVal-lftVal;
     grandTotal+=dayCnt;grandNet+=netCnt;
 
-    // رأس الجدول
-    let rows=`<div style="display:grid;grid-template-columns:1fr 28px 42px;gap:2px;padding:2px 0 3px;border-bottom:2px solid #8B5E1A;font-size:9px;font-weight:800;color:#8B5E1A">
+    let rows=`<div style="display:grid;grid-template-columns:1fr 30px 46px;padding:2px 0 3px;border-bottom:2px solid #8B5E1A;font-size:9px;font-weight:800;color:#8B5E1A">
       <span>التوقيت والتفاصيل</span><span style="text-align:center">عدد</span><span style="text-align:left">د.م</span>
     </div>`;
 
-    // التسليمات
     ds.forEach(d=>{
       const isZ=ccount(d.items)===0;
       const typesStr=TK.filter(k=>parseInt(d.items[k])>0).map(k=>`${TM[k].icon}${d.items[k]}`).join(' ');
-      rows+=`<div style="display:grid;grid-template-columns:1fr 28px 42px;gap:2px;padding:2px 0;border-bottom:1px solid #F0E8D0;font-size:10px;${isZ?'opacity:.5':''}">
+      rows+=`<div style="display:grid;grid-template-columns:1fr 30px 46px;padding:2px 0;border-bottom:1px solid #F0E8D0;font-size:10px;${isZ?'opacity:.5':''}">
         <span style="color:#5A3000">${d.time} ${typesStr}${d.driver?` 👤${d.driver}`:''}</span>
         <span style="text-align:center;font-weight:700;color:#8B5E1A">${isZ?'—':ccount(d.items)}</span>
         <span style="text-align:left;font-weight:700;color:#8B5E1A">${isZ?'ملغى':cval(d.items,ptId).toFixed(1)}</span>
@@ -2296,25 +2293,16 @@ function printDailyLog(ptId){
       if(pub)rows+=`<div style="font-size:9px;color:#085041;padding:1px 0 2px;border-bottom:1px solid #F0E8D0">📋 ${pub}</div>`;
     });
 
-    // الفوائض مع شرح
     lfts.forEach(lf=>{
-      const lc=ccount(lf.items);
-      if(!lc)return;
+      const lc=ccount(lf.items);if(!lc)return;
       const ts=TK.filter(k=>parseInt(lf.items[k])>0).map(k=>`${TM[k].icon}${lf.items[k]}`).join(' ');
       let lbl='',desc='';
-      if(lf.lType==='yesterday'){
-        lbl='🥖 الخبز البارد';
-        desc='خبز أمس مُسترجَع — يُطرح من الحساب';
-      }else if(lf.lType==='swap'){
-        lbl='🔄 استبدال';
-        desc='خبز جديد وُضع بدل البارد المأخوذ';
-      }else{
-        lbl='➡️ نقل';
-        desc='خرج من هذه النقطة إلى نقطة أخرى';
-      }
+      if(lf.lType==='yesterday'){lbl='🥖 الخبز البارد';desc='خبز أمس مُسترجَع — يُطرح من الحساب';}
+      else if(lf.lType==='swap'){lbl='🔄 استبدال';desc='خبز جديد وُضع بدل البارد المأخوذ';}
+      else{lbl='➡️ نقل';desc='خرج من هذه النقطة إلى نقطة أخرى';}
       const timeStr=lf.time?` · ${lf.time}`:'';
       rows+=`<div style="border-top:2px dashed #F0997B;margin-top:2px;padding-top:2px">
-        <div style="display:grid;grid-template-columns:1fr 28px 42px;gap:2px;font-size:10px">
+        <div style="display:grid;grid-template-columns:1fr 30px 46px;font-size:10px">
           <span style="color:#C05000;font-weight:700">${lbl}${timeStr} ${ts}</span>
           <span style="text-align:center;font-weight:700;color:#C05000">−${lc}</span>
           <span style="text-align:left;font-weight:700;color:#C05000">−${cval(lf.items,ptId).toFixed(1)}</span>
@@ -2323,7 +2311,6 @@ function printDailyLog(ptId){
       </div>`;
     });
 
-    // إشارة مرجعية
     const coldHere=S.leftovers.filter(l=>l.ptId===ptId&&l.date<date&&l.lType==='yesterday'&&ccount(l.items)>0&&l.id&&new Date(parseInt(l.id)).toISOString().split('T')[0]===date);
     coldHere.forEach(l=>{
       rows+=`<div style="background:#EFF6FF;border-top:1.5px dashed #3B82F6;padding:2px 4px;font-size:9px;color:#1E40AF;margin-top:2px">
@@ -2331,17 +2318,16 @@ function printDailyLog(ptId){
       </div>`;
     });
 
-    daysHtml+=`<div class="pd-day">
+    daysHtml+=`<div style="break-inside:avoid;-webkit-column-break-inside:avoid;margin-bottom:6px">
       <div style="background:#8B5E1A;color:#fff;padding:4px 8px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;font-size:11px;font-weight:800">
-        <span>${fdate(date)}</span>
-        <span>${ds.length} تسليم</span>
+        <span>${fdate(date)}</span><span>${ds.length} تسليم</span>
       </div>
-      <div style="padding:4px 8px;border:1.5px solid #D4B483;border-top:none;border-radius:0 0 4px 4px;background:#fff">
+      <div style="padding:4px 8px;border:1.5px solid #D4B483;border-top:none;border-radius:0 0 4px 4px">
         ${rows}
-        <div style="display:grid;grid-template-columns:1fr 28px 42px;gap:2px;padding:3px 0 2px;border-top:2px solid #8B5E1A;margin-top:3px;font-size:11px;font-weight:900;color:${netCnt<0?'#C05000':'#1D7A4A'}">
+        <div style="display:grid;grid-template-columns:1fr 30px 46px;padding:3px 0 2px;border-top:2px solid #8B5E1A;margin-top:3px;font-size:11px;font-weight:900;color:${netCnt<0?'#C05000':'#1D7A4A'}">
           <span>🍞 الصافي المحتسب</span>
           <span style="text-align:center">${netCnt}</span>
-          <span style="text-align:left">${netVal.toFixed(1)}</span>
+          <span style="text-align:left">${netVal.toFixed(2)}</span>
         </div>
       </div>
     </div>`;
@@ -2351,71 +2337,57 @@ function printDailyLog(ptId){
   const printTime=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
   const dateRange=`${dl(allDates[allDates.length-1])} ← ${dl(allDates[0])}`;
 
-  const printEl=document.getElementById('print-area');
-  printEl.innerHTML=`
+  const w=window.open('','_print_','width=950,height=750');
+  if(!w){toast('اسمح بالنوافذ المنبثقة في إعدادات المتصفح','e');return;}
+  w.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head>
+  <meta charset="UTF-8">
+  <title>محسين للخبز التقليدي — ${pt.name}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
   <style>
-        @page{size:A4;margin:10mm;-webkit-print-color-adjust:exact}
-    @page:first{margin-top:8mm}
-    .pd-wrap{font-family:'Cairo',sans-serif;direction:rtl;color:#222;background:#fff}
-    .pd-header{text-align:center;margin-bottom:8px;padding-bottom:8px;border-bottom:3px solid #8B5E1A}
-    .pd-title{font-size:22px;font-weight:900;color:#8B5E1A;font-family:'Cairo',sans-serif}
-    .pd-aya{font-family:'Scheherazade New','Traditional Arabic','Arabic Typesetting','Times New Roman',serif;font-size:15px;color:#3A2000;margin:5px 0;line-height:2.0}
-    .pd-meta{font-size:11px;color:#666;margin-top:5px;display:flex;justify-content:space-between}
-    .pd-cols{columns:3;column-gap:8mm;column-rule:1.5px dashed #C4A35A;margin-bottom:8mm;direction:rtl;column-fill:auto}
-    .pd-day{break-inside:avoid;margin-bottom:6px;direction:rtl}
-    .pd-footer-box{border:2px solid #8B5E1A;border-radius:6px;padding:8px 14px;break-inside:avoid;margin-bottom:6mm}
-    .pd-tot-row{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
-    .pd-debt{display:flex;justify-content:space-between;align-items:center;border-top:2px solid #8B5E1A;margin-top:6px;padding-top:6px}
-    .pd-sign{display:grid;grid-template-columns:1fr 1fr;gap:20mm;margin-top:6mm;break-inside:avoid}
-    .pd-sign-box{border-top:1.5px solid #000;padding-top:5px;font-size:10px}
-    .pd-pg{text-align:center;font-size:10px;color:#999;margin-top:4mm}
-    @media print{
-      body>*:not(#print-area){display:none!important}
-      #print-area{display:block!important;position:static!important}
-      .pd-wrap{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    }
-  </style>
-  <div class="pd-wrap">
-    <div class="pd-header">
-      <div class="pd-title">🍞 محسين للخبز التقليدي 🍞</div>
-      <div class="pd-aya">وَآيَةٌ لَّهُمُ الْأَرْضُ الْمَيْتَةُ أَحْيَيْنَاهَا وَأَخْرَجْنَا مِنْهَا حَبًّا فَمِنْهُ يَأْكُلُونَ</div>
-      <div class="pd-meta">
-        <span>نقطة البيع: <strong>${pt.name}</strong>${pt.address?' · '+pt.address:''}${pt.phone?` · <span dir="ltr">📞 ${pt.phone}</span>`:''}</span>
-        <span>الفترة: ${dateRange} · طُبع: ${dl(TODAY)} ${printTime}</span>
-      </div>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Cairo',sans-serif;direction:rtl;color:#222;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    @page{size:A4;margin:10mm}
+    .hdr{text-align:center;margin-bottom:10px;padding-bottom:8px;border-bottom:3px solid #8B5E1A}
+    .ttl{font-size:24px;font-weight:900;color:#8B5E1A;font-family:'Cairo',sans-serif}
+    .aya{font-family:'Amiri',serif;font-size:16px;color:#3A2000;margin:6px 0;line-height:2.1}
+    .meta{font-size:11px;color:#555;margin-top:6px;display:flex;justify-content:space-between}
+    .cols{columns:3;column-gap:8mm;column-rule:1.5px dashed #C4A35A;direction:rtl;margin-bottom:8mm}
+    .totbox{border:2px solid #8B5E1A;border-radius:6px;padding:10px 14px;page-break-inside:avoid;margin-bottom:6mm}
+    .trow{display:flex;justify-content:space-between;font-size:12px;padding:3px 0}
+    .drow{display:flex;justify-content:space-between;align-items:center;border-top:2px solid #8B5E1A;margin-top:8px;padding-top:8px}
+    .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:20mm;margin-top:6mm;page-break-inside:avoid}
+    .sbox{border-top:1.5px solid #000;padding-top:5px;font-size:10px}
+    .ft{text-align:center;font-size:10px;color:#aaa;margin-top:8mm}
+    @media print{a[href]:after{content:''}}
+  </style></head><body>
+  <div class="hdr">
+    <div class="ttl">🍞 محسين للخبز التقليدي 🍞</div>
+    <div class="aya">وَآيَةٌ لَّهُمُ الْأَرْضُ الْمَيْتَةُ أَحْيَيْنَاهَا وَأَخْرَجْنَا مِنْهَا حَبًّا فَمِنْهُ يَأْكُلُونَ</div>
+    <div class="meta">
+      <span>نقطة البيع: <strong>${pt.name}</strong>${pt.address?' · '+pt.address:''}${pt.phone?` · <span dir="ltr">📞 ${pt.phone}</span>`:''}</span>
+      <span>الفترة: ${dateRange} · طُبع: ${dl(TODAY)} ${printTime}</span>
     </div>
-
-    <div class="pd-cols">${daysHtml}</div>
-
-    <div class="pd-footer-box">
-      <div class="pd-tot-row"><span>🚚 إجمالي الموزَّع</span><span><strong>${grandTotal} خبزة</strong></span></div>
-      <div class="pd-tot-row"><span>↩ إجمالي المرتجع</span><span><strong>${grandTotal-grandNet} خبزة</strong></span></div>
-      <div class="pd-tot-row"><span>🍞 إجمالي المباع (صافي)</span><span><strong>${grandNet} خبزة</strong></span></div>
-      <div class="pd-debt">
-        <span style="font-size:14px;font-weight:900;color:#8B5E1A">💰 الرصيد المستحق</span>
-        <span style="font-size:24px;font-weight:900;color:#C05000">${debt.toFixed(2)} <small style="font-size:12px">د.م</small></span>
-      </div>
+  </div>
+  <div class="cols">${daysHtml}</div>
+  <div class="totbox">
+    <div class="trow"><span>🚚 إجمالي الموزَّع</span><span><strong>${grandTotal} خبزة</strong></span></div>
+    <div class="trow"><span>↩ إجمالي المرتجع</span><span><strong>${grandTotal-grandNet} خبزة</strong></span></div>
+    <div class="trow"><span>🍞 إجمالي المباع (صافي)</span><span><strong>${grandNet} خبزة</strong></span></div>
+    <div class="drow">
+      <span style="font-size:15px;font-weight:900;color:#8B5E1A">💰 الرصيد المستحق</span>
+      <span style="font-size:26px;font-weight:900;color:#C05000">${debt.toFixed(2)} <small style="font-size:13px">د.م</small></span>
     </div>
-
-    <div class="pd-sign">
-      <div class="pd-sign-box">
-        <div style="font-weight:800;font-size:11px;margin-bottom:14px">توقيع المسؤول عن النقطة</div>
-        <div>الاسم: _______________________</div>
-        <div style="margin-top:8px">التاريخ: ____________________</div>
-      </div>
-      <div class="pd-sign-box">
-        <div style="font-weight:800;font-size:11px;margin-bottom:14px">توقيع محسين</div>
-        <div>التاريخ: ____________________</div>
-        <div style="margin-top:8px">الختم: ______________________</div>
-      </div>
-    </div>
-
-    <div class="pd-pg">محسين للخبز التقليدي · تطبيق التوزيع</div>
-  </div>`;
-
-  printEl.style.display='block';
-  window.print();
-  setTimeout(()=>{printEl.style.display='none';printEl.innerHTML='';},1500);
+  </div>
+  <div class="sgrid">
+    <div class="sbox"><div style="font-weight:800;font-size:11px;margin-bottom:14px">توقيع المسؤول عن النقطة</div>
+      <div>الاسم: _______________________</div><div style="margin-top:8px">التاريخ: ____________________</div></div>
+    <div class="sbox"><div style="font-weight:800;font-size:11px;margin-bottom:14px">توقيع محسين</div>
+      <div>التاريخ: ____________________</div><div style="margin-top:8px">الختم: ______________________</div></div>
+  </div>
+  <div class="ft">محسين للخبز التقليدي · تطبيق التوزيع</div>
+  <script>window.onload=()=>{setTimeout(()=>window.print(),900);}<\/script>
+  </body></html>`);
+  w.document.close();
 }
 
 // ═══════════════════════════════════════════════
