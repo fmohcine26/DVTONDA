@@ -1938,7 +1938,7 @@ function renderPtDetail(){
       <div style="font-size:14px;color:var(--tx2);margin-top:4px">${pt.address||'بدون عنوان'}${pt.phone?` · 📞 ${pt.phone}`:''}</div>
     </div>
     <div style="display:flex;gap:8px">
-      <button class="btn btn-s btn-sm" onclick="printDailyLog('${pt.id}')" style="font-size:13px">🖨️ طباعة</button>
+      <button class="btn btn-s btn-sm" onclick="openPrintModal('${pt.id}')" style="font-size:13px">🖨️ طباعة</button>
       <button class="btn btn-s btn-sm" onclick="openPriceModal('${pt.id}')">⚙️ الأسعار</button>
     </div>
   </div>`;
@@ -2255,9 +2255,115 @@ function delPtBtn(btnEl,id){confirmDel(btnEl,()=>delPt(id),'p'+id);}
 // ═══════════════════════════════════════════════
 //  PRINT DAILY LOG — احترافي
 // ═══════════════════════════════════════════════
-function printDailyLog(ptId){
+// ═══════════════════════════════════════════════
+//  PRINT MODAL — اختيار الأيام
+// ═══════════════════════════════════════════════
+function openPrintModal(ptId){
   const pt=S.points.find(p=>p.id===ptId);if(!pt)return;
   const allDates=[...new Set([
+    ...S.deliveries.filter(d=>d.ptId===ptId).map(d=>d.date),
+    ...S.leftovers.filter(l=>l.ptId===ptId).map(l=>l.date)
+  ])].sort().reverse();
+  if(!allDates.length){toast('لا توجد بيانات للطباعة','e');return;}
+
+  // بناء قائمة الأيام
+  let daysHtml='';
+  allDates.forEach(date=>{
+    const ds=S.deliveries.filter(d=>d.ptId===ptId&&d.date===date);
+    const lfts=S.leftovers.filter(l=>l.ptId===ptId&&l.date===date);
+    const cnt=ds.reduce((s,d)=>s+ccount(d.items),0)-lfts.reduce((s,l)=>s+ccount(l.items),0);
+    const val=ds.reduce((s,d)=>s+cval(d.items,ptId),0)-lfts.reduce((s,l)=>s+cval(l.items,ptId),0);
+    daysHtml+=`<div class="pm-day" id="pmd-${date}" onclick="togglePrintDay('${date}')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:var(--r);border:2px solid var(--br);margin-bottom:8px;cursor:pointer;background:var(--bg2);transition:all .15s">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="pmcb-${date}" style="width:22px;height:22px;border-radius:5px;border:2px solid var(--br2);background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px"></div>
+        <div>
+          <div style="font-size:14px;font-weight:800">${fdate(date)}</div>
+          <div style="font-size:12px;color:var(--tx2)">${ds.length} تسليم · ${cnt} خبزة</div>
+        </div>
+      </div>
+      <div style="font-size:14px;font-weight:700;color:var(--A)">${val.toFixed(1)} د.م</div>
+    </div>`;
+  });
+
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🖨️ اختر الأيام للطباعة</div>
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:12px">📍 ${pt.name}</div>
+    <div id="pm-days-list">${daysHtml}</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn btn-s btn-sm" onclick="selectAllPrintDays(true)" style="flex:1">✓ تحديد الكل</button>
+      <button class="btn btn-s btn-sm" onclick="selectAllPrintDays(false)" style="flex:1">✗ إلغاء الكل</button>
+    </div>
+    <div id="pm-summary" style="background:var(--bg2);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--tx2);text-align:center">
+      لم تختر أي يوم بعد
+    </div>
+    <button class="btn btn-p" id="pm-print-btn" onclick="doPrintSelected('${ptId}')" disabled style="opacity:.5;font-size:17px">
+      🖨️ طباعة الأيام المختارة
+    </button>
+    <button class="btn btn-s" style="margin-top:10px" onclick="closeModal()">إلغاء</button>
+  </div>`;
+  document.body.appendChild(ov);
+  window._printSelectedDates=new Set();
+  window._printPtId=ptId;
+}
+
+function togglePrintDay(date){
+  const sel=window._printSelectedDates;
+  const row=document.getElementById('pmd-'+date);
+  const cb=document.getElementById('pmcb-'+date);
+  if(sel.has(date)){
+    sel.delete(date);
+    row.style.borderColor='var(--br)';
+    row.style.background='var(--bg2)';
+    cb.textContent='';
+    cb.style.background='var(--bg)';
+    cb.style.borderColor='var(--br2)';
+  }else{
+    sel.add(date);
+    row.style.borderColor='var(--A)';
+    row.style.background='var(--AL)';
+    cb.textContent='✓';
+    cb.style.background='var(--A)';
+    cb.style.borderColor='var(--A)';
+    cb.style.color='#fff';
+  }
+  updPrintSummary();
+}
+
+function selectAllPrintDays(selectAll){
+  const allRows=document.querySelectorAll('[id^="pmd-"]');
+  allRows.forEach(row=>{
+    const date=row.id.replace('pmd-','');
+    const inSel=window._printSelectedDates.has(date);
+    if(selectAll&&!inSel)togglePrintDay(date);
+    else if(!selectAll&&inSel)togglePrintDay(date);
+  });
+}
+
+function updPrintSummary(){
+  const sel=window._printSelectedDates;
+  const btn=document.getElementById('pm-print-btn');
+  const sum=document.getElementById('pm-summary');
+  if(!sel.size){
+    sum.textContent='لم تختر أي يوم بعد';
+    btn.disabled=true;btn.style.opacity='.5';
+  }else{
+    sum.innerHTML=`<strong>${sel.size} يوم</strong> مختار للطباعة`;
+    btn.disabled=false;btn.style.opacity='1';
+  }
+}
+
+function doPrintSelected(ptId){
+  const dates=[...window._printSelectedDates].sort().reverse();
+  if(!dates.length){toast('اختر يوماً واحداً على الأقل','e');return;}
+  closeModal();
+  printDailyLog(ptId,dates);
+}
+
+function printDailyLog(ptId,selectedDates){
+  const pt=S.points.find(p=>p.id===ptId);if(!pt)return;
+  const allDates=selectedDates||[...new Set([
     ...S.deliveries.filter(d=>d.ptId===ptId).map(d=>d.date),
     ...S.leftovers.filter(l=>l.ptId===ptId).map(l=>l.date)
   ])].sort().reverse();
