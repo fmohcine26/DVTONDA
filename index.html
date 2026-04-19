@@ -2064,18 +2064,41 @@ function renderPtDetail(){
       });
 
       // ── إشارة مرجعية ──
-      // ١ — فوائض خبز بارد مسجَّلة في هذا اليوم (date===date) لكن ID يشير لغد (سُجِّلت بعد منتصف الليل)
+      // ١ — فوائض خبز بارد مسجَّلة في هذا اليوم (date===date) وسُجِّلت نفس اليوم
       const coldRegisteredToday=S.leftovers.filter(l=>
         l.ptId===pt.id && l.date===date && l.lType==='yesterday' && ccount(l.items)>0
         && l.id && new Date(parseInt(l.id)).toISOString().split('T')[0]===date
       );
-      // ٢ — فوائض خبز بارد تُحتسب على هذا اليوم (date===date) لكن سُجِّلت في يوم لاحق (ID > date)
+      // ٢ — فوائض تُحتسب على هذا اليوم لكن سُجِّلت لاحقاً (ID > date)
       const coldAppliedLater=S.leftovers.filter(l=>
         l.ptId===pt.id && l.date===date && l.lType==='yesterday' && ccount(l.items)>0
         && l.id && new Date(parseInt(l.id)).toISOString().split('T')[0]>date
       );
+      // ٣ — فوائض سُجِّلت في هذا اليوم (ID يشير لهذا اليوم) لكن تُحتسب على يوم سابق (l.date < date)
+      const coldRegisteredHereAppliedPrev=S.leftovers.filter(l=>
+        l.ptId===pt.id && l.date<date && l.lType==='yesterday' && ccount(l.items)>0
+        && l.id && new Date(parseInt(l.id)).toISOString().split('T')[0]===date
+      );
 
-      // في يوم الاحتساب — إشارة الخبز البارد المسجَّل في اليوم التالي
+      // في يوم التسجيل (٣) — إشارة: سجّلت خبزاً بارداً يُطرح من يوم سابق
+      if(coldRegisteredHereAppliedPrev.length){
+        const byColdDate={};
+        coldRegisteredHereAppliedPrev.forEach(l=>{
+          if(!byColdDate[l.date])byColdDate[l.date]=0;
+          byColdDate[l.date]+=ccount(l.items);
+        });
+        Object.entries(byColdDate).forEach(([applyDate,cnt])=>{
+          h+=`<div class="cross-ref">
+            <div class="cross-ref-icon">🔔</div>
+            <div class="cross-ref-text">
+              <strong>خبز بارد مسجَّل اليوم</strong><br>
+              ${cnt} خبزة ← تُطرح من حساب <strong>${fdate(applyDate)}</strong>
+            </div>
+          </div>`;
+        });
+      }
+
+      // في يوم الاحتساب (١) — إشارة الخبز البارد المسجَّل نفس اليوم
       if(coldRegisteredToday.length){
         const totalCold=coldRegisteredToday.reduce((s,l)=>s+ccount(l.items),0);
         if(totalCold>0){
@@ -2090,11 +2113,10 @@ function renderPtDetail(){
         }
       }
 
-      // في يوم الاحتساب — إشارة أن خبزاً بارداً طُرح من هذا اليوم لاحقاً
+      // في يوم الاحتساب (٢) — إشارة أن خبزاً بارداً طُرح من هذا اليوم لاحقاً
       if(coldAppliedLater.length){
         const totalCold=coldAppliedLater.reduce((s,l)=>s+ccount(l.items),0);
         if(totalCold>0){
-          // تاريخ التسجيل الفعلي من الـ ID
           const regDates=[...new Set(coldAppliedLater.map(l=>new Date(parseInt(l.id)).toISOString().split('T')[0]))];
           const regDateStr=regDates.map(rd=>fdate(rd)).join(' / ');
           h+=`<div class="cross-ref" style="background:#FFF0E8;border-color:#D85A30">
