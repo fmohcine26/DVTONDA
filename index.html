@@ -867,8 +867,16 @@ function dataForSync(){ return JSON.stringify({...S,_ts:S._ts||Date.now()}) }
 function mergeFromSync(raw){
   try{
     const R=JSON.parse(raw);
+    // مفتاح التسليمات والتخليصات: الـ ID
     const mId=(l,r)=>{const m=new Map();l.forEach(x=>m.set(x.id,x));r.forEach(x=>{if(!m.has(x.id))m.set(x.id,x)});return[...m.values()]};
-    const mLft=(l,r)=>{const m=new Map();l.forEach(x=>m.set(x.ptId+'_'+x.date,x));r.forEach(x=>{const k=x.ptId+'_'+x.date;if(!m.has(k))m.set(k,x)});return[...m.values()]};
+    // مفتاح الفوائض: الـ ID إذا وُجد، وإلا ptId+date (للبيانات القديمة)
+    const mLft=(l,r)=>{
+      const m=new Map();
+      const key=x=>x.id?x.id:(x.ptId+'_'+x.date);
+      l.forEach(x=>m.set(key(x),x));
+      r.forEach(x=>{if(!m.has(key(x)))m.set(key(x),x);});
+      return[...m.values()];
+    };
     const mPts=(l,r)=>{const m=new Map();l.forEach(x=>m.set(x.id,x));r.forEach(x=>{if(!m.has(x.id))m.set(x.id,x)});return[...m.values()]};
     S.deliveries=mId(S.deliveries,R.deliveries||[]);
     S.settlements=mId(S.settlements,R.settlements||[]);
