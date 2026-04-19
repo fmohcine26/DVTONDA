@@ -2262,8 +2262,7 @@ function printDailyLog(ptId){
     ...S.leftovers.filter(l=>l.ptId===ptId).map(l=>l.date)
   ])].sort().reverse();
 
-  // إذا يومان أو أقل — لا حاجة للطباعة
-  if(allDates.length<=2){toast('يومان أو أقل — راجع على الهاتف مع المسؤول','s');return;}
+  // الطباعة متاحة دائماً مهما كان عدد الأيام
 
   let grandTotal=0;let grandNet=0;
   const debt=ptDebt(ptId);
@@ -2391,111 +2390,6 @@ function printDailyLog(ptId){
   window.print();
   setTimeout(()=>{printEl.style.display='none';printEl.innerHTML='';},1500);
 }
-
-  let grandTotal=0;let grandNet=0;
-  const debt=ptDebt(ptId);
-  let html='';
-
-  allDates.forEach(date=>{
-    const ds=S.deliveries.filter(d=>d.ptId===ptId&&d.date===date).sort((a,b)=>a.time>b.time?1:-1);
-    const lfts=S.leftovers.filter(l=>l.ptId===ptId&&l.date===date);
-    const dayCnt=ds.reduce((s,d)=>s+ccount(d.items),0);
-    const dayVal=ds.reduce((s,d)=>s+cval(d.items,ptId),0);
-    const lftCnt=lfts.reduce((s,l)=>s+ccount(l.items),0);
-    const lftVal=lfts.reduce((s,l)=>s+cval(l.items,ptId),0);
-    const netCnt=dayCnt-lftCnt;const netVal=dayVal-lftVal;
-    grandTotal+=dayCnt;grandNet+=netCnt;
-
-    html+=`<div class="p-day">
-      <div class="p-day-head">
-        <span>${fdate(date)}</span>
-        <span>${ds.length} تسليم</span>
-      </div>
-      <div class="p-day-body">`;
-
-    ds.forEach(d=>{
-      const typesStr=TK.filter(k=>parseInt(d.items[k])>0)
-        .map(k=>`${TM[k].icon}${d.items[k]}${TM[k].short}`).join(' ');
-      html+=`<div class="p-row">
-        <span>${d.time} &nbsp;${typesStr}${d.driver?` · 👤${d.driver}`:''}</span>
-        <span>${ccount(d.items)} خبزة &nbsp; ${cval(d.items,ptId).toFixed(2)} د.م</span>
-      </div>`;
-      const pubNote=d.notePublic||(d.notes&&!d.notePrivate?d.notes:'');
-      if(pubNote)html+=`<div class="p-row" style="color:#085041;font-size:11px"><span>📋 ${pubNote}</span><span></span></div>`;
-    });
-
-    lfts.forEach(lf=>{
-      const lftTypesStr=TK.filter(k=>parseInt(lf.items[k])>0)
-        .map(k=>`${TM[k].icon}${lf.items[k]}${TM[k].short}`).join(' ');
-      const typeLabel=lf.lType==='yesterday'?'🥖 الخبز البارد':lf.lType==='swap'?'🔄 استبدال':'➡️ نقل';
-      const timeStr=lf.time?` · ${lf.time}`:'';
-      html+=`<div class="p-row p-row-ret">
-        <span>↩ ${typeLabel}${timeStr} &nbsp; ${lftTypesStr}</span>
-        <span>− ${ccount(lf.items)} خبزة &nbsp; − ${cval(lf.items,ptId).toFixed(2)} د.م</span>
-      </div>`;
-    });
-
-    html+=`<div class="p-row p-row-net">
-        <span>🍞 صافي اليوم</span>
-        <span>${netCnt} خبزة · ${netVal.toFixed(2)} د.م</span>
-      </div>
-    </div></div>`;
-  });
-
-  const now=new Date();
-  const printTime=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-  const dateRange=allDates.length>1?`${dl(allDates[allDates.length-1])} ← ${dl(allDates[0])}`:dl(allDates[0]||TODAY);
-
-  // ── نافذة معاينة الطباعة ──
-  const printEl=document.getElementById('print-area');
-  printEl.innerHTML=`
-    <div class="p-header">
-      <div>
-        <div class="p-header-logo">🍞 محسين للخبز التقليدي</div>
-        <div class="p-header-sub">نقطة البيع: <strong>${pt.name}</strong>${pt.address?' · '+pt.address:''}${pt.phone?` · 📞 ${pt.phone}`:''}</div>
-        <div class="p-header-sub">الفترة: ${dateRange}</div>
-      </div>
-      <div class="p-header-right">
-        طُبع: ${dl(TODAY)} · ${printTime}<br>
-        <span style="color:#C05000;font-weight:700">الدين: ${debt.toFixed(2)} د.م</span>
-      </div>
-    </div>
-    ${html}
-    <div class="p-total-box">
-      <div class="p-total-row"><span>إجمالي الخبز الموزَّع</span><span>${grandTotal} خبزة</span></div>
-      <div class="p-total-row"><span>إجمالي المرتجع</span><span>${grandTotal-grandNet} خبزة</span></div>
-      <div class="p-total-row"><span>إجمالي المباع (صافي)</span><span><strong>${grandNet} خبزة</strong></span></div>
-      <div class="p-debt-big">
-        <span class="p-debt-lbl">💰 الرصيد المستحق</span>
-        <span class="p-debt-val">${debt.toFixed(2)} <small style="font-size:14px;font-weight:600">د.م</small></span>
-      </div>
-    </div>
-    <div class="p-sign">
-      <div class="p-sign-box">
-        <div class="p-sign-name">توقيع المسؤول عن النقطة</div>
-        <div style="height:1px;background:#000;margin-bottom:6px"></div>
-        <div>الاسم: ___________________</div>
-        <div style="margin-top:8px">التاريخ: ________________</div>
-      </div>
-      <div class="p-sign-box">
-        <div class="p-sign-name">توقيع محسين</div>
-        <div style="height:1px;background:#000;margin-bottom:6px"></div>
-        <div>التاريخ: ________________</div>
-        <div style="margin-top:8px">الختم: _________________</div>
-      </div>
-    </div>
-    <div class="p-footer">محسين للخبز التقليدي · طُبع بواسطة تطبيق التوزيع</div>
-  `;
-  printEl.style.display='block';
-  window.print();
-  // استعادة الوضع بعد الطباعة
-  setTimeout(()=>{
-    printEl.style.display='none';
-    printEl.innerHTML='';
-  },1500);
-}
-
-  
 
 // ═══════════════════════════════════════════════
 //  EDIT CHOICE MODAL — اختيار تعديل تسليم أم فائض
