@@ -1254,18 +1254,30 @@ function bDelivForm(){
   }
 
   // ─── أزرار نقاط البيع ────────────────────────
+  const ptSearch=window._ptSearch||'';
+  const filteredPts=ptSearch?pts.filter(p=>p.name.includes(ptSearch)):pts;
+
   let h=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
     <div style="font-size:15px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em">① اختر نقطة البيع</div>
     <div class="sort-toggle" style="margin:0;gap:6px">
       <div class="sort-btn ${PT_SORT==='manual'?'on':''}" onclick="PT_SORT='manual';renderDeliv()" style="padding:6px 10px;font-size:12px">⠿ يدوي</div>
       <div class="sort-btn ${PT_SORT==='usage'?'on':''}" onclick="PT_SORT='usage';renderDeliv()" style="padding:6px 10px;font-size:12px">🔥 الأكثر</div>
     </div>
+  </div>
+  <div style="position:relative;margin-bottom:10px">
+    <input type="text" id="pt-search-inp" value="${ptSearch}"
+      placeholder="🔍 ابحث عن نقطة..."
+      inputmode="text" autocomplete="off" autocorrect="off"
+      style="width:100%;padding:10px 14px;border-radius:var(--r);border:1.5px solid var(--br2);background:var(--bg2);font-size:15px;font-family:inherit;color:var(--tx)"
+      oninput="window._ptSearch=this.value;renderDeliv()">
+    ${ptSearch?`<button onclick="window._ptSearch='';renderDeliv()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer;color:var(--tx3)">✕</button>`:''}
   </div>`;
 
   if(!S.points.length){h+=`<div class="alrt alrt-w">أضف نقطة بيع أولاً</div>`;}
+  else if(filteredPts.length===0){h+=`<div class="alrt alrt-w" style="text-align:center">لا توجد نتائج لـ "${ptSearch}"</div>`;}
   else{
     h+=`<div class="pt-btn-grid">`;
-    pts.forEach(pt=>{
+    filteredPts.forEach(pt=>{
       const isSel=ptId===pt.id;
       const cntToday=gd(pt.id,TODAY).reduce((s,d)=>s+ccount(d.items),0);
       const debt=ptDebt(pt.id);
@@ -1359,7 +1371,8 @@ function bDelivForm(){
 
 function selPt(id){
   DF.ptId=id;
-  DF.time=nstr(); // تحديث الساعة عند اختيار النقطة
+  DF.time=nstr();
+  window._ptSearch=''; // مسح البحث عند اختيار نقطة
   renderDeliv();
 }
 
