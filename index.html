@@ -2295,22 +2295,62 @@ function openPrintModal(ptId){
   ])].sort().reverse();
   if(!allDates.length){toast('لا توجد بيانات للطباعة','e');return;}
 
-  // بناء قائمة الأيام
+  // تحضير سجل التخليصات لهذه النقطة
+  const ptSettles=S.settlements.filter(s=>s.ptId===ptId);
+  const settledIds=new Set();
+  ptSettles.forEach(s=>(s.settledDeliveryIds||[]).forEach(id=>settledIds.add(id)));
+
   let daysHtml='';
   allDates.forEach(date=>{
     const ds=S.deliveries.filter(d=>d.ptId===ptId&&d.date===date);
     const lfts=S.leftovers.filter(l=>l.ptId===ptId&&l.date===date);
     const cnt=ds.reduce((s,d)=>s+ccount(d.items),0)-lfts.reduce((s,l)=>s+ccount(l.items),0);
     const val=ds.reduce((s,d)=>s+cval(d.items,ptId),0)-lfts.reduce((s,l)=>s+cval(l.items,ptId),0);
-    daysHtml+=`<div class="pm-day" id="pmd-${date}" onclick="togglePrintDay('${date}')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:var(--r);border:2px solid var(--br);margin-bottom:8px;cursor:pointer;background:var(--bg2);transition:all .15s">
+
+    // هل الأيام مخلَّصة؟
+    const dayDelivIds=ds.map(d=>d.id);
+    const allSettled=dayDelivIds.length>0&&dayDelivIds.every(id=>settledIds.has(id));
+
+    // هل هناك تخليص جزئي؟
+    const relSettles=ptSettles.filter(s=>{
+      const sDate=s.dateFrom<=date&&date<=s.dateTo;
+      return sDate;
+    });
+    const totalPaid=relSettles.reduce((s,st)=>s+(st.paid||0),0);
+    const remaining=relSettles.reduce((s,st)=>s+(st.remainingBalance||0),0);
+    const isPartial=!allSettled&&totalPaid>0&&remaining>0;
+
+    // ألوان وأيقونة حسب الحالة
+    let statusIcon='',statusHtml='',rowBg='var(--bg2)',borderColor='var(--br)';
+    if(allSettled){
+      statusIcon='✅';
+      rowBg='#F0FAF4';borderColor='var(--TM)';
+      statusHtml=`<div style="font-size:11px;color:var(--T);font-weight:700">مخلَّص بالكامل</div>`;
+    }else if(isPartial){
+      statusIcon='🟡';
+      rowBg='#FFF8E5';borderColor='#E8A040';
+      statusHtml=`<div style="font-size:11px;font-weight:700">
+        <span style="color:var(--T)">دفع: ${totalPaid.toFixed(2)} د.م</span>
+        <span style="color:#888"> · </span>
+        <span style="color:#D85A30">باقي: ${remaining.toFixed(2)} د.م</span>
+      </div>`;
+    }else{
+      statusIcon='🔴';
+      rowBg='var(--bg2)';borderColor='#F0997B';
+      statusHtml=`<div style="font-size:11px;color:#D85A30;font-weight:700">لم تُخلَّص</div>`;
+    }
+
+    daysHtml+=`<div class="pm-day" id="pmd-${date}" onclick="togglePrintDay('${date}')"
+      style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:var(--r);border:2px solid ${borderColor};margin-bottom:8px;cursor:pointer;background:${rowBg};transition:all .15s">
       <div style="display:flex;align-items:center;gap:10px">
         <div id="pmcb-${date}" style="width:22px;height:22px;border-radius:5px;border:2px solid var(--br2);background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px"></div>
         <div>
-          <div style="font-size:14px;font-weight:800">${fdate(date)}</div>
+          <div style="font-size:14px;font-weight:800">${fdate(date)} ${statusIcon}</div>
           <div style="font-size:12px;color:var(--tx2)">${ds.length} تسليم · ${cnt} خبزة</div>
+          ${statusHtml}
         </div>
       </div>
-      <div style="font-size:14px;font-weight:700;color:var(--A)">${val.toFixed(1)} د.م</div>
+      <div style="font-size:14px;font-weight:700;color:${allSettled?'var(--T)':isPartial?'#E8A040':'#D85A30'}">${val.toFixed(1)} د.م</div>
     </div>`;
   });
 
@@ -2318,7 +2358,12 @@ function openPrintModal(ptId){
   ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
     <div class="modal-title">🖨️ اختر الأيام للطباعة</div>
-    <div style="font-size:13px;color:var(--tx2);margin-bottom:12px">📍 ${pt.name}</div>
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:6px">📍 ${pt.name}</div>
+    <div style="display:flex;gap:12px;font-size:11px;margin-bottom:12px">
+      <span>🔴 لم تُخلَّص</span>
+      <span>🟡 جزئي</span>
+      <span>✅ مخلَّص</span>
+    </div>
     <div id="pm-days-list">${daysHtml}</div>
     <div style="display:flex;gap:8px;margin-bottom:14px">
       <button class="btn btn-s btn-sm" onclick="selectAllPrintDays(true)" style="flex:1">✓ تحديد الكل</button>
