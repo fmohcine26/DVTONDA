@@ -2445,7 +2445,12 @@ function printDailyLog(ptId,selectedDates){
 
   let grandTotal=0;let grandNet=0;
   const debt=ptDebt(ptId);
-  const dayBlocksMap={}; // date → html block
+  const dayBlocksMap={};
+
+  // تحضير بيانات التخليص
+  const ptSettles=S.settlements.filter(s=>s.ptId===ptId);
+  const settledIds=new Set();
+  ptSettles.forEach(s=>(s.settledDeliveryIds||[]).forEach(id=>settledIds.add(id)));
 
   allDates.forEach(date=>{
     const ds=S.deliveries.filter(d=>d.ptId===ptId&&d.date===date).sort((a,b)=>a.time>b.time?1:-1);
@@ -2456,6 +2461,40 @@ function printDailyLog(ptId,selectedDates){
     const lftVal=lfts.reduce((s,l)=>s+cval(l.items,ptId),0);
     const netCnt=dayCnt-lftCnt;const netVal=dayVal-lftVal;
     grandTotal+=dayCnt;grandNet+=netCnt;
+
+    // حالة التخليص لهذا اليوم
+    const dayDelivIds=ds.map(d=>d.id);
+    const allSettled=dayDelivIds.length>0&&dayDelivIds.every(id=>settledIds.has(id));
+    const relSettles=ptSettles.filter(s=>s.dateFrom<=date&&date<=s.dateTo);
+    const totalPaid=relSettles.reduce((s,st)=>s+(st.paid||0),0);
+    const remaining=relSettles.reduce((s,st)=>s+(st.remainingBalance||0),0);
+    const isPartial=!allSettled&&totalPaid>0&&remaining>0;
+
+    // ألوان الكتلة حسب الحالة
+    let blockBg='#fff';
+    let borderColor='#D4B483';
+    let statusBar='';
+    if(allSettled){
+      blockBg='#F0FAF4';
+      borderColor='#5CB87A';
+      statusBar=`<div style="background:#D4F0DD;border-top:1.5px solid #5CB87A;padding:3px 8px;font-size:10px;font-weight:800;color:#1D7A4A;display:flex;justify-content:space-between">
+        <span>✅ مخلَّص بالكامل</span>
+        <span>${netVal.toFixed(2)} د.م</span>
+      </div>`;
+    }else if(isPartial){
+      blockBg='#FFFBF0';
+      borderColor='#E8A040';
+      statusBar=`<div style="background:#FFF3CD;border-top:1.5px solid #E8A040;padding:3px 8px;font-size:10px;font-weight:800;color:#7A4A08;display:flex;justify-content:space-between">
+        <span>🟡 جزئي — دفع: <span style="color:#1D7A4A">${totalPaid.toFixed(2)}</span> · باقي: <span style="color:#C05000">${remaining.toFixed(2)}</span> د.م</span>
+      </div>`;
+    }else{
+      blockBg='#fff';
+      borderColor='#F0997B';
+      statusBar=`<div style="background:#FFF0E8;border-top:1.5px solid #F0997B;padding:3px 8px;font-size:10px;font-weight:800;color:#C05000;display:flex;justify-content:space-between">
+        <span>🔴 لم تُخلَّص</span>
+        <span>${netVal.toFixed(2)} د.م</span>
+      </div>`;
+    }
 
     let rows=`<div style="display:grid;grid-template-columns:1fr 30px 46px;padding:2px 0 3px;border-bottom:2px solid #8B5E1A;font-size:9px;font-weight:800;color:#8B5E1A">
       <span>التوقيت والتفاصيل</span><span style="text-align:center">عدد</span><span style="text-align:left">د.م</span>
@@ -2498,11 +2537,11 @@ function printDailyLog(ptId,selectedDates){
       </div>`;
     });
 
-    dayBlocksMap[date]=`<div style="margin-bottom:6px">
-      <div style="background:#8B5E1A;color:#fff;padding:4px 8px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;font-size:11px;font-weight:800">
+    dayBlocksMap[date]=`<div style="margin-bottom:6px;border-radius:4px;overflow:hidden;border:1.5px solid ${borderColor}">
+      <div style="background:#8B5E1A;color:#fff;padding:4px 8px;display:flex;justify-content:space-between;font-size:11px;font-weight:800">
         <span>${fdate(date)}</span><span>${ds.length} تسليم</span>
       </div>
-      <div style="padding:4px 8px;border:1.5px solid #D4B483;border-top:none;border-radius:0 0 4px 4px">
+      <div style="padding:4px 8px;background:${blockBg}">
         ${rows}
         <div style="display:grid;grid-template-columns:1fr 30px 46px;padding:3px 0 2px;border-top:2px solid #8B5E1A;margin-top:3px;font-size:11px;font-weight:900;color:${netCnt<0?'#C05000':'#1D7A4A'}">
           <span>🍞 الصافي المحتسب</span>
@@ -2510,6 +2549,7 @@ function printDailyLog(ptId,selectedDates){
           <span style="text-align:left">${netVal.toFixed(2)}</span>
         </div>
       </div>
+      ${statusBar}
     </div>`;
   });
 
