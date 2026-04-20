@@ -678,7 +678,7 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
 // ═══════════════════════════════════════════════
 const TK = ['sha3ir_k','dra','qmh'];
 const TM = {
-  sha3ir_k:{ label:'خبز الشعير', short:'شعير', icon:'🌾', cls:'sha', bdgCls:'bdg-sha' },
+  sha3ir_k:{ label:'خبز الشعير', short:'شعير', icon:'🫘', cls:'sha', bdgCls:'bdg-sha' },
   dra:     { label:'خبز الذرة',  short:'ذرة',   icon:'🌽', cls:'dra', bdgCls:'bdg-dra' },
   qmh:     { label:'خبز القمح', short:'قمح',   icon:'🌾', cls:'qmh', bdgCls:'bdg-qmh' }
 };
@@ -1340,16 +1340,16 @@ function bDelivForm(){
     h+=`</div>`;
   }
 
+  h+=`<div class="fg"><label class="fl">📋 ملاحظة للمسؤول <span style="font-size:12px;font-weight:400;color:var(--tx3)">(تظهر في الطباعة)</span></label>
+    <input type="text" id="f-note-pub" value="${DF.notePublic||''}" placeholder="ملاحظة لمسؤول نقطة البيع..." autocomplete="off" name="npb-x9" oninput="DF.notePublic=this.value"></div>`;
+  h+=`<div class="fg"><label class="fl">🔒 ملاحظة داخلية <span style="font-size:12px;font-weight:400;color:var(--tx3)">(لا تظهر في الطباعة)</span></label>
+    <input type="text" id="f-note-priv" value="${DF.notePrivate||''}" placeholder="ملاحظة خاصة بالمخبزة..." autocomplete="off" name="np-x9" oninput="DF.notePrivate=this.value"></div>`;
   h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
     <div class="fg"><label class="fl">الساعة</label><input type="time" id="f-time" value="${DF.time}" autocomplete="off" oninput="DF.time=this.value"></div>
     <div class="fg"><label class="fl">المسؤول</label>
       <input type="text" id="f-drv" list="drvs" value="${DF.driver}" placeholder="الاسم" autocomplete="off" name="bread-driver-x7" oninput="DF.driver=this.value">
       <datalist id="drvs">${S.drivers.map(d=>`<option value="${d}">`).join('')}</datalist>
     </div></div>`;
-  h+=`<div class="fg"><label class="fl">🔒 ملاحظة داخلية <span style="font-size:12px;font-weight:400;color:var(--tx3)">(لا تظهر في الطباعة)</span></label>
-    <input type="text" id="f-note-priv" value="${DF.notePrivate||''}" placeholder="ملاحظة خاصة بالمخبزة..." autocomplete="off" name="np-x9" oninput="DF.notePrivate=this.value"></div>`;
-  h+=`<div class="fg"><label class="fl">📋 ملاحظة للمسؤول <span style="font-size:12px;font-weight:400;color:var(--tx3)">(تظهر في الطباعة)</span></label>
-    <input type="text" id="f-note-pub" value="${DF.notePublic||''}" placeholder="ملاحظة لمسؤول نقطة البيع..." autocomplete="off" name="npb-x9" oninput="DF.notePublic=this.value"></div>`;
   // الزر يظهر فقط عند اختيار نقطة + إدخال كمية
   if(ptId&&hasQ){
     h+=`<div class="sticky-submit"><button class="btn btn-p" onclick="submitDeliv()" style="font-size:19px;padding:17px">✓ تسجيل التسليم</button></div>`;
@@ -1775,6 +1775,10 @@ function renderPts(){
         </div>
         <div style="display:flex;gap:6px;align-items:center">
           <button class="icon-btn" onclick="event.stopPropagation();openEditPt('${pt.id}')" title="تعديل الاسم" style="font-size:18px">✏️</button>
+          <div class="touch-order-btns" style="display:flex;flex-direction:column;gap:2px">
+            <button onclick="event.stopPropagation();movePt('${pt.id}',-1)" style="font-size:12px;padding:2px 6px;border-radius:4px;border:1.5px solid var(--br2);background:var(--bg2);cursor:pointer;line-height:1">▲</button>
+            <button onclick="event.stopPropagation();movePt('${pt.id}',1)" style="font-size:12px;padding:2px 6px;border-radius:4px;border:1.5px solid var(--br2);background:var(--bg2);cursor:pointer;line-height:1">▼</button>
+          </div>
           <button class="del-btn" onclick="event.stopPropagation();delPtBtn(this,'${pt.id}')" style="font-size:12px">✕</button>
         </div>
       </div>`;
@@ -1782,6 +1786,18 @@ function renderPts(){
     h+=`</div>`;
   }
   document.getElementById('scr-pts').innerHTML=h;
+}
+
+// ─── تحريك نقطة للأعلى/الأسفل (للهاتف) ──────────
+function movePt(id,dir){
+  const idx=S.points.findIndex(p=>p.id===id);
+  if(idx<0)return;
+  const newIdx=idx+dir;
+  if(newIdx<0||newIdx>=S.points.length)return;
+  const tmp=S.points[idx];
+  S.points[idx]=S.points[newIdx];
+  S.points[newIdx]=tmp;
+  save();autoSync();renderPts();
 }
 
 // ─── تعديل اسم نقطة البيع ───────────────────────
