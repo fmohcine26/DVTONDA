@@ -635,6 +635,10 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
   <div class="content" id="content">
     <div class="screen on" id="scr-home"></div>
     <div class="screen" id="scr-deliv"></div>
+    <!-- ملخص تلقائي — يظهر عند إدخال أي كمية -->
+    <div id="deliv-summary-bar" style="display:none;position:fixed;bottom:0;right:0;left:0;z-index:199;background:#1E3A8A;color:#fff;padding:8px 14px;direction:rtl">
+      <div id="deliv-summary-content" style="font-size:13px;font-weight:700"></div>
+    </div>
     <!-- زر التسليم الثابت — دائماً في الـ DOM -->
     <div id="sticky-submit-deliv" class="sticky-submit" style="display:none">
       <button class="btn btn-p" onclick="submitDeliv()" style="font-size:19px;padding:17px">✓ تسجيل التسليم</button>
@@ -859,6 +863,18 @@ function save(){
   S._ts=Date.now();
   localStorage.setItem('makhbaza_v4',JSON.stringify(S));
   localStorage.setItem('makhbaza_cfg',JSON.stringify(CFG));
+  // نسخة احتياطية تلقائية — آخر 10 تغييرات
+  try{
+    const snap={data:JSON.stringify(S),ts:Date.now()};
+    const snaps=[];
+    for(let i=1;i<=10;i++){const r=localStorage.getItem('makhbaza_snap_'+i);if(r)snaps.push({i,s:JSON.parse(r)});}
+    // أضف النسخة الجديدة في المقدمة وأزح الباقي
+    for(let i=Math.min(snaps.length+1,10);i>=2;i--){
+      const prev=localStorage.getItem('makhbaza_snap_'+(i-1));
+      if(prev)localStorage.setItem('makhbaza_snap_'+i,prev);
+    }
+    localStorage.setItem('makhbaza_snap_1',JSON.stringify(snap));
+  }catch(e){}
 }
 function loadLocal(){
   try{const r=localStorage.getItem('makhbaza_v4');if(r){const d=JSON.parse(r);Object.assign(S,d);if(!S.settlements)S.settlements=[];}}catch(e){}
@@ -1424,10 +1440,23 @@ function updSum(){
 function _showSubmitBtn(){
   const sb=document.getElementById('sticky-submit-deliv');
   if(sb){sb.style.display='block';sb.style.opacity='1';}
+  // ملخص تلقائي في الشريط
+  const bar=document.getElementById('deliv-summary-bar');
+  const cnt=document.getElementById('deliv-summary-content');
+  if(bar&&cnt&&DF.ptId){
+    const pt=S.points.find(p=>p.id===DF.ptId);
+    const parts=TK.filter(k=>parseInt(DF.items[k])>0).map(k=>`${TM[k].icon} ${DF.items[k]}`).join(' · ');
+    const total=TK.reduce((s,k)=>s+(parseInt(DF.items[k])||0),0);
+    cnt.innerHTML=`<span style="opacity:.8">${pt?pt.name:''}</span> &nbsp;|&nbsp; ${parts} &nbsp;|&nbsp; <strong>المجموع: ${total} خبزة</strong>`;
+    bar.style.display='block';
+    bar.style.bottom=(document.getElementById('sticky-submit-deliv')?.offsetHeight||70)+'px';
+  }
 }
 function _hideSubmitBtn(){
   const sb=document.getElementById('sticky-submit-deliv');
   if(sb){sb.style.display='none';}
+  const bar=document.getElementById('deliv-summary-bar');
+  if(bar)bar.style.display='none';
 }
 
 function submitDeliv(){
@@ -1471,7 +1500,14 @@ function bLeftForm(){
   const yestCnt=yestDelivs.reduce((s,d)=>s+ccount(d.items),0);
   const yestLeftCnt=glCount(ptId,YESTERDAY);
 
-  let h=``;
+  // ─── رأس أزرق واضح يميز واجهة الفائض ───────────────
+  let h=`<div style="background:#1E40AF;color:#fff;padding:10px 14px;border-radius:var(--r);margin-bottom:14px;display:flex;align-items:center;gap:10px">
+    <span style="font-size:24px">📦</span>
+    <div>
+      <div style="font-size:17px;font-weight:900">وضع تسجيل الفائض</div>
+      <div style="font-size:12px;opacity:.85">أنت الآن في واجهة الفائض — وليس التسليم</div>
+    </div>
+  </div>`;
 
   // ─── STEP 1: اختر نقطة البيع ───────────────────
   h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
@@ -1834,6 +1870,9 @@ function openEditPt(id){
           style="width:48px;height:48px;border-radius:var(--r);border:2px solid var(--A);background:var(--AL);font-size:22px;cursor:pointer;flex-shrink:0">👤</button>
       </div>
     </div>
+    <div class="fg"><label class="fl">⚠️ عتبة تنبيه الدين (درهم) <span style="font-size:12px;font-weight:400;color:var(--tx3)">اتركه فارغاً لتعطيل التنبيه</span></label>
+      <input type="number" id="edit-pt-threshold" value="${pt.debtThreshold||''}" placeholder="مثال: 500" inputmode="numeric" min="0">
+    </div>
     <button class="btn btn-p" onclick="saveEditPt('${id}')">✓ حفظ التعديلات</button>
     <button class="btn btn-s" style="margin-top:10px" onclick="closeModal()">إلغاء</button>
   </div>`;
@@ -1845,8 +1884,10 @@ function saveEditPt(id){
   const n=document.getElementById('edit-pt-name')?.value.trim();
   const a=document.getElementById('edit-pt-addr')?.value.trim();
   const phone=document.getElementById('edit-pt-phone')?.value.trim();
+  const thr=document.getElementById('edit-pt-threshold')?.value.trim();
   if(!n){toast('أدخل اسم النقطة','e');return;}
   pt.name=n;pt.address=a||'';pt.phone=phone||'';
+  pt.debtThreshold=thr?parseFloat(thr):null;
   save();autoSync();closeModal();toast('✓ تم حفظ التعديلات');render();
 }
 
@@ -2496,7 +2537,7 @@ function printDailyLog(ptId,selectedDates){
       </div>`;
     }
 
-    let rows=`<div style="display:grid;grid-template-columns:1fr 30px 46px;padding:2px 0 3px;border-bottom:2px solid #8B5E1A;font-size:9px;font-weight:800;color:#8B5E1A">
+    let rows=`<div style="display:grid;grid-template-columns:1fr 30px 46px;padding:2px 0 4px;border-bottom:2.5px solid #8B5E1A;font-size:11px;font-weight:900;color:#8B5E1A">
       <span>التوقيت والتفاصيل</span><span style="text-align:center">عدد</span><span style="text-align:left">د.م</span>
     </div>`;
 
@@ -3436,7 +3477,10 @@ function renderSettings(){
     <div style="font-size:12px;color:var(--tx3);margin-top:10px;text-align:center">📤 المشاركة تفتح: واتساب · تيليغرام · ميسنجر · وغيرها</div>
   </div>`;
 
-  h+=`<div class="slbl">📊 البيانات</div><div class="card">
+  h+=`<div class="slbl">🕐 النسخ الاحتياطية التلقائية</div><div class="card">
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:12px">يحفظ التطبيق تلقائياً آخر 10 تغييرات</div>
+    <button class="btn btn-s" onclick="openSnapshotModal()" style="font-size:15px">📂 استرجاع نسخة احتياطية</button>
+  </div>`;
     <div class="srow"><div class="srow-lbl">نقاط البيع</div><span class="bdg bdg-a">${S.points.length}</span></div>
     <div class="srow"><div class="srow-lbl">إجمالي التسليمات</div><span class="bdg bdg-t">${S.deliveries.length}</span></div>
     <div class="srow"><div class="srow-lbl">سجلات الفائض</div><span class="bdg bdg-g">${S.leftovers.length}</span></div>
@@ -3447,6 +3491,57 @@ function renderSettings(){
   </div>
   <div style="text-align:center;padding:16px 0;font-size:13px;color:var(--tx3)">محسين للخبز التقليدي · يعمل بدون اتصال</div>`;
   document.getElementById('scr-settings').innerHTML=h;
+}
+
+function openSnapshotModal(){
+  const snaps=[];
+  for(let i=1;i<=10;i++){
+    try{const r=localStorage.getItem('makhbaza_snap_'+i);if(r){const s=JSON.parse(r);snaps.push({i,s});}}catch(e){}
+  }
+  if(!snaps.length){toast('لا توجد نسخ احتياطية بعد','e');return;}
+
+  let html='';
+  snaps.forEach(({i,s})=>{
+    const d=JSON.parse(s.data||'{}');
+    const dt=new Date(s.ts);
+    const dtStr=`${dl(dt.toISOString().split('T')[0])} ${dt.getHours().toString().padStart(2,'0')}:${dt.getMinutes().toString().padStart(2,'0')}`;
+    const delivCnt=(d.deliveries||[]).length;
+    const ptCnt=(d.points||[]).length;
+    html+=`<div style="padding:10px 12px;border-radius:var(--r);border:1.5px solid var(--br);margin-bottom:8px;background:var(--bg2)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:14px;font-weight:800">نسخة ${i} ${i===1?'← الأحدث':''}</div>
+          <div style="font-size:12px;color:var(--tx2)">${dtStr}</div>
+          <div style="font-size:12px;color:var(--tx2)">${ptCnt} نقطة · ${delivCnt} تسليم</div>
+        </div>
+        <button class="btn btn-s btn-sm" onclick="restoreSnapshot(${i})" style="font-size:13px">استرجاع</button>
+      </div>
+    </div>`;
+  });
+
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📂 استرجاع نسخة احتياطية</div>
+    <div style="font-size:12px;color:#D85A30;margin-bottom:12px;background:#FFF0E8;padding:8px 12px;border-radius:var(--r)">
+      ⚠️ الاسترجاع سيستبدل البيانات الحالية — تأكد من حفظ نسخة أولاً
+    </div>
+    ${html}
+    <button class="btn btn-s" style="margin-top:8px" onclick="closeModal()">إلغاء</button>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+function restoreSnapshot(i){
+  try{
+    const r=localStorage.getItem('makhbaza_snap_'+i);
+    if(!r){toast('النسخة غير موجودة','e');return;}
+    const s=JSON.parse(r);
+    const d=JSON.parse(s.data);
+    Object.assign(S,d);
+    save();render();closeModal();
+    toast('✓ تم استرجاع النسخة '+i);
+  }catch(e){toast('خطأ في الاسترجاع','e');}
 }
 
 function exportData(){
@@ -4009,12 +4104,48 @@ regSW();
 loadLocal();
 applyTheme();
 if(!DF.time)DF.time=nstr();
-// إظهار شاشة اختيار الدور فقط إذا تم تفعيل الميزة
 if(CFG.managerPin&&CFG.managerPin.length>=4){
   showPinScreen();
 }else{
   render();
 }
+
+// ─── تنبيه الديون الكبيرة عند الفتح ─────────────────────
+setTimeout(()=>{
+  if(SESSION.role!=='manager')return;
+  const alerts=S.points.filter(pt=>pt.debtThreshold&&ptDebt(pt.id)>=pt.debtThreshold);
+  if(!alerts.length)return;
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  let rows=alerts.map(pt=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--br);font-size:14px">
+    <span style="font-weight:700">${pt.name}</span>
+    <span style="color:#D85A30;font-weight:800">${ptDebt(pt.id).toFixed(2)} د.م</span>
+  </div>`).join('');
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div style="font-size:22px;text-align:center;margin-bottom:8px">⚠️</div>
+    <div class="modal-title" style="color:#D85A30">تنبيه ديون كبيرة</div>
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:14px">النقاط التالية تجاوزت عتبة التنبيه:</div>
+    ${rows}
+    <button class="btn btn-p" style="margin-top:16px" onclick="closeModal()">✓ تم الإحاطة</button>
+  </div>`;
+  document.body.appendChild(ov);
+},1500);
+
+// ─── ملخص يومي عند إغلاق الشاشة ─────────────────────────
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState!=='hidden')return;
+  if(SESSION.role!=='manager')return;
+  const tds=S.deliveries.filter(d=>d.date===TODAY);
+  if(!tds.length)return;
+  const totCnt=tds.reduce((s,d)=>s+ccount(d.items),0);
+  const totVal=tds.reduce((s,d)=>s+cval(d.items,d.ptId),0);
+  const todaySettled=S.settlements.filter(s=>s.date===TODAY).reduce((s,st)=>s+st.paid,0);
+  const totalDebt=S.points.reduce((s,pt)=>s+ptDebt(pt.id),0);
+  // حفظ الملخص اليومي
+  localStorage.setItem('makhbaza_daily_summary',JSON.stringify({
+    date:TODAY,totCnt,totVal,todaySettled,totalDebt,ts:Date.now()
+  }));
+});
 
 // ═══════════════════════════════════════════════
 //  VISUAL VIEWPORT — الزر يلتصق فوق لوحة المفاتيح
