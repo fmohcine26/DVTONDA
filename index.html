@@ -218,6 +218,7 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
 .mode-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .mode-btn{padding:20px 10px;border-radius:var(--r);font-size:19px;font-weight:800;cursor:pointer;border:2.5px solid var(--br2);background:var(--bg2);color:var(--tx2);text-align:center;transition:all .18s;font-family:inherit;line-height:1.4}
 .mode-btn.on{background:var(--A);color:#fff;border-color:var(--A);box-shadow:0 3px 12px color-mix(in srgb,var(--A) 35%,transparent)}
+.mode-btn.on-left{background:#DBEAFE;color:#1E40AF;border-color:#3B82F6;box-shadow:0 3px 12px rgba(59,130,246,.25)}
 
 /* ─── BREAD TYPE CARDS — عمودي للوضوح الميداني ─── */
 .tgrid{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
@@ -635,9 +636,13 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
   <div class="content" id="content">
     <div class="screen on" id="scr-home"></div>
     <div class="screen" id="scr-deliv"></div>
-    <!-- زر التسليم الثابت — دائماً في الـ DOM -->
+    <!-- زر التسليم الثابت -->
     <div id="sticky-submit-deliv" class="sticky-submit" style="display:none">
       <button class="btn btn-p" onclick="submitDeliv()" id="sticky-deliv-btn" style="font-size:16px;padding:15px;line-height:1.4;width:100%">✓ تسجيل التسليم</button>
+    </div>
+    <!-- زر الفائض الثابت -->
+    <div id="sticky-left-wrap" class="sticky-submit" style="display:none">
+      <button id="sticky-left-btn" class="btn" onclick="submitLeft()" style="font-size:16px;padding:15px;line-height:1.4;background:#1E40AF;color:#fff;border-color:#1E40AF;width:100%;border-radius:var(--r);font-family:inherit;cursor:pointer">📦 تسجيل الفائض</button>
     </div>
     <div class="screen" id="scr-pts"></div>
     <div class="screen" id="scr-stats"></div>
@@ -1309,7 +1314,6 @@ function bDelivForm(){
     <div class="mode-btn on">🚚<br>تسليم خبز</div>
     <div class="mode-btn" onclick="setMode(true)">📦<br>تسجيل فائض</div>
   </div>`;
-
   h+=`<div style="font-size:15px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em;margin:10px 0 10px">② الكميات حسب النوع</div>`;
 
   // ─── بانر اسم النقطة المختارة ───────────────
@@ -1467,26 +1471,19 @@ function updLeftBtn(){
   if(sb)sb.style.display='none';
 
   const lTotal=TK.reduce((s,k)=>s+(parseInt(DF.lItems[k])||0),0);
-  let btn=document.getElementById('sticky-left-btn');
+  const wrap=document.getElementById('sticky-left-wrap');
+  const btn=document.getElementById('sticky-left-btn');
+  if(!wrap||!btn)return;
+
   if(lTotal>0){
     const lParts=TK.filter(k=>parseInt(DF.lItems[k])>0).map(k=>`${TM[k].icon}${DF.lItems[k]}`).join(' · ');
     const lType=DF.lType||'yesterday';
     const lTypeLabel=lType==='yesterday'?'🥖 خبز بارد':lType==='swap'?'🔄 استبدال':'➡️ نقل';
     const lPtName=S.points.find(p=>p.id===DF.lPtId)?.name||'';
-    if(!btn){
-      const wrap=document.createElement('div');
-      wrap.className='sticky-submit';wrap.id='sticky-left-wrap';
-      wrap.innerHTML=`<button id="sticky-left-btn" class="btn" onclick="submitLeft()" style="font-size:16px;padding:15px;line-height:1.4;background:#1E40AF;color:#fff;border-color:#1E40AF;width:100%;border-radius:var(--r);font-family:inherit;cursor:pointer"></button>`;
-      document.getElementById('scr-deliv')?.appendChild(wrap);
-      btn=document.getElementById('sticky-left-btn');
-    }
-    if(btn){
-      btn.innerHTML=`<div style="font-size:12px;opacity:.85;font-weight:700">📦 فائض ${lTypeLabel} — ${lPtName}</div><div>${lParts} | المجموع: ${lTotal} خبزة</div>`;
-      btn.parentElement.style.display='block';
-    }
+    btn.innerHTML=`<div style="font-size:12px;opacity:.85;font-weight:700">📦 فائض ${lTypeLabel} — ${lPtName}</div><div>${lParts} | المجموع: ${lTotal} خبزة</div>`;
+    wrap.style.display='block';
   }else{
-    const wrap=document.getElementById('sticky-left-wrap');
-    if(wrap)wrap.style.display='none';
+    wrap.style.display='none';
   }
 }
 
@@ -1568,7 +1565,7 @@ function bLeftForm(){
   // ─── زرا التسليم/الفائض ───
   h+=`<div class="mode-btns" style="margin-top:12px">
     <div class="mode-btn" onclick="setMode(false)">🚚<br>تسليم خبز</div>
-    <div class="mode-btn on">📦<br>تسجيل فائض</div>
+    <div class="mode-btn on-left">📦<br>تسجيل فائض</div>
   </div>`;
 
   // ─── STEP 2: نوع الفائض — يظهر فقط بعد اختيار النقطة ───
@@ -1798,7 +1795,18 @@ function _doSaveLeft(ptId,targetDate,lType,items){
   save();autoSync();
   renderDeliv();scrollTop();
 }
-function setMode(b){DF.leftMode=b;DF.lType='yesterday';if(b&&DF.ptId)DF.lPtId=DF.ptId;if(b)_hideSubmitBtn();renderDeliv();}
+function setMode(b){
+  DF.leftMode=b;DF.lType='yesterday';
+  if(b&&DF.ptId)DF.lPtId=DF.ptId;
+  if(b){
+    _hideSubmitBtn(); // أخفِ زر التسليم
+  }else{
+    // أخفِ زر الفائض عند الرجوع للتسليم
+    const lw=document.getElementById('sticky-left-wrap');
+    if(lw)lw.style.display='none';
+  }
+  renderDeliv();
+}
 
 // ─── كتيب جهات الاتصال ───────────────────────
 async function pickContact(inputId){
