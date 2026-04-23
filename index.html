@@ -1456,6 +1456,33 @@ function _hideSubmitBtn(){
   if(sb){sb.style.display='none';}
 }
 
+// تحديث زر الفائض عند كل تغيير في الكمية
+function updLeftBtn(){
+  const lTotal=TK.reduce((s,k)=>s+(parseInt(DF.lItems[k])||0),0);
+  let btn=document.getElementById('sticky-left-btn');
+  if(lTotal>0){
+    const lParts=TK.filter(k=>parseInt(DF.lItems[k])>0).map(k=>`${TM[k].icon}${DF.lItems[k]}`).join(' · ');
+    const lType=DF.lType||'yesterday';
+    const lTypeLabel=lType==='yesterday'?'🥖 خبز بارد':lType==='swap'?'🔄 استبدال':'➡️ نقل';
+    const lPtName=S.points.find(p=>p.id===DF.lPtId)?.name||'';
+    if(!btn){
+      // أنشئ الزر إذا لم يكن موجوداً
+      const wrap=document.createElement('div');
+      wrap.className='sticky-submit';wrap.id='sticky-left-wrap';
+      wrap.innerHTML=`<button id="sticky-left-btn" class="btn" onclick="submitLeft()" style="font-size:16px;padding:15px;line-height:1.4;background:#1E40AF;color:#fff;border-color:#1E40AF;width:100%;border-radius:var(--r);font-family:inherit;cursor:pointer"></button>`;
+      document.getElementById('scr-deliv')?.appendChild(wrap);
+      btn=document.getElementById('sticky-left-btn');
+    }
+    if(btn){
+      btn.innerHTML=`<div style="font-size:12px;opacity:.85;font-weight:700">📦 فائض ${lTypeLabel} — ${lPtName}</div><div>${lParts} | المجموع: ${lTotal} خبزة</div>`;
+      btn.parentElement.style.display='block';
+    }
+  }else{
+    const wrap=document.getElementById('sticky-left-wrap');
+    if(wrap)wrap.style.display='none';
+  }
+}
+
 function submitDeliv(){
   const ptId=DF.ptId;
   const time=document.getElementById('f-time')?.value||DF.time;
@@ -1602,14 +1629,14 @@ function bLeftForm(){
     // بانر اسم النقطة
     const ptObj=S.points.find(p=>p.id===ptId);
     const dateLabel=lType==='yesterday'?`أمس (${dl(YESTERDAY)})`:'اليوم';
-    h+=`<div class="pt-selected-banner">
+    h+=`<div class="pt-selected-banner" style="background:#1E40AF;border-color:#1E40AF">
       <div>
-        <div class="pt-selected-banner-lbl">📍 ${lType==='yesterday'?'الخبز البارد لـ':lType==='swap'?'استبدال لـ':'نقل من'} — ${dateLabel}</div>
+        <div class="pt-selected-banner-lbl" style="opacity:.85">📍 ${lType==='yesterday'?'الخبز البارد لـ':lType==='swap'?'استبدال لـ':'نقل من'} — ${dateLabel}</div>
         <div class="pt-selected-banner-name">${ptObj?ptObj.name:'?'}</div>
       </div>
     </div>`;
 
-    h+=bTGrid(items,ptId,'DF.lItems',null);
+    h+=bTGrid(items,ptId,'DF.lItems','updLeftBtn()');
 
     // الملخص
     if(hasQ){
