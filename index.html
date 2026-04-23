@@ -1440,6 +1440,7 @@ function updSum(){
 }
 
 function _showSubmitBtn(){
+  if(DF.leftMode)return; // لا تُظهر زر التسليم في وضع الفائض
   const sb=document.getElementById('sticky-submit-deliv');
   if(sb){sb.style.display='block';sb.style.opacity='1';}
   // تحديث محتوى الزر الثابت
@@ -1450,6 +1451,9 @@ function _showSubmitBtn(){
     const total=TK.reduce((s,k)=>s+(parseInt(DF.items[k])||0),0);
     btn.innerHTML=`<div style="font-size:12px;opacity:.85;font-weight:700">🚚 تسليم — ${pt?pt.name:''}</div><div>${parts} | المجموع: ${total} خبزة</div>`;
   }
+  // أخفِ زر الفائض
+  const lw=document.getElementById('sticky-left-wrap');
+  if(lw)lw.style.display='none';
 }
 function _hideSubmitBtn(){
   const sb=document.getElementById('sticky-submit-deliv');
@@ -1458,6 +1462,10 @@ function _hideSubmitBtn(){
 
 // تحديث زر الفائض عند كل تغيير في الكمية
 function updLeftBtn(){
+  // أخفِ زر التسليم دائماً في وضع الفائض
+  const sb=document.getElementById('sticky-submit-deliv');
+  if(sb)sb.style.display='none';
+
   const lTotal=TK.reduce((s,k)=>s+(parseInt(DF.lItems[k])||0),0);
   let btn=document.getElementById('sticky-left-btn');
   if(lTotal>0){
@@ -1466,7 +1474,6 @@ function updLeftBtn(){
     const lTypeLabel=lType==='yesterday'?'🥖 خبز بارد':lType==='swap'?'🔄 استبدال':'➡️ نقل';
     const lPtName=S.points.find(p=>p.id===DF.lPtId)?.name||'';
     if(!btn){
-      // أنشئ الزر إذا لم يكن موجوداً
       const wrap=document.createElement('div');
       wrap.className='sticky-submit';wrap.id='sticky-left-wrap';
       wrap.innerHTML=`<button id="sticky-left-btn" class="btn" onclick="submitLeft()" style="font-size:16px;padding:15px;line-height:1.4;background:#1E40AF;color:#fff;border-color:#1E40AF;width:100%;border-radius:var(--r);font-family:inherit;cursor:pointer"></button>`;
