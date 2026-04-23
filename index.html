@@ -518,7 +518,7 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
 .pt-btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .pt-btn{padding:18px 12px;border-radius:var(--r);border:3px solid var(--br2);background:var(--bg2);cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;position:relative;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .pt-btn:active{transform:scale(.95)}
-.pt-btn.selected{border-color:var(--A);background:var(--AL);box-shadow:0 3px 10px color-mix(in srgb,var(--A) 25%,transparent)}
+.pt-btn.selected{border-color:var(--A);background:var(--AL);box-shadow:0 3px 10px color-mix(in srgb,var(--A) 25%,transparent);border-width:3px}
 .pt-btn-name{font-size:18px;font-weight:800;color:var(--tx);margin-bottom:5px}
 .pt-btn.selected .pt-btn-name{color:var(--AD)}
 .pt-btn-meta{font-size:13px;color:var(--tx2)}
@@ -1295,7 +1295,7 @@ function bDelivForm(){
       const debt=ptDebt(pt.id);
       const usageCnt=usageMap[pt.id]||0;
       h+=`<div class="pt-btn ${isSel?'selected':''}" onclick="selPt('${pt.id}')" style="position:relative">
-        ${PT_SORT==='usage'&&usageCnt>0?`<span class="pt-btn-usage">${usageCnt}</span>`:''}
+        ${isSel?`<div style="position:absolute;top:6px;left:8px;width:20px;height:20px;border-radius:50%;background:var(--A);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:900">✓</div>`:''}
         <div class="pt-btn-name">${pt.name}</div>
         <div class="pt-btn-meta">${cntToday} خبزة اليوم</div>
         ${debt>0?`<div class="pt-btn-debt">دين: ${debt.toFixed(2)} د.م</div>`:''}
@@ -1520,9 +1520,10 @@ function bLeftForm(){
       const isSel=ptId===pt.id;
       const c=gd(pt.id,TODAY).reduce((s,d)=>s+ccount(d.items),0);
       const btnStyle=isSel
-        ?'border-color:#1E40AF;background:#BFDBFE;'
+        ?'border-color:#1E40AF;background:#BFDBFE;border-width:3px;'
         :'border-color:#3B82F6;background:#DBEAFE;';
-      h+=`<div class="pt-btn ${isSel?'selected':''}" onclick="DF.lPtId='${pt.id}';DF.lType='yesterday';DF.lItems=ei();renderDeliv()" style="${btnStyle}">
+      h+=`<div class="pt-btn ${isSel?'selected':''}" onclick="DF.lPtId='${pt.id}';DF.lType='yesterday';DF.lItems=ei();renderDeliv()" style="${btnStyle}position:relative">
+        ${isSel?`<div style="position:absolute;top:6px;left:8px;width:20px;height:20px;border-radius:50%;background:#1E40AF;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:900">✓</div>`:''}
         <div class="pt-btn-name">${pt.name}</div>
         <div class="pt-btn-meta">${c} خبزة اليوم</div>
       </div>`;
@@ -1640,10 +1641,12 @@ function bLeftForm(){
     const lTotal=TK.reduce((s,k)=>s+(parseInt(DF.lItems[k])||0),0);
     const lPtName=S.points.find(p=>p.id===DF.lPtId)?.name||'';
     const lTypeLabel=lType==='yesterday'?'🥖 خبز بارد':lType==='swap'?'🔄 استبدال':'➡️ نقل';
-    h+=`<div class="sticky-submit"><button class="btn" onclick="submitLeft()" style="font-size:16px;padding:15px;line-height:1.4;background:#1E40AF;color:#fff;border-color:#1E40AF;width:100%;border-radius:var(--r);font-family:inherit;cursor:pointer">
-      <div style="font-size:12px;opacity:.85;font-weight:700">📦 فائض ${lTypeLabel} — ${lPtName}</div>
-      <div>${lParts} | المجموع: ${lTotal} خبزة</div>
-    </button></div>`;
+    if(lTotal>0){
+      h+=`<div class="sticky-submit"><button class="btn" onclick="submitLeft()" style="font-size:16px;padding:15px;line-height:1.4;background:#1E40AF;color:#fff;border-color:#1E40AF;width:100%;border-radius:var(--r);font-family:inherit;cursor:pointer">
+        <div style="font-size:12px;opacity:.85;font-weight:700">📦 فائض ${lTypeLabel} — ${lPtName}</div>
+        <div>${lParts} | المجموع: ${lTotal} خبزة</div>
+      </button></div>`;
+    }
   }
 
   h+=`<button class="btn btn-s" style="margin-top:10px" onclick="setMode(false)">⬅ رجوع للتسليم</button>`;
