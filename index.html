@@ -9,9 +9,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="محسين للخبز التقليدي">
 <title>محسين للخبز التقليدي</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" media="print" onload="this.media='all'" onerror="this.remove()">
 <script>
 (function(){
   try{
@@ -23,6 +20,7 @@
 })();
 </script>
 <style>
+
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --A:#C27A1A;--AL:#FEF3E2;--AM:#F5C469;--AD:#7A4A08;--AX:#4A2C04;
@@ -82,6 +80,8 @@
 .role-badge.manager{background:var(--AL);color:var(--AD)}
 .role-badge.driver{background:var(--TL);color:var(--TD)}
 /* ─── SPLASH SCREEN ─── */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+
 #splash{
   position:fixed;inset:0;z-index:999;
   background:linear-gradient(155deg,#7A3008 0%,#B86010 35%,#C27A1A 65%,#D4922A 100%);
@@ -173,7 +173,7 @@ body{font-family:'Cairo',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,s
 @keyframes fi{from{opacity:.5;transform:translateY(3px)}to{opacity:1;transform:none}}
 
 /* ─── NAV ─── */
-.nav{background:var(--bg);border-top:2px solid var(--br);display:flex;flex-shrink:0;padding-bottom:var(--sb);position:relative;z-index:100}
+.nav{background:var(--bg);border-top:2px solid var(--br);display:flex;flex-shrink:0;padding-bottom:var(--sb);position:relative;z-index:300}
 .nb{flex:1;padding:10px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:none;background:none;color:var(--tx3);font-size:10px;font-family:inherit;font-weight:700;transition:color .15s;position:relative;min-width:0}
 .nb.on{color:var(--A)}
 .nb.on::after{content:'';position:absolute;top:0;left:15%;right:15%;height:3px;background:var(--A);border-radius:0 0 3px 3px}
@@ -218,6 +218,7 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
 .mode-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .mode-btn{padding:20px 10px;border-radius:var(--r);font-size:19px;font-weight:800;cursor:pointer;border:2.5px solid var(--br2);background:var(--bg2);color:var(--tx2);text-align:center;transition:all .18s;font-family:inherit;line-height:1.4}
 .mode-btn.on{background:var(--A);color:#fff;border-color:var(--A);box-shadow:0 3px 12px color-mix(in srgb,var(--A) 35%,transparent)}
+.mode-btn.on-left{background:#DBEAFE;color:#1E40AF;border-color:#3B82F6;box-shadow:0 3px 12px rgba(59,130,246,.25)}
 
 /* ─── BREAD TYPE CARDS — عمودي للوضوح الميداني ─── */
 .tgrid{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
@@ -518,7 +519,7 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
 .pt-btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .pt-btn{padding:18px 12px;border-radius:var(--r);border:3px solid var(--br2);background:var(--bg2);cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;position:relative;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .pt-btn:active{transform:scale(.95)}
-.pt-btn.selected{border-color:var(--A);background:var(--AL);box-shadow:0 3px 10px color-mix(in srgb,var(--A) 25%,transparent)}
+.pt-btn.selected{border-color:var(--A);background:var(--AL);box-shadow:0 3px 10px color-mix(in srgb,var(--A) 25%,transparent);border-width:3px}
 .pt-btn-name{font-size:18px;font-weight:800;color:var(--tx);margin-bottom:5px}
 .pt-btn.selected .pt-btn-name{color:var(--AD)}
 .pt-btn-meta{font-size:13px;color:var(--tx2)}
@@ -635,9 +636,13 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
   <div class="content" id="content">
     <div class="screen on" id="scr-home"></div>
     <div class="screen" id="scr-deliv"></div>
-    <!-- زر التسليم الثابت — دائماً في الـ DOM -->
+    <!-- زر التسليم الثابت -->
     <div id="sticky-submit-deliv" class="sticky-submit" style="display:none">
-      <button class="btn btn-p" onclick="submitDeliv()" style="font-size:19px;padding:17px">✓ تسجيل التسليم</button>
+      <button class="btn btn-p" onclick="submitDeliv()" id="sticky-deliv-btn" style="font-size:16px;padding:15px;line-height:1.4;width:100%">✓ تسجيل التسليم</button>
+    </div>
+    <!-- زر الفائض الثابت -->
+    <div id="sticky-left-wrap" class="sticky-submit" style="display:none">
+      <button id="sticky-left-btn" class="btn" onclick="submitLeft()" style="font-size:16px;padding:15px;line-height:1.4;background:#1E40AF;color:#fff;border-color:#1E40AF;width:100%;border-radius:var(--r);font-family:inherit;cursor:pointer">📦 تسجيل الفائض</button>
     </div>
     <div class="screen" id="scr-pts"></div>
     <div class="screen" id="scr-stats"></div>
@@ -678,7 +683,7 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
 // ═══════════════════════════════════════════════
 const TK = ['sha3ir_k','dra','qmh'];
 const TM = {
-  sha3ir_k:{ label:'خبز الشعير', short:'شعير', icon:'🌾', cls:'sha', bdgCls:'bdg-sha' },
+  sha3ir_k:{ label:'خبز الشعير', short:'شعير', icon:'🫘', cls:'sha', bdgCls:'bdg-sha' },
   dra:     { label:'خبز الذرة',  short:'ذرة',   icon:'🌽', cls:'dra', bdgCls:'bdg-dra' },
   qmh:     { label:'خبز القمح', short:'قمح',   icon:'🌾', cls:'qmh', bdgCls:'bdg-qmh' }
 };
@@ -859,6 +864,18 @@ function save(){
   S._ts=Date.now();
   localStorage.setItem('makhbaza_v4',JSON.stringify(S));
   localStorage.setItem('makhbaza_cfg',JSON.stringify(CFG));
+  // نسخة احتياطية تلقائية — آخر 10 تغييرات
+  try{
+    const snap={data:JSON.stringify(S),ts:Date.now()};
+    const snaps=[];
+    for(let i=1;i<=10;i++){const r=localStorage.getItem('makhbaza_snap_'+i);if(r)snaps.push({i,s:JSON.parse(r)});}
+    // أضف النسخة الجديدة في المقدمة وأزح الباقي
+    for(let i=Math.min(snaps.length+1,10);i>=2;i--){
+      const prev=localStorage.getItem('makhbaza_snap_'+(i-1));
+      if(prev)localStorage.setItem('makhbaza_snap_'+i,prev);
+    }
+    localStorage.setItem('makhbaza_snap_1',JSON.stringify(snap));
+  }catch(e){}
 }
 function loadLocal(){
   try{const r=localStorage.getItem('makhbaza_v4');if(r){const d=JSON.parse(r);Object.assign(S,d);if(!S.settlements)S.settlements=[];}}catch(e){}
@@ -868,8 +885,16 @@ function dataForSync(){ return JSON.stringify({...S,_ts:S._ts||Date.now()}) }
 function mergeFromSync(raw){
   try{
     const R=JSON.parse(raw);
+    // مفتاح التسليمات والتخليصات: الـ ID
     const mId=(l,r)=>{const m=new Map();l.forEach(x=>m.set(x.id,x));r.forEach(x=>{if(!m.has(x.id))m.set(x.id,x)});return[...m.values()]};
-    const mLft=(l,r)=>{const m=new Map();l.forEach(x=>m.set(x.ptId+'_'+x.date,x));r.forEach(x=>{const k=x.ptId+'_'+x.date;if(!m.has(k))m.set(k,x)});return[...m.values()]};
+    // مفتاح الفوائض: الـ ID إذا وُجد، وإلا ptId+date (للبيانات القديمة)
+    const mLft=(l,r)=>{
+      const m=new Map();
+      const key=x=>x.id?x.id:(x.ptId+'_'+x.date);
+      l.forEach(x=>m.set(key(x),x));
+      r.forEach(x=>{if(!m.has(key(x)))m.set(key(x),x);});
+      return[...m.values()];
+    };
     const mPts=(l,r)=>{const m=new Map();l.forEach(x=>m.set(x.id,x));r.forEach(x=>{if(!m.has(x.id))m.set(x.id,x)});return[...m.values()]};
     S.deliveries=mId(S.deliveries,R.deliveries||[]);
     S.settlements=mId(S.settlements,R.settlements||[]);
@@ -1210,8 +1235,8 @@ function bTGrid(items,ptId,pfx,onchg){
         <div class="tcard-adj">
           <button type="button" class="tcard-adj-btn" onclick="adjTC('${k}','${pfx}',${onchg?'true':'false'},-1)">−</button>
           <input type="number" id="tc-${k}" min="0" step="1" placeholder="0" inputmode="numeric" autocomplete="off" value="${v||''}"
-            oninput="${pfx}['${k}']=this.value${onchg?';'+onchg:''}"
-            onchange="${pfx}['${k}']=this.value${onchg?';'+onchg:''}"
+            oninput="${pfx}['${k}']=this.value;${pfx==='DF.lItems'?'updLeftBtn()':onchg?onchg:''}"
+            onchange="${pfx}['${k}']=this.value;${pfx==='DF.lItems'?'updLeftBtn()':onchg?onchg:''}"
             onfocus="this.select()">
           <button type="button" class="tcard-adj-btn" onclick="adjTC('${k}','${pfx}',${onchg?'true':'false'},1)">+</button>
         </div>
@@ -1225,10 +1250,8 @@ function adjTC(k,pfx,hasOnchg,delta){
   const inp=document.getElementById('tc-'+k);if(!inp)return;
   const newVal=Math.max(0,(parseInt(inp.value)||0)+delta);
   inp.value=newVal;
-  // update state
-  if(pfx==='DF.items') DF.items[k]=String(newVal);
-  else if(pfx==='DF.lItems') DF.lItems[k]=String(newVal);
-  if(hasOnchg) updSum();
+  if(pfx==='DF.items'){DF.items[k]=String(newVal);if(hasOnchg)updSum();}
+  else if(pfx==='DF.lItems'){DF.lItems[k]=String(newVal);updLeftBtn();}
 }
 
 function bDelivForm(){
@@ -1246,24 +1269,36 @@ function bDelivForm(){
   }
 
   // ─── أزرار نقاط البيع ────────────────────────
+  const ptSearch=window._ptSearch||'';
+  const filteredPts=ptSearch?pts.filter(p=>p.name.includes(ptSearch)):pts;
+
   let h=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
     <div style="font-size:15px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em">① اختر نقطة البيع</div>
     <div class="sort-toggle" style="margin:0;gap:6px">
       <div class="sort-btn ${PT_SORT==='manual'?'on':''}" onclick="PT_SORT='manual';renderDeliv()" style="padding:6px 10px;font-size:12px">⠿ يدوي</div>
       <div class="sort-btn ${PT_SORT==='usage'?'on':''}" onclick="PT_SORT='usage';renderDeliv()" style="padding:6px 10px;font-size:12px">🔥 الأكثر</div>
     </div>
+  </div>
+  <div style="position:relative;margin-bottom:10px">
+    <input type="text" id="pt-search-inp" value="${ptSearch}"
+      placeholder="🔍 ابحث عن نقطة..."
+      inputmode="text" autocomplete="off" autocorrect="off"
+      style="width:100%;padding:10px 14px;border-radius:var(--r);border:1.5px solid var(--br2);background:var(--bg2);font-size:15px;font-family:inherit;color:var(--tx)"
+      oninput="window._ptSearch=this.value;renderDeliv()">
+    ${ptSearch?`<button onclick="window._ptSearch='';renderDeliv()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer;color:var(--tx3)">✕</button>`:''}
   </div>`;
 
   if(!S.points.length){h+=`<div class="alrt alrt-w">أضف نقطة بيع أولاً</div>`;}
+  else if(filteredPts.length===0){h+=`<div class="alrt alrt-w" style="text-align:center">لا توجد نتائج لـ "${ptSearch}"</div>`;}
   else{
     h+=`<div class="pt-btn-grid">`;
-    pts.forEach(pt=>{
+    filteredPts.forEach(pt=>{
       const isSel=ptId===pt.id;
       const cntToday=gd(pt.id,TODAY).reduce((s,d)=>s+ccount(d.items),0);
       const debt=ptDebt(pt.id);
       const usageCnt=usageMap[pt.id]||0;
       h+=`<div class="pt-btn ${isSel?'selected':''}" onclick="selPt('${pt.id}')" style="position:relative">
-        ${PT_SORT==='usage'&&usageCnt>0?`<span class="pt-btn-usage">${usageCnt}</span>`:''}
+        ${isSel?`<div style="position:absolute;top:6px;left:8px;width:20px;height:20px;border-radius:50%;background:var(--A);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:900">✓</div>`:''}
         <div class="pt-btn-name">${pt.name}</div>
         <div class="pt-btn-meta">${cntToday} خبزة اليوم</div>
         ${debt>0?`<div class="pt-btn-debt">دين: ${debt.toFixed(2)} د.م</div>`:''}
@@ -1277,7 +1312,6 @@ function bDelivForm(){
     <div class="mode-btn on">🚚<br>تسليم خبز</div>
     <div class="mode-btn" onclick="setMode(true)">📦<br>تسجيل فائض</div>
   </div>`;
-
   h+=`<div style="font-size:15px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em;margin:10px 0 10px">② الكميات حسب النوع</div>`;
 
   // ─── بانر اسم النقطة المختارة ───────────────
@@ -1332,26 +1366,33 @@ function bDelivForm(){
     h+=`</div>`;
   }
 
+  h+=`<div class="fg"><label class="fl">📋 ملاحظة للمسؤول <span style="font-size:12px;font-weight:400;color:var(--tx3)">(تظهر في الطباعة)</span></label>
+    <input type="text" id="f-note-pub" value="${DF.notePublic||''}" placeholder="ملاحظة لمسؤول نقطة البيع..." autocomplete="off" name="npb-x9" oninput="DF.notePublic=this.value"></div>`;
+  h+=`<div class="fg"><label class="fl">🔒 ملاحظة داخلية <span style="font-size:12px;font-weight:400;color:var(--tx3)">(لا تظهر في الطباعة)</span></label>
+    <input type="text" id="f-note-priv" value="${DF.notePrivate||''}" placeholder="ملاحظة خاصة بالمخبزة..." autocomplete="off" name="np-x9" oninput="DF.notePrivate=this.value"></div>`;
   h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
     <div class="fg"><label class="fl">الساعة</label><input type="time" id="f-time" value="${DF.time}" autocomplete="off" oninput="DF.time=this.value"></div>
     <div class="fg"><label class="fl">المسؤول</label>
       <input type="text" id="f-drv" list="drvs" value="${DF.driver}" placeholder="الاسم" autocomplete="off" name="bread-driver-x7" oninput="DF.driver=this.value">
       <datalist id="drvs">${S.drivers.map(d=>`<option value="${d}">`).join('')}</datalist>
     </div></div>`;
-  h+=`<div class="fg"><label class="fl">🔒 ملاحظة داخلية <span style="font-size:12px;font-weight:400;color:var(--tx3)">(لا تظهر في الطباعة)</span></label>
-    <input type="text" id="f-note-priv" value="${DF.notePrivate||''}" placeholder="ملاحظة خاصة بالمخبزة..." autocomplete="off" name="np-x9" oninput="DF.notePrivate=this.value"></div>`;
-  h+=`<div class="fg"><label class="fl">📋 ملاحظة للمسؤول <span style="font-size:12px;font-weight:400;color:var(--tx3)">(تظهر في الطباعة)</span></label>
-    <input type="text" id="f-note-pub" value="${DF.notePublic||''}" placeholder="ملاحظة لمسؤول نقطة البيع..." autocomplete="off" name="npb-x9" oninput="DF.notePublic=this.value"></div>`;
   // الزر يظهر فقط عند اختيار نقطة + إدخال كمية
   if(ptId&&hasQ){
-    h+=`<div class="sticky-submit"><button class="btn btn-p" onclick="submitDeliv()" style="font-size:19px;padding:17px">✓ تسجيل التسليم</button></div>`;
+    const pt=S.points.find(p=>p.id===ptId);
+    const parts=TK.filter(k=>parseInt(DF.items[k])>0).map(k=>`${TM[k].icon}${DF.items[k]}`).join(' · ');
+    const total=TK.reduce((s,k)=>s+(parseInt(DF.items[k])||0),0);
+    h+=`<div class="sticky-submit"><button class="btn btn-p" onclick="submitDeliv()" style="font-size:16px;padding:15px;line-height:1.4">
+      <div style="font-size:12px;opacity:.85;font-weight:700">🚚 تسليم — ${pt?pt.name:''}</div>
+      <div>${parts} | المجموع: ${total} خبزة</div>
+    </button></div>`;
   }
   return h;
 }
 
 function selPt(id){
   DF.ptId=id;
-  DF.time=nstr(); // تحديث الساعة عند اختيار النقطة
+  DF.time=nstr();
+  window._ptSearch=''; // مسح البحث عند اختيار نقطة
   renderDeliv();
 }
 
@@ -1401,12 +1442,47 @@ function updSum(){
 }
 
 function _showSubmitBtn(){
+  if(DF.leftMode)return; // لا تُظهر زر التسليم في وضع الفائض
   const sb=document.getElementById('sticky-submit-deliv');
   if(sb){sb.style.display='block';sb.style.opacity='1';}
+  // تحديث محتوى الزر الثابت
+  const btn=document.getElementById('sticky-deliv-btn');
+  if(btn&&DF.ptId){
+    const pt=S.points.find(p=>p.id===DF.ptId);
+    const parts=TK.filter(k=>parseInt(DF.items[k])>0).map(k=>`${TM[k].icon}${DF.items[k]}`).join(' · ');
+    const total=TK.reduce((s,k)=>s+(parseInt(DF.items[k])||0),0);
+    btn.innerHTML=`<div style="font-size:12px;opacity:.85;font-weight:700">🚚 تسليم — ${pt?pt.name:''}</div><div>${parts} | المجموع: ${total} خبزة</div>`;
+  }
+  // أخفِ زر الفائض
+  const lw=document.getElementById('sticky-left-wrap');
+  if(lw)lw.style.display='none';
 }
 function _hideSubmitBtn(){
   const sb=document.getElementById('sticky-submit-deliv');
   if(sb){sb.style.display='none';}
+}
+
+// تحديث زر الفائض عند كل تغيير في الكمية
+function updLeftBtn(){
+  // أخفِ زر التسليم دائماً في وضع الفائض
+  const sb=document.getElementById('sticky-submit-deliv');
+  if(sb)sb.style.display='none';
+
+  const lTotal=TK.reduce((s,k)=>s+(parseInt(DF.lItems[k])||0),0);
+  const wrap=document.getElementById('sticky-left-wrap');
+  const btn=document.getElementById('sticky-left-btn');
+  if(!wrap||!btn)return;
+
+  if(lTotal>0){
+    const lParts=TK.filter(k=>parseInt(DF.lItems[k])>0).map(k=>`${TM[k].icon}${DF.lItems[k]}`).join(' · ');
+    const lType=DF.lType||'yesterday';
+    const lTypeLabel=lType==='yesterday'?'🥖 خبز بارد':lType==='swap'?'🔄 استبدال':'➡️ نقل';
+    const lPtName=S.points.find(p=>p.id===DF.lPtId)?.name||'';
+    btn.innerHTML=`<div style="font-size:12px;opacity:.85;font-weight:700">📦 فائض ${lTypeLabel} — ${lPtName}</div><div>${lParts} | المجموع: ${lTotal} خبزة</div>`;
+    wrap.style.display='block';
+  }else{
+    wrap.style.display='none';
+  }
 }
 
 function submitDeliv(){
@@ -1450,7 +1526,14 @@ function bLeftForm(){
   const yestCnt=yestDelivs.reduce((s,d)=>s+ccount(d.items),0);
   const yestLeftCnt=glCount(ptId,YESTERDAY);
 
-  let h=``;
+  // ─── رأس أزرق واضح يميز واجهة الفائض ───────────────
+  let h=`<div style="background:#1E40AF;color:#fff;padding:10px 14px;border-radius:var(--r);margin-bottom:14px;display:flex;align-items:center;gap:10px">
+    <span style="font-size:24px">📦</span>
+    <div>
+      <div style="font-size:17px;font-weight:900">وضع تسجيل الفائض</div>
+      <div style="font-size:12px;opacity:.85">أنت الآن في واجهة الفائض — وليس التسليم</div>
+    </div>
+  </div>`;
 
   // ─── STEP 1: اختر نقطة البيع ───────────────────
   h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
@@ -1465,7 +1548,11 @@ function bLeftForm(){
     S.points.forEach(pt=>{
       const isSel=ptId===pt.id;
       const c=gd(pt.id,TODAY).reduce((s,d)=>s+ccount(d.items),0);
-      h+=`<div class="pt-btn ${isSel?'selected':''}" onclick="DF.lPtId='${pt.id}';DF.lType='yesterday';DF.lItems=ei();renderDeliv()">
+      const btnStyle=isSel
+        ?'border-color:#1E40AF;background:#BFDBFE;border-width:3px;'
+        :'border-color:#3B82F6;background:#DBEAFE;';
+      h+=`<div class="pt-btn ${isSel?'selected':''}" onclick="DF.lPtId='${pt.id}';DF.lType='yesterday';DF.lItems=ei();renderDeliv()" style="${btnStyle}position:relative">
+        ${isSel?`<div style="position:absolute;top:6px;left:8px;width:20px;height:20px;border-radius:50%;background:#1E40AF;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:900">✓</div>`:''}
         <div class="pt-btn-name">${pt.name}</div>
         <div class="pt-btn-meta">${c} خبزة اليوم</div>
       </div>`;
@@ -1476,7 +1563,7 @@ function bLeftForm(){
   // ─── زرا التسليم/الفائض ───
   h+=`<div class="mode-btns" style="margin-top:12px">
     <div class="mode-btn" onclick="setMode(false)">🚚<br>تسليم خبز</div>
-    <div class="mode-btn on">📦<br>تسجيل فائض</div>
+    <div class="mode-btn on-left">📦<br>تسجيل فائض</div>
   </div>`;
 
   // ─── STEP 2: نوع الفائض — يظهر فقط بعد اختيار النقطة ───
@@ -1544,14 +1631,14 @@ function bLeftForm(){
     // بانر اسم النقطة
     const ptObj=S.points.find(p=>p.id===ptId);
     const dateLabel=lType==='yesterday'?`أمس (${dl(YESTERDAY)})`:'اليوم';
-    h+=`<div class="pt-selected-banner">
+    h+=`<div class="pt-selected-banner" style="background:#1E40AF;border-color:#1E40AF">
       <div>
-        <div class="pt-selected-banner-lbl">📍 ${lType==='yesterday'?'الخبز البارد لـ':lType==='swap'?'استبدال لـ':'نقل من'} — ${dateLabel}</div>
+        <div class="pt-selected-banner-lbl" style="opacity:.85">📍 ${lType==='yesterday'?'الخبز البارد لـ':lType==='swap'?'استبدال لـ':'نقل من'} — ${dateLabel}</div>
         <div class="pt-selected-banner-name">${ptObj?ptObj.name:'?'}</div>
       </div>
     </div>`;
 
-    h+=bTGrid(items,ptId,'DF.lItems',null);
+    h+=bTGrid(items,ptId,'DF.lItems','updLeftBtn()');
 
     // الملخص
     if(hasQ){
@@ -1579,7 +1666,16 @@ function bLeftForm(){
       h+=`</div>`;
     }
 
-    h+=`<div class="sticky-submit"><button class="btn btn-p" onclick="submitLeft()" style="font-size:19px;padding:17px">✓ تسجيل الفائض</button></div>`;
+    const lParts=TK.filter(k=>parseInt(DF.lItems[k])>0).map(k=>`${TM[k].icon}${DF.lItems[k]}`).join(' · ');
+    const lTotal=TK.reduce((s,k)=>s+(parseInt(DF.lItems[k])||0),0);
+    const lPtName=S.points.find(p=>p.id===DF.lPtId)?.name||'';
+    const lTypeLabel=lType==='yesterday'?'🥖 خبز بارد':lType==='swap'?'🔄 استبدال':'➡️ نقل';
+    if(lTotal>0){
+      h+=`<div class="sticky-submit"><button class="btn" onclick="submitLeft()" style="font-size:16px;padding:15px;line-height:1.4;background:#1E40AF;color:#fff;border-color:#1E40AF;width:100%;border-radius:var(--r);font-family:inherit;cursor:pointer">
+        <div style="font-size:12px;opacity:.85;font-weight:700">📦 فائض ${lTypeLabel} — ${lPtName}</div>
+        <div>${lParts} | المجموع: ${lTotal} خبزة</div>
+      </button></div>`;
+    }
   }
 
   h+=`<button class="btn btn-s" style="margin-top:10px" onclick="setMode(false)">⬅ رجوع للتسليم</button>`;
@@ -1623,26 +1719,38 @@ function getReason(l){
 }
 
 function submitLeft(){
+  // تعطيل الزر فوراً لمنع الضغط المتكرر
+  const lBtn=document.getElementById('sticky-left-btn');
+  const lWrap=document.getElementById('sticky-left-wrap');
+  if(lBtn){lBtn.disabled=true;lBtn.style.opacity='.6';}
+
   const ptId=DF.lPtId;
   let lType=DF.lType||'yesterday';
   const items=ei();
   TK.forEach(k=>{const inp=document.getElementById('tc-'+k);if(inp)items[k]=inp.value||'0';});
-  if(!ptId){toast('اختر نقطة بيع','e');return;}
-  if(!hasI(items)){toast('أدخل كمية الفائض','e');return;}
+  if(!ptId){
+    if(lBtn){lBtn.disabled=false;lBtn.style.opacity='1';}
+    toast('اختر نقطة بيع','e');return;
+  }
+  if(!hasI(items)){
+    if(lBtn){lBtn.disabled=false;lBtn.style.opacity='1';}
+    toast('أدخل كمية الفائض','e');return;
+  }
 
   // ── منطق الدين الذكي مع تنبيه ──
   if(lType==='yesterday'){
-    const currentDebt=ptOldDebt(ptId); // ديون الأيام السابقة فقط
+    const currentDebt=ptOldDebt(ptId);
     if(currentDebt<=0){
-      // لا دين — اعرض تنبيهاً قبل التنفيذ
+      if(lBtn){lBtn.disabled=false;lBtn.style.opacity='1';}
       _showNoDebtWarning(ptId,items,lType);
       return;
     }
-    // يوجد دين → يُطرح من أمس مباشرة
     _doSaveLeft(ptId,YESTERDAY,'yesterday',items);
   }else{
     _doSaveLeft(ptId,TODAY,lType,items);
   }
+  // إخفاء الزر بعد التسجيل
+  if(lWrap)lWrap.style.display='none';
 }
 
 function _showNoDebtWarning(ptId,items,lType){
@@ -1697,7 +1805,18 @@ function _doSaveLeft(ptId,targetDate,lType,items){
   save();autoSync();
   renderDeliv();scrollTop();
 }
-function setMode(b){DF.leftMode=b;DF.lType='yesterday';if(b&&DF.ptId)DF.lPtId=DF.ptId;if(b)_hideSubmitBtn();renderDeliv();}
+function setMode(b){
+  DF.leftMode=b;DF.lType='yesterday';
+  if(b&&DF.ptId)DF.lPtId=DF.ptId;
+  if(b){
+    _hideSubmitBtn(); // أخفِ زر التسليم
+  }else{
+    // أخفِ زر الفائض عند الرجوع للتسليم
+    const lw=document.getElementById('sticky-left-wrap');
+    if(lw)lw.style.display='none';
+  }
+  renderDeliv();
+}
 
 // ─── كتيب جهات الاتصال ───────────────────────
 async function pickContact(inputId){
@@ -1767,6 +1886,10 @@ function renderPts(){
         </div>
         <div style="display:flex;gap:6px;align-items:center">
           <button class="icon-btn" onclick="event.stopPropagation();openEditPt('${pt.id}')" title="تعديل الاسم" style="font-size:18px">✏️</button>
+          <div class="touch-order-btns" style="display:flex;flex-direction:column;gap:2px">
+            <button onclick="event.stopPropagation();movePt('${pt.id}',-1)" style="font-size:12px;padding:2px 6px;border-radius:4px;border:1.5px solid var(--br2);background:var(--bg2);cursor:pointer;line-height:1">▲</button>
+            <button onclick="event.stopPropagation();movePt('${pt.id}',1)" style="font-size:12px;padding:2px 6px;border-radius:4px;border:1.5px solid var(--br2);background:var(--bg2);cursor:pointer;line-height:1">▼</button>
+          </div>
           <button class="del-btn" onclick="event.stopPropagation();delPtBtn(this,'${pt.id}')" style="font-size:12px">✕</button>
         </div>
       </div>`;
@@ -1774,6 +1897,18 @@ function renderPts(){
     h+=`</div>`;
   }
   document.getElementById('scr-pts').innerHTML=h;
+}
+
+// ─── تحريك نقطة للأعلى/الأسفل (للهاتف) ──────────
+function movePt(id,dir){
+  const idx=S.points.findIndex(p=>p.id===id);
+  if(idx<0)return;
+  const newIdx=idx+dir;
+  if(newIdx<0||newIdx>=S.points.length)return;
+  const tmp=S.points[idx];
+  S.points[idx]=S.points[newIdx];
+  S.points[newIdx]=tmp;
+  save();autoSync();renderPts();
 }
 
 // ─── تعديل اسم نقطة البيع ───────────────────────
@@ -1797,6 +1932,9 @@ function openEditPt(id){
           style="width:48px;height:48px;border-radius:var(--r);border:2px solid var(--A);background:var(--AL);font-size:22px;cursor:pointer;flex-shrink:0">👤</button>
       </div>
     </div>
+    <div class="fg"><label class="fl">⚠️ عتبة تنبيه الدين (درهم) <span style="font-size:12px;font-weight:400;color:var(--tx3)">اتركه فارغاً لتعطيل التنبيه</span></label>
+      <input type="number" id="edit-pt-threshold" value="${pt.debtThreshold||''}" placeholder="مثال: 500" inputmode="numeric" min="0">
+    </div>
     <button class="btn btn-p" onclick="saveEditPt('${id}')">✓ حفظ التعديلات</button>
     <button class="btn btn-s" style="margin-top:10px" onclick="closeModal()">إلغاء</button>
   </div>`;
@@ -1808,8 +1946,10 @@ function saveEditPt(id){
   const n=document.getElementById('edit-pt-name')?.value.trim();
   const a=document.getElementById('edit-pt-addr')?.value.trim();
   const phone=document.getElementById('edit-pt-phone')?.value.trim();
+  const thr=document.getElementById('edit-pt-threshold')?.value.trim();
   if(!n){toast('أدخل اسم النقطة','e');return;}
   pt.name=n;pt.address=a||'';pt.phone=phone||'';
+  pt.debtThreshold=thr?parseFloat(thr):null;
   save();autoSync();closeModal();toast('✓ تم حفظ التعديلات');render();
 }
 
@@ -1930,7 +2070,7 @@ function renderPtDetail(){
       <div style="font-size:14px;color:var(--tx2);margin-top:4px">${pt.address||'بدون عنوان'}${pt.phone?` · 📞 ${pt.phone}`:''}</div>
     </div>
     <div style="display:flex;gap:8px">
-      <button class="btn btn-s btn-sm" onclick="printDailyLog('${pt.id}')" style="font-size:13px">🖨️ طباعة</button>
+      <button class="btn btn-s btn-sm" onclick="openPrintModal('${pt.id}')" style="font-size:13px">🖨️ طباعة</button>
       <button class="btn btn-s btn-sm" onclick="openPriceModal('${pt.id}')">⚙️ الأسعار</button>
     </div>
   </div>`;
@@ -2247,16 +2387,200 @@ function delPtBtn(btnEl,id){confirmDel(btnEl,()=>delPt(id),'p'+id);}
 // ═══════════════════════════════════════════════
 //  PRINT DAILY LOG — احترافي
 // ═══════════════════════════════════════════════
-function printDailyLog(ptId){
+// ═══════════════════════════════════════════════
+//  PRINT MODAL — اختيار الأيام
+// ═══════════════════════════════════════════════
+function openPrintModal(ptId){
   const pt=S.points.find(p=>p.id===ptId);if(!pt)return;
   const allDates=[...new Set([
     ...S.deliveries.filter(d=>d.ptId===ptId).map(d=>d.date),
     ...S.leftovers.filter(l=>l.ptId===ptId).map(l=>l.date)
   ])].sort().reverse();
+  if(!allDates.length){toast('لا توجد بيانات للطباعة','e');return;}
+
+  // تحضير سجل التخليصات لهذه النقطة
+  const ptSettles=S.settlements.filter(s=>s.ptId===ptId);
+  const settledIds=new Set();
+  ptSettles.forEach(s=>(s.settledDeliveryIds||[]).forEach(id=>settledIds.add(id)));
+
+  let daysHtml='';
+  allDates.forEach(date=>{
+    const ds=S.deliveries.filter(d=>d.ptId===ptId&&d.date===date);
+    const lfts=S.leftovers.filter(l=>l.ptId===ptId&&l.date===date);
+    const cnt=ds.reduce((s,d)=>s+ccount(d.items),0)-lfts.reduce((s,l)=>s+ccount(l.items),0);
+    const val=ds.reduce((s,d)=>s+cval(d.items,ptId),0)-lfts.reduce((s,l)=>s+cval(l.items,ptId),0);
+
+    // هل الأيام مخلَّصة؟
+    const dayDelivIds=ds.map(d=>d.id);
+    const allSettled=dayDelivIds.length>0&&dayDelivIds.every(id=>settledIds.has(id));
+
+    // هل هناك تخليص جزئي؟
+    const relSettles=ptSettles.filter(s=>{
+      const sDate=s.dateFrom<=date&&date<=s.dateTo;
+      return sDate;
+    });
+    const totalPaid=relSettles.reduce((s,st)=>s+(st.paid||0),0);
+    const remaining=relSettles.reduce((s,st)=>s+(st.remainingBalance||0),0);
+    const isPartial=!allSettled&&totalPaid>0&&remaining>0;
+
+    // ألوان وأيقونة حسب الحالة
+    let statusIcon='',statusHtml='',rowBg='var(--bg2)',borderColor='var(--br)';
+    if(allSettled){
+      statusIcon='✅';
+      rowBg='#F0FAF4';borderColor='var(--TM)';
+      statusHtml=`<div style="font-size:11px;color:var(--T);font-weight:700">مخلَّص بالكامل</div>`;
+    }else if(isPartial){
+      statusIcon='🟡';
+      rowBg='#FFF8E5';borderColor='#E8A040';
+      statusHtml=`<div style="font-size:11px;font-weight:700">
+        <span style="color:var(--T)">دفع: ${totalPaid.toFixed(2)} د.م</span>
+        <span style="color:#888"> · </span>
+        <span style="color:#D85A30">باقي: ${remaining.toFixed(2)} د.م</span>
+      </div>`;
+    }else{
+      statusIcon='🔴';
+      rowBg='var(--bg2)';borderColor='#F0997B';
+      statusHtml=`<div style="font-size:11px;color:#D85A30;font-weight:700">لم تُخلَّص</div>`;
+    }
+
+    daysHtml+=`<div class="pm-day" id="pmd-${date}" onclick="togglePrintDay('${date}')"
+      style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:var(--r);border:2px solid ${borderColor};margin-bottom:8px;cursor:pointer;background:${rowBg};transition:all .15s">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="pmcb-${date}" style="width:22px;height:22px;border-radius:5px;border:2px solid var(--br2);background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px"></div>
+        <div>
+          <div style="font-size:14px;font-weight:800">${fdate(date)} ${statusIcon}</div>
+          <div style="font-size:12px;color:var(--tx2)">${ds.length} تسليم · ${cnt} خبزة</div>
+          ${statusHtml}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <div style="font-size:14px;font-weight:700;color:${allSettled?'var(--T)':isPartial?'#E8A040':'#D85A30'}">${val.toFixed(1)} د.م</div>
+        ${!allSettled?`<div onclick="event.stopPropagation();toggleDeferred('${date}')" id="def-${date}"
+          style="font-size:10px;padding:2px 8px;border-radius:10px;border:1.5px solid #9CA3AF;color:#6B7280;background:var(--bg2);cursor:pointer">
+          ⏳ مؤجَّل
+        </div>`:''}
+      </div>
+    </div>`;
+  });
+
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🖨️ اختر الأيام للطباعة</div>
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:6px">📍 ${pt.name}</div>
+    <div style="display:flex;gap:12px;font-size:11px;margin-bottom:12px">
+      <span>🔴 لم تُخلَّص</span>
+      <span>🟡 جزئي</span>
+      <span>✅ مخلَّص</span>
+    </div>
+    <div id="pm-days-list">${daysHtml}</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn btn-s btn-sm" onclick="selectAllPrintDays(true)" style="flex:1">✓ تحديد الكل</button>
+      <button class="btn btn-s btn-sm" onclick="selectAllPrintDays(false)" style="flex:1">✗ إلغاء الكل</button>
+    </div>
+    <div id="pm-summary" style="background:var(--bg2);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--tx2);text-align:center">
+      لم تختر أي يوم بعد
+    </div>
+    <button class="btn btn-p" id="pm-print-btn" onclick="doPrintSelected('${ptId}')" disabled style="opacity:.5;font-size:17px">
+      🖨️ طباعة الأيام المختارة
+    </button>
+    <button class="btn btn-s" style="margin-top:10px" onclick="closeModal()">إلغاء</button>
+  </div>`;
+  document.body.appendChild(ov);
+  window._printSelectedDates=new Set();
+  window._deferredDates=new Set();
+  window._printPtId=ptId;
+}
+
+function togglePrintDay(date){
+  const sel=window._printSelectedDates;
+  const row=document.getElementById('pmd-'+date);
+  const cb=document.getElementById('pmcb-'+date);
+  if(sel.has(date)){
+    sel.delete(date);
+    row.style.borderColor='var(--br)';
+    row.style.background='var(--bg2)';
+    cb.textContent='';
+    cb.style.background='var(--bg)';
+    cb.style.borderColor='var(--br2)';
+  }else{
+    sel.add(date);
+    row.style.borderColor='var(--A)';
+    row.style.background='var(--AL)';
+    cb.textContent='✓';
+    cb.style.background='var(--A)';
+    cb.style.borderColor='var(--A)';
+    cb.style.color='#fff';
+  }
+  updPrintSummary();
+}
+
+function selectAllPrintDays(selectAll){
+  const allRows=document.querySelectorAll('[id^="pmd-"]');
+  allRows.forEach(row=>{
+    const date=row.id.replace('pmd-','');
+    const inSel=window._printSelectedDates.has(date);
+    if(selectAll&&!inSel)togglePrintDay(date);
+    else if(!selectAll&&inSel)togglePrintDay(date);
+  });
+}
+
+function updPrintSummary(){
+  const sel=window._printSelectedDates;
+  const def=window._deferredDates||new Set();
+  const btn=document.getElementById('pm-print-btn');
+  const sum=document.getElementById('pm-summary');
+  if(!sel.size&&!def.size){
+    sum.textContent='لم تختر أي يوم بعد';
+    btn.disabled=true;btn.style.opacity='.5';
+  }else{
+    let html='';
+    if(sel.size)html+=`<div>📋 <strong>${sel.size} يوم</strong> للمحاسبة اليوم</div>`;
+    if(def.size)html+=`<div style="color:#6B7280">⏳ <strong>${def.size} يوم</strong> مؤجَّل</div>`;
+    sum.innerHTML=html;
+    btn.disabled=sel.size===0;btn.style.opacity=sel.size>0?'1':'.5';
+  }
+}
+
+function toggleDeferred(date){
+  if(!window._deferredDates)window._deferredDates=new Set();
+  const el=document.getElementById('def-'+date);
+  if(window._deferredDates.has(date)){
+    window._deferredDates.delete(date);
+    if(el){el.style.background='var(--bg2)';el.style.borderColor='#9CA3AF';el.style.color='#6B7280';el.textContent='⏳ مؤجَّل';}
+  }else{
+    window._deferredDates.add(date);
+    // إلغاء تحديده إذا كان محدداً
+    if(window._printSelectedDates.has(date))togglePrintDay(date);
+    if(el){el.style.background='#F3F4F6';el.style.borderColor='#6B7280';el.style.color='#374151';el.textContent='⏳ مؤجَّل ✓';}
+  }
+  updPrintSummary();
+}
+
+function doPrintSelected(ptId){
+  const dates=[...window._printSelectedDates].sort().reverse();
+  if(!dates.length){toast('اختر يوماً واحداً على الأقل','e');return;}
+  const deferred=[...(window._deferredDates||new Set())].sort().reverse();
+  closeModal();
+  printDailyLog(ptId,dates,deferred);
+}
+
+function printDailyLog(ptId,selectedDates,deferredDates){
+  const pt=S.points.find(p=>p.id===ptId);if(!pt)return;
+  const allDates=selectedDates||[...new Set([
+    ...S.deliveries.filter(d=>d.ptId===ptId).map(d=>d.date),
+    ...S.leftovers.filter(l=>l.ptId===ptId).map(l=>l.date)
+  ])].sort().reverse();
+  if(!allDates.length){toast('لا توجد بيانات للطباعة','e');return;}
 
   let grandTotal=0;let grandNet=0;
   const debt=ptDebt(ptId);
-  let html='';
+  const dayBlocksMap={};
+
+  // تحضير بيانات التخليص
+  const ptSettles=S.settlements.filter(s=>s.ptId===ptId);
+  const settledIds=new Set();
+  ptSettles.forEach(s=>(s.settledDeliveryIds||[]).forEach(id=>settledIds.add(id)));
 
   allDates.forEach(date=>{
     const ds=S.deliveries.filter(d=>d.ptId===ptId&&d.date===date).sort((a,b)=>a.time>b.time?1:-1);
@@ -2268,96 +2592,219 @@ function printDailyLog(ptId){
     const netCnt=dayCnt-lftCnt;const netVal=dayVal-lftVal;
     grandTotal+=dayCnt;grandNet+=netCnt;
 
-    html+=`<div class="p-day">
-      <div class="p-day-head">
-        <span>${fdate(date)}</span>
-        <span>${ds.length} تسليم</span>
-      </div>
-      <div class="p-day-body">`;
+    // حالة التخليص لهذا اليوم
+    const dayDelivIds=ds.map(d=>d.id);
+    const allSettled=dayDelivIds.length>0&&dayDelivIds.every(id=>settledIds.has(id));
+    const relSettles=ptSettles.filter(s=>s.dateFrom<=date&&date<=s.dateTo);
+    const totalPaid=relSettles.reduce((s,st)=>s+(st.paid||0),0);
+    const remaining=relSettles.reduce((s,st)=>s+(st.remainingBalance||0),0);
+    const isPartial=!allSettled&&totalPaid>0&&remaining>0;
+
+    // ألوان الكتلة حسب الحالة
+    let blockBg='#fff';
+    let borderColor='#D4B483';
+    let statusBar='';
+    if(allSettled){
+      blockBg='#F0FAF4';
+      borderColor='#5CB87A';
+      statusBar=`<div style="background:#D4F0DD;border-top:1.5px solid #5CB87A;padding:3px 8px;font-size:10px;font-weight:800;color:#1D7A4A;display:flex;justify-content:space-between">
+        <span>✅ مخلَّص بالكامل</span>
+        <span>${netVal.toFixed(2)} د.م</span>
+      </div>`;
+    }else if(isPartial){
+      blockBg='#FFFBF0';
+      borderColor='#E8A040';
+      statusBar=`<div style="background:#FFF3CD;border-top:1.5px solid #E8A040;padding:3px 8px;font-size:10px;font-weight:800;color:#7A4A08;display:flex;justify-content:space-between">
+        <span>🟡 جزئي — دفع: <span style="color:#1D7A4A">${totalPaid.toFixed(2)}</span> · باقي: <span style="color:#C05000">${remaining.toFixed(2)}</span> د.م</span>
+      </div>`;
+    }else{
+      blockBg='#fff';
+      borderColor='#F0997B';
+      statusBar=`<div style="background:#FFF0E8;border-top:1.5px solid #F0997B;padding:3px 8px;font-size:10px;font-weight:800;color:#C05000;display:flex;justify-content:space-between">
+        <span>🔴 لم تُخلَّص</span>
+        <span>${netVal.toFixed(2)} د.م</span>
+      </div>`;
+    }
+
+    let rows=`<div style="display:grid;grid-template-columns:1fr 30px 46px;padding:2px 0 4px;border-bottom:2.5px solid #8B5E1A;font-size:11px;font-weight:900;color:#8B5E1A">
+      <span>التوقيت والتفاصيل</span><span style="text-align:center">عدد</span><span style="text-align:left">د.م</span>
+    </div>`;
 
     ds.forEach(d=>{
-      const typesStr=TK.filter(k=>parseInt(d.items[k])>0)
-        .map(k=>`${TM[k].icon}${d.items[k]}${TM[k].short}`).join(' ');
-      html+=`<div class="p-row">
-        <span>${d.time} &nbsp;${typesStr}${d.driver?` · 👤${d.driver}`:''}</span>
-        <span>${ccount(d.items)} خبزة &nbsp; ${cval(d.items,ptId).toFixed(2)} د.م</span>
+      const isZ=ccount(d.items)===0;
+      const typesStr=TK.filter(k=>parseInt(d.items[k])>0).map(k=>`${TM[k].icon}${d.items[k]}`).join(' ');
+      rows+=`<div style="display:grid;grid-template-columns:1fr 30px 46px;padding:2px 0;border-bottom:1px solid #F0E8D0;font-size:10px;${isZ?'opacity:.5':''}">
+        <span style="color:#5A3000">${d.time} ${typesStr}${d.driver?` 👤${d.driver}`:''}</span>
+        <span style="text-align:center;font-weight:700;color:#8B5E1A">${isZ?'—':ccount(d.items)}</span>
+        <span style="text-align:left;font-weight:700;color:#8B5E1A">${isZ?'ملغى':cval(d.items,ptId).toFixed(1)}</span>
       </div>`;
-      const pubNote=d.notePublic||(d.notes&&!d.notePrivate?d.notes:'');
-      if(pubNote)html+=`<div class="p-row" style="color:#085041;font-size:11px"><span>📋 ${pubNote}</span><span></span></div>`;
+      const pub=d.notePublic||(d.notes&&!d.notePrivate?d.notes:'');
+      if(pub)rows+=`<div style="font-size:9px;color:#085041;padding:1px 0 2px;border-bottom:1px solid #F0E8D0">📋 ${pub}</div>`;
     });
 
     lfts.forEach(lf=>{
-      const lftTypesStr=TK.filter(k=>parseInt(lf.items[k])>0)
-        .map(k=>`${TM[k].icon}${lf.items[k]}${TM[k].short}`).join(' ');
-      const typeLabel=lf.lType==='yesterday'?'🥖 الخبز البارد':lf.lType==='swap'?'🔄 استبدال':'➡️ نقل';
+      const lc=ccount(lf.items);if(!lc)return;
+      const ts=TK.filter(k=>parseInt(lf.items[k])>0).map(k=>`${TM[k].icon}${lf.items[k]}`).join(' ');
+      let lbl='',desc='';
+      if(lf.lType==='yesterday'){lbl='🥖 الخبز البارد';desc='خبز أمس مُسترجَع — يُطرح من الحساب';}
+      else if(lf.lType==='swap'){lbl='🔄 استبدال';desc='خبز جديد وُضع بدل البارد المأخوذ';}
+      else{lbl='➡️ نقل';desc='خرج من هذه النقطة إلى نقطة أخرى';}
       const timeStr=lf.time?` · ${lf.time}`:'';
-      html+=`<div class="p-row p-row-ret">
-        <span>↩ ${typeLabel}${timeStr} &nbsp; ${lftTypesStr}</span>
-        <span>− ${ccount(lf.items)} خبزة &nbsp; − ${cval(lf.items,ptId).toFixed(2)} د.م</span>
+      rows+=`<div style="border-top:2px dashed #F0997B;margin-top:2px;padding-top:2px">
+        <div style="display:grid;grid-template-columns:1fr 30px 46px;font-size:10px">
+          <span style="color:#C05000;font-weight:700">${lbl}${timeStr} ${ts}</span>
+          <span style="text-align:center;font-weight:700;color:#C05000">−${lc}</span>
+          <span style="text-align:left;font-weight:700;color:#C05000">−${cval(lf.items,ptId).toFixed(1)}</span>
+        </div>
+        <div style="font-size:9px;color:#993C1D;padding:1px 0 2px">${desc}</div>
       </div>`;
     });
 
-    html+=`<div class="p-row p-row-net">
-        <span>🍞 صافي اليوم</span>
-        <span>${netCnt} خبزة · ${netVal.toFixed(2)} د.م</span>
+    const coldHere=S.leftovers.filter(l=>l.ptId===ptId&&l.date<date&&l.lType==='yesterday'&&ccount(l.items)>0&&l.id&&new Date(parseInt(l.id)).toISOString().split('T')[0]===date);
+    coldHere.forEach(l=>{
+      rows+=`<div style="background:#EFF6FF;border-top:1.5px dashed #3B82F6;padding:2px 4px;font-size:9px;color:#1E40AF;margin-top:2px">
+        🔔 خبز بارد مسجَّل اليوم — ${ccount(l.items)} خبزة تُطرح من ${dl(l.date)}
+      </div>`;
+    });
+
+    dayBlocksMap[date]=`<div style="margin-bottom:6px;border-radius:4px;overflow:hidden;border:1.5px solid ${borderColor}">
+      <div style="background:#8B5E1A;color:#fff;padding:4px 8px;display:flex;justify-content:space-between;font-size:11px;font-weight:800">
+        <span>${fdate(date)}</span><span>${ds.length} تسليم</span>
       </div>
-    </div></div>`;
+      <div style="padding:4px 8px;background:${blockBg}">
+        ${rows}
+        <div style="display:grid;grid-template-columns:1fr 30px 46px;padding:3px 0 2px;border-top:2px solid #8B5E1A;margin-top:3px;font-size:11px;font-weight:900;color:${netCnt<0?'#C05000':'#1D7A4A'}">
+          <span>🍞 الصافي المحتسب</span>
+          <span style="text-align:center">${netCnt}</span>
+          <span style="text-align:left">${netVal.toFixed(2)}</span>
+        </div>
+      </div>
+      ${statusBar}
+    </div>`;
   });
 
   const now=new Date();
   const printTime=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-  const dateRange=allDates.length>1?`${dl(allDates[allDates.length-1])} ← ${dl(allDates[0])}`:dl(allDates[0]||TODAY);
+  const dateRange=`${dl(allDates[allDates.length-1])} ← ${dl(allDates[0])}`;
 
-  // ── نافذة معاينة الطباعة ──
-  const printEl=document.getElementById('print-area');
-  printEl.innerHTML=`
-    <div class="p-header">
-      <div>
-        <div class="p-header-logo">🍞 محسين للخبز التقليدي</div>
-        <div class="p-header-sub">نقطة البيع: <strong>${pt.name}</strong>${pt.address?' · '+pt.address:''}${pt.phone?` · 📞 ${pt.phone}`:''}</div>
-        <div class="p-header-sub">الفترة: ${dateRange}</div>
-      </div>
-      <div class="p-header-right">
-        طُبع: ${dl(TODAY)} · ${printTime}<br>
-        <span style="color:#C05000;font-weight:700">الدين: ${debt.toFixed(2)} د.م</span>
-      </div>
+  // تقسيم الأيام على 3 أعمدة — الأقدم يسار، الأحدث يمين
+  const sortedAsc=allDates.slice().reverse(); // الأقدم أولاً
+  const n=sortedAsc.length;
+  const s1=Math.ceil(n/3);
+  const s2=Math.ceil((n-s1)/2);
+  const col1html=sortedAsc.slice(0,s1).map(d=>dayBlocksMap[d]||'').join('');
+  const col2html=sortedAsc.slice(s1,s1+s2).map(d=>dayBlocksMap[d]||'').join('');
+  const col3html=sortedAsc.slice(s1+s2).map(d=>dayBlocksMap[d]||'').join('');
+
+  // كتل الأيام المؤجَّلة — مبسَّطة بخلفية رمادية
+  let deferredHtml='';
+  if(deferredDates&&deferredDates.length){
+    deferredDates.forEach(date=>{
+      const ds=S.deliveries.filter(d=>d.ptId===ptId&&d.date===date);
+      const lfts=S.leftovers.filter(l=>l.ptId===ptId&&l.date===date);
+      const netCnt=ds.reduce((s,d)=>s+ccount(d.items),0)-lfts.reduce((s,l)=>s+ccount(l.items),0);
+      const netVal=ds.reduce((s,d)=>s+cval(d.items,ptId),0)-lfts.reduce((s,l)=>s+cval(l.items,ptId),0);
+      deferredHtml+=`<div style="margin-bottom:6px;border-radius:4px;overflow:hidden;border:1.5px dashed #9CA3AF;opacity:.7">
+        <div style="background:#6B7280;color:#fff;padding:4px 8px;display:flex;justify-content:space-between;font-size:11px;font-weight:800">
+          <span>${fdate(date)}</span><span>⏳ مؤجَّل</span>
+        </div>
+        <div style="padding:6px 8px;background:#F9FAFB">
+          <div style="font-size:10px;color:#6B7280">${ds.length} تسليم · ${netCnt} خبزة</div>
+          <div style="font-size:11px;font-weight:800;color:#374151;margin-top:2px">الصافي: ${netVal.toFixed(2)} د.م</div>
+        </div>
+      </div>`;
+    });
+  }
+
+  // ملخص الثلاثة أقسام
+  const settledDates=allDates.filter(d=>{
+    const ds=S.deliveries.filter(dv=>dv.ptId===ptId&&dv.date===d);
+    return ds.length>0&&ds.every(dv=>settledIds.has(dv.id));
+  });
+  const settledVal=settledDates.reduce((s,d)=>{
+    return s+S.deliveries.filter(dv=>dv.ptId===ptId&&dv.date===d).reduce((ss,dv)=>ss+cval(dv.items,ptId),0)
+          -S.leftovers.filter(l=>l.ptId===ptId&&l.date===d).reduce((ss,l)=>ss+cval(l.items,ptId),0);
+  },0);
+  const selectedVal=allDates.reduce((s,d)=>s+(dayBlocksMap[d]?
+    S.deliveries.filter(dv=>dv.ptId===ptId&&dv.date===d).reduce((ss,dv)=>ss+cval(dv.items,ptId),0)
+    -S.leftovers.filter(l=>l.ptId===ptId&&l.date===d).reduce((ss,l)=>ss+cval(l.items,ptId),0):0),0);
+  const deferredVal=deferredDates?deferredDates.reduce((s,d)=>{
+    return s+S.deliveries.filter(dv=>dv.ptId===ptId&&dv.date===d).reduce((ss,dv)=>ss+cval(dv.items,ptId),0)
+          -S.leftovers.filter(l=>l.ptId===ptId&&l.date===d).reduce((ss,l)=>ss+cval(l.items,ptId),0);
+  },0):0;
+
+  const w=window.open('','_print_','width=950,height=750');
+  if(!w){toast('اسمح بالنوافذ المنبثقة في إعدادات المتصفح','e');return;}
+  w.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head>
+  <meta charset="UTF-8">
+  <title>محسين للخبز التقليدي — ${pt.name}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Cairo',sans-serif;direction:rtl;color:#222;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    @page{size:A4;margin:10mm}
+    .hdr{text-align:center;margin-bottom:10px;padding-bottom:8px;border-bottom:3px solid #8B5E1A}
+    .ttl{font-size:24px;font-weight:900;color:#8B5E1A;font-family:'Cairo',sans-serif}
+    .aya{font-family:'Amiri',serif;font-size:16px;color:#3A2000;margin:6px 0;line-height:2.1}
+    .meta{font-size:11px;color:#555;margin-top:6px;display:flex;justify-content:space-between}
+    .cols{columns:3;column-gap:8mm;column-rule:1.5px dashed #C4A35A;direction:rtl;margin-bottom:8mm}
+    .totbox{border:2px solid #8B5E1A;border-radius:6px;padding:10px 14px;page-break-inside:avoid;margin-bottom:6mm}
+    .trow{display:flex;justify-content:space-between;font-size:12px;padding:3px 0}
+    .drow{display:flex;justify-content:space-between;align-items:center;border-top:2px solid #8B5E1A;margin-top:8px;padding-top:8px}
+    .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:20mm;margin-top:6mm;page-break-inside:avoid}
+    .sbox{border-top:1.5px solid #000;padding-top:5px;font-size:10px}
+    .ft{text-align:center;font-size:10px;color:#aaa;margin-top:8mm}
+    @media print{a[href]:after{content:''}}
+  </style></head><body>
+  <div class="hdr">
+    <div class="ttl">🍞 محسين للخبز التقليدي 🍞</div>
+    <div class="aya">وَآيَةٌ لَّهُمُ الْأَرْضُ الْمَيْتَةُ أَحْيَيْنَاهَا وَأَخْرَجْنَا مِنْهَا حَبًّا فَمِنْهُ يَأْكُلُونَ</div>
+    <div class="meta">
+      <span>نقطة البيع: <strong>${pt.name}</strong>${pt.address?' · '+pt.address:''}${pt.phone?` · <span dir="ltr">📞 ${pt.phone}</span>`:''}</span>
+      <span>الفترة: ${dateRange} · طُبع: ${dl(TODAY)} ${printTime}</span>
     </div>
-    ${html}
-    <div class="p-total-box">
-      <div class="p-total-row"><span>إجمالي الخبز الموزَّع</span><span>${grandTotal} خبزة</span></div>
-      <div class="p-total-row"><span>إجمالي المرتجع</span><span>${grandTotal-grandNet} خبزة</span></div>
-      <div class="p-total-row"><span>إجمالي المباع (صافي)</span><span><strong>${grandNet} خبزة</strong></span></div>
-      <div class="p-debt-big">
-        <span class="p-debt-lbl">💰 الرصيد المستحق</span>
-        <span class="p-debt-val">${debt.toFixed(2)} <small style="font-size:14px;font-weight:600">د.م</small></span>
-      </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-bottom:8mm;border-top:1.5px solid #C4A35A">
+    <div style="padding:0 4mm 0 0;border-left:1.5px dashed #C4A35A">${col1html}</div>
+    <div style="padding:0 4mm;border-left:1.5px dashed #C4A35A">${col2html}</div>
+    <div style="padding:0 0 0 4mm">${col3html}</div>
+  </div>
+  ${deferredHtml?`<div style="margin-bottom:6mm;border-top:1.5px dashed #9CA3AF;padding-top:4mm">
+    <div style="font-size:11px;font-weight:800;color:#6B7280;margin-bottom:6px">⏳ أيام مؤجَّلة — لن تُحاسَب اليوم</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4mm">${deferredHtml}</div>
+  </div>`:''}
+  <div class="totbox">
+    ${settledDates.length?`<div style="background:#F0FAF4;border-radius:4px;padding:6px 10px;margin-bottom:8px;border:1px solid #5CB87A">
+      <div style="font-size:11px;font-weight:800;color:#1D7A4A;margin-bottom:2px">✅ مخلَّص سابقاً</div>
+      <div style="display:flex;justify-content:space-between;font-size:12px"><span>${settledDates.length} يوم</span><span style="font-weight:800">${settledVal.toFixed(2)} د.م</span></div>
+    </div>`:''}
+    <div style="background:#EFF6FF;border-radius:4px;padding:6px 10px;margin-bottom:8px;border:1px solid #3B82F6">
+      <div style="font-size:11px;font-weight:800;color:#1E40AF;margin-bottom:2px">📋 محاسبة اليوم</div>
+      <div style="display:flex;justify-content:space-between;font-size:12px"><span>${allDates.length} يوم</span><span style="font-weight:800;color:#C05000">${selectedVal.toFixed(2)} د.م ← المطلوب اليوم</span></div>
     </div>
-    <div class="p-sign">
-      <div class="p-sign-box">
-        <div class="p-sign-name">توقيع المسؤول عن النقطة</div>
-        <div style="height:1px;background:#000;margin-bottom:6px"></div>
-        <div>الاسم: ___________________</div>
-        <div style="margin-top:8px">التاريخ: ________________</div>
-      </div>
-      <div class="p-sign-box">
-        <div class="p-sign-name">توقيع محسين</div>
-        <div style="height:1px;background:#000;margin-bottom:6px"></div>
-        <div>التاريخ: ________________</div>
-        <div style="margin-top:8px">الختم: _________________</div>
-      </div>
+    ${deferredDates&&deferredDates.length?`<div style="background:#F9FAFB;border-radius:4px;padding:6px 10px;margin-bottom:8px;border:1px solid #9CA3AF">
+      <div style="font-size:11px;font-weight:800;color:#6B7280;margin-bottom:2px">⏳ مؤجَّل</div>
+      <div style="display:flex;justify-content:space-between;font-size:12px"><span>${deferredDates.length} يوم</span><span style="font-weight:800">${deferredVal.toFixed(2)} د.م</span></div>
+    </div>`:''}
+    <div class="trow"><span>🚚 إجمالي الموزَّع</span><span><strong>${grandTotal} خبزة</strong></span></div>
+    <div class="trow"><span>↩ إجمالي المرتجع</span><span><strong>${grandTotal-grandNet} خبزة</strong></span></div>
+    <div class="trow"><span>🍞 إجمالي المباع (صافي)</span><span><strong>${grandNet} خبزة</strong></span></div>
+    <div class="drow">
+      <span style="font-size:15px;font-weight:900;color:#8B5E1A">💰 الرصيد الكلي المستحق</span>
+      <span style="font-size:26px;font-weight:900;color:#C05000">${debt.toFixed(2)} <small style="font-size:13px">د.م</small></span>
     </div>
-    <div class="p-footer">محسين للخبز التقليدي · طُبع بواسطة تطبيق التوزيع</div>
-  `;
-  printEl.style.display='block';
-  window.print();
-  // استعادة الوضع بعد الطباعة
-  setTimeout(()=>{
-    printEl.style.display='none';
-    printEl.innerHTML='';
-  },1500);
+  </div>
+  <div class="sgrid">
+    <div class="sbox"><div style="font-weight:800;font-size:11px;margin-bottom:14px">توقيع المسؤول عن النقطة</div>
+      <div>الاسم: _______________________</div><div style="margin-top:8px">التاريخ: ____________________</div></div>
+    <div class="sbox"><div style="font-weight:800;font-size:11px;margin-bottom:14px">توقيع محسين</div>
+      <div>التاريخ: ____________________</div><div style="margin-top:8px">الختم: ______________________</div></div>
+  </div>
+  <div class="ft">محسين للخبز التقليدي · تطبيق التوزيع</div>
+  <script>window.onload=()=>{setTimeout(()=>window.print(),900);}<\/script>
+  </body></html>`);
+  w.document.close();
 }
-
-  
 
 // ═══════════════════════════════════════════════
 //  EDIT CHOICE MODAL — اختيار تعديل تسليم أم فائض
@@ -3172,6 +3619,11 @@ function renderSettings(){
     <div style="font-size:12px;color:var(--tx3);margin-top:10px;text-align:center">📤 المشاركة تفتح: واتساب · تيليغرام · ميسنجر · وغيرها</div>
   </div>`;
 
+  h+=`<div class="slbl">🕐 النسخ الاحتياطية التلقائية</div><div class="card">
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:12px">يحفظ التطبيق تلقائياً آخر 10 تغييرات</div>
+    <button class="btn btn-s" onclick="openSnapshotModal()" style="font-size:15px">📂 استرجاع نسخة احتياطية</button>
+  </div>`;
+
   h+=`<div class="slbl">📊 البيانات</div><div class="card">
     <div class="srow"><div class="srow-lbl">نقاط البيع</div><span class="bdg bdg-a">${S.points.length}</span></div>
     <div class="srow"><div class="srow-lbl">إجمالي التسليمات</div><span class="bdg bdg-t">${S.deliveries.length}</span></div>
@@ -3183,6 +3635,57 @@ function renderSettings(){
   </div>
   <div style="text-align:center;padding:16px 0;font-size:13px;color:var(--tx3)">محسين للخبز التقليدي · يعمل بدون اتصال</div>`;
   document.getElementById('scr-settings').innerHTML=h;
+}
+
+function openSnapshotModal(){
+  const snaps=[];
+  for(let i=1;i<=10;i++){
+    try{const r=localStorage.getItem('makhbaza_snap_'+i);if(r){const s=JSON.parse(r);snaps.push({i,s});}}catch(e){}
+  }
+  if(!snaps.length){toast('لا توجد نسخ احتياطية بعد','e');return;}
+
+  let html='';
+  snaps.forEach(({i,s})=>{
+    const d=JSON.parse(s.data||'{}');
+    const dt=new Date(s.ts);
+    const dtStr=`${dl(dt.toISOString().split('T')[0])} ${dt.getHours().toString().padStart(2,'0')}:${dt.getMinutes().toString().padStart(2,'0')}`;
+    const delivCnt=(d.deliveries||[]).length;
+    const ptCnt=(d.points||[]).length;
+    html+=`<div style="padding:10px 12px;border-radius:var(--r);border:1.5px solid var(--br);margin-bottom:8px;background:var(--bg2)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:14px;font-weight:800">نسخة ${i} ${i===1?'← الأحدث':''}</div>
+          <div style="font-size:12px;color:var(--tx2)">${dtStr}</div>
+          <div style="font-size:12px;color:var(--tx2)">${ptCnt} نقطة · ${delivCnt} تسليم</div>
+        </div>
+        <button class="btn btn-s btn-sm" onclick="restoreSnapshot(${i})" style="font-size:13px">استرجاع</button>
+      </div>
+    </div>`;
+  });
+
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📂 استرجاع نسخة احتياطية</div>
+    <div style="font-size:12px;color:#D85A30;margin-bottom:12px;background:#FFF0E8;padding:8px 12px;border-radius:var(--r)">
+      ⚠️ الاسترجاع سيستبدل البيانات الحالية — تأكد من حفظ نسخة أولاً
+    </div>
+    ${html}
+    <button class="btn btn-s" style="margin-top:8px" onclick="closeModal()">إلغاء</button>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+function restoreSnapshot(i){
+  try{
+    const r=localStorage.getItem('makhbaza_snap_'+i);
+    if(!r){toast('النسخة غير موجودة','e');return;}
+    const s=JSON.parse(r);
+    const d=JSON.parse(s.data);
+    Object.assign(S,d);
+    save();render();closeModal();
+    toast('✓ تم استرجاع النسخة '+i);
+  }catch(e){toast('خطأ في الاسترجاع','e');}
 }
 
 function exportData(){
@@ -3745,12 +4248,48 @@ regSW();
 loadLocal();
 applyTheme();
 if(!DF.time)DF.time=nstr();
-// إظهار شاشة اختيار الدور فقط إذا تم تفعيل الميزة
 if(CFG.managerPin&&CFG.managerPin.length>=4){
   showPinScreen();
 }else{
   render();
 }
+
+// ─── تنبيه الديون الكبيرة عند الفتح ─────────────────────
+setTimeout(()=>{
+  if(SESSION.role!=='manager')return;
+  const alerts=S.points.filter(pt=>pt.debtThreshold&&ptDebt(pt.id)>=pt.debtThreshold);
+  if(!alerts.length)return;
+  const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
+  let rows=alerts.map(pt=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--br);font-size:14px">
+    <span style="font-weight:700">${pt.name}</span>
+    <span style="color:#D85A30;font-weight:800">${ptDebt(pt.id).toFixed(2)} د.م</span>
+  </div>`).join('');
+  ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div style="font-size:22px;text-align:center;margin-bottom:8px">⚠️</div>
+    <div class="modal-title" style="color:#D85A30">تنبيه ديون كبيرة</div>
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:14px">النقاط التالية تجاوزت عتبة التنبيه:</div>
+    ${rows}
+    <button class="btn btn-p" style="margin-top:16px" onclick="closeModal()">✓ تم الإحاطة</button>
+  </div>`;
+  document.body.appendChild(ov);
+},1500);
+
+// ─── ملخص يومي عند إغلاق الشاشة ─────────────────────────
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState!=='hidden')return;
+  if(SESSION.role!=='manager')return;
+  const tds=S.deliveries.filter(d=>d.date===TODAY);
+  if(!tds.length)return;
+  const totCnt=tds.reduce((s,d)=>s+ccount(d.items),0);
+  const totVal=tds.reduce((s,d)=>s+cval(d.items,d.ptId),0);
+  const todaySettled=S.settlements.filter(s=>s.date===TODAY).reduce((s,st)=>s+st.paid,0);
+  const totalDebt=S.points.reduce((s,pt)=>s+ptDebt(pt.id),0);
+  // حفظ الملخص اليومي
+  localStorage.setItem('makhbaza_daily_summary',JSON.stringify({
+    date:TODAY,totCnt,totVal,todaySettled,totalDebt,ts:Date.now()
+  }));
+});
 
 // ═══════════════════════════════════════════════
 //  VISUAL VIEWPORT — الزر يلتصق فوق لوحة المفاتيح
