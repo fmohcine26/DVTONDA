@@ -1471,7 +1471,20 @@ function updSum(){
 function _showSubmitBtn(){
   if(DF.leftMode)return;
   const sb=document.getElementById('sticky-submit-deliv');
-  if(sb){sb.style.display='block';}
+  if(sb)sb.style.display='block';
+  // تحديث محتوى الزر بالتفاصيل
+  const btn=document.getElementById('sticky-deliv-btn');
+  if(btn&&DF.ptId){
+    const pt=S.points.find(p=>p.id===DF.ptId);
+    const parts=TK.filter(k=>parseInt(DF.items[k])>0)
+      .map(k=>`<span style="font-size:18px;font-weight:900">${TM[k].icon}${DF.items[k]}</span>`).join(' · ');
+    const total=TK.reduce((s,k)=>s+(parseInt(DF.items[k])||0),0);
+    btn.innerHTML=`<div style="font-size:13px;font-weight:700;opacity:.9;margin-bottom:4px">🚚 ${pt?pt.name:''}</div>`
+      +`<div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap">`
+      +`${parts}`
+      +`<span style="font-size:13px;opacity:.85">| المجموع: <strong style="font-size:17px">${total}</strong> خبزة</span>`
+      +`</div>`;
+  }
   const lw=document.getElementById('sticky-left-wrap');
   if(lw)lw.style.display='none';
 }
@@ -1495,11 +1508,16 @@ function updLeftBtn(){
   btn.style.opacity='1';
 
   if(lTotal>0&&DF.lPtId){
-    const lParts=TK.filter(k=>parseInt(DF.lItems[k])>0).map(k=>`${TM[k].icon}${DF.lItems[k]}`).join(' · ');
+    const lParts=TK.filter(k=>parseInt(DF.lItems[k])>0)
+      .map(k=>`<span style="font-size:18px;font-weight:900">${TM[k].icon}${DF.lItems[k]}</span>`).join(' · ');
     const lType=DF.lType||'yesterday';
     const lTypeLabel=lType==='yesterday'?'🥖 خبز بارد':lType==='swap'?'🔄 استبدال':'➡️ نقل';
     const lPtName=S.points.find(p=>p.id===DF.lPtId)?.name||'';
-    btn.innerHTML=`<div style="font-size:12px;opacity:.85;font-weight:700">📦 فائض ${lTypeLabel} — ${lPtName}</div><div>${lParts} | المجموع: ${lTotal} خبزة</div>`;
+    btn.innerHTML=`<div style="font-size:13px;font-weight:700;opacity:.9;margin-bottom:4px">📦 ${lTypeLabel} — ${lPtName}</div>`
+      +`<div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap">`
+      +`${lParts}`
+      +`<span style="font-size:13px;opacity:.85">| المجموع: <strong style="font-size:17px">${lTotal}</strong> خبزة</span>`
+      +`</div>`;
     wrap.style.display='block';
   }else{
     wrap.style.display='none';
