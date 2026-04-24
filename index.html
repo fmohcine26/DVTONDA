@@ -9,6 +9,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="محسين للخبز التقليدي">
 <title>محسين للخبز التقليدي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" media="print" onload="this.media='all'" onerror="this.remove()">
 <script>
 (function(){
   try{
@@ -80,21 +83,17 @@
 .role-badge.manager{background:var(--AL);color:var(--AD)}
 .role-badge.driver{background:var(--TL);color:var(--TD)}
 /* ─── SPLASH SCREEN ─── */
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
-
 #splash{
   position:fixed;inset:0;z-index:999;
   background:linear-gradient(155deg,#7A3008 0%,#B86010 35%,#C27A1A 65%,#D4922A 100%);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:40px 28px;text-align:center;
-  /* أبطأ قليلاً — fade-out بعد 3.2 ثانية */
   animation:splashOut .6s ease-out forwards 3.2s;
-  /* طبقة خفيفة لإضفاء عمق */
   box-shadow:inset 0 -120px 200px rgba(0,0,0,.18),inset 0 40px 80px rgba(255,220,100,.12);
 }
 @keyframes splashOut{
   0%{opacity:1;transform:scale(1)}
-  100%{opacity:0;transform:scale(1.04);pointer-events:none;visibility:hidden}
+  100%{opacity:0;transform:scale(1.04)}
 }
 
 /* الأيقونة */
@@ -638,11 +637,11 @@ input[type=number]{text-align:center;font-size:20px;font-weight:700}
     <div class="screen" id="scr-deliv"></div>
     <!-- زر التسليم الثابت -->
     <div id="sticky-submit-deliv" class="sticky-submit" style="display:none">
-      <button class="btn btn-p" onclick="submitDeliv()" id="sticky-deliv-btn" style="font-size:16px;padding:15px;line-height:1.4;width:100%">✓ تسجيل التسليم</button>
+      <button class="btn btn-p" onclick="submitDeliv()" id="sticky-deliv-btn" style="font-size:17px;padding:16px;line-height:1.5;width:100%">✓ تسجيل التسليم</button>
     </div>
     <!-- زر الفائض الثابت -->
     <div id="sticky-left-wrap" class="sticky-submit" style="display:none">
-      <button id="sticky-left-btn" class="btn" onclick="submitLeft()" style="font-size:16px;padding:15px;line-height:1.4;background:#1E40AF;color:#fff;border-color:#1E40AF;width:100%;border-radius:var(--r);font-family:inherit;cursor:pointer">📦 تسجيل الفائض</button>
+      <button id="sticky-left-btn" class="btn" onclick="submitLeft()" style="font-size:17px;padding:16px;line-height:1.5;background:#1E40AF;color:#fff;border-color:#1E40AF;width:100%;border-radius:var(--r);font-family:inherit;cursor:pointer">📦 تسجيل الفائض</button>
     </div>
     <div class="screen" id="scr-pts"></div>
     <div class="screen" id="scr-stats"></div>
@@ -864,17 +863,26 @@ function save(){
   S._ts=Date.now();
   localStorage.setItem('makhbaza_v4',JSON.stringify(S));
   localStorage.setItem('makhbaza_cfg',JSON.stringify(CFG));
-  // نسخة احتياطية تلقائية — آخر 10 تغييرات
+  // نسخة احتياطية تلقائية — آخر 30 نسخة
   try{
-    const snap={data:JSON.stringify(S),ts:Date.now()};
-    const snaps=[];
-    for(let i=1;i<=10;i++){const r=localStorage.getItem('makhbaza_snap_'+i);if(r)snaps.push({i,s:JSON.parse(r)});}
-    // أضف النسخة الجديدة في المقدمة وأزح الباقي
-    for(let i=Math.min(snaps.length+1,10);i>=2;i--){
-      const prev=localStorage.getItem('makhbaza_snap_'+(i-1));
-      if(prev)localStorage.setItem('makhbaza_snap_'+i,prev);
-    }
-    localStorage.setItem('makhbaza_snap_1',JSON.stringify(snap));
+    const snaps=getSnaps();
+    const newSnap={ts:Date.now(),data:JSON.stringify(S)};
+    snaps.unshift(newSnap);
+    if(snaps.length>30)snaps.splice(30);
+    localStorage.setItem('makhbaza_snaps',JSON.stringify(snaps));
+  }catch(e){}
+}
+function getSnaps(){
+  try{return JSON.parse(localStorage.getItem('makhbaza_snaps')||'[]');}catch(e){return[];}
+}
+function saveSnapWithCtx(ctx){
+  // نسخة احتياطية مع سياق — تُستدعى بعد كل تسليم أو فائض
+  try{
+    const snaps=getSnaps();
+    const newSnap={ts:Date.now(),ctx,data:JSON.stringify(S)};
+    snaps.unshift(newSnap);
+    if(snaps.length>30)snaps.splice(30);
+    localStorage.setItem('makhbaza_snaps',JSON.stringify(snaps));
   }catch(e){}
 }
 function loadLocal(){
@@ -1038,7 +1046,12 @@ function toast(msg,type='s'){
 function scrollTop(){document.getElementById('content').scrollTop=0;}
 function go(name){
   CUR=name;SEL_PT=null;
-  if(name!=='deliv'){AFTER_SUBMIT=null;AFTER_LEFT=null;_hideSubmitBtn();}
+  if(name!=='deliv'){
+    AFTER_SUBMIT=null;AFTER_LEFT=null;
+    _hideSubmitBtn();
+    const lw=document.getElementById('sticky-left-wrap');
+    if(lw)lw.style.display='none';
+  }
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   document.getElementById('scr-'+name).classList.add('on');
@@ -1199,12 +1212,26 @@ function renderDeliv(){
 
   // ─── شريط ما بعد التسليم ───────────────────────
   if(AFTER_SUBMIT&&!DF.leftMode){
-    const {ptId,cnt,val,ptName}=AFTER_SUBMIT;
+    const {ptId,cnt,val,ptName,items:sItems}=AFTER_SUBMIT;
+    const pr=gpr(ptId);
+    let typeRows='';
+    TK.forEach(k=>{
+      const q=parseInt(sItems?.[k])||0;
+      if(!q)return;
+      typeRows+=`<div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;padding:3px 0">
+        <span>${TM[k].icon} ${TM[k].label.replace('خبز ','')}: ${q}</span>
+        <span style="color:var(--A)">${(q*pr[k]).toFixed(2)} د.م</span>
+      </div>`;
+    });
     h+=`<div class="after-submit">
       <div class="after-submit-title">✅ تم تسجيل التسليم</div>
-      <div class="after-submit-cnt">${cnt} خبزة · ${val.toFixed(2)} د.م</div>
-      <div style="font-size:15px;color:var(--TD);font-weight:700;margin-bottom:16px">📍 ${ptName}</div>
-      <div style="font-size:15px;font-weight:700;color:var(--TD);margin-bottom:12px">ماذا تريد الآن؟</div>
+      <div style="font-size:15px;color:var(--TD);font-weight:700;margin-bottom:10px">📍 ${ptName}</div>
+      ${typeRows}
+      <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:900;color:var(--T);border-top:1.5px solid var(--TM);margin-top:8px;padding-top:8px">
+        <span>المجموع: ${cnt} خبزة</span>
+        <span>${val.toFixed(2)} د.م</span>
+      </div>
+      <div style="font-size:15px;font-weight:700;color:var(--TD);margin:14px 0 10px">ماذا تريد الآن؟</div>
       <div class="after-submit-btns">
         <button class="btn btn-teal" style="padding:16px 10px;font-size:16px" onclick="goLeftSamePt('${ptId}')">📦 سجّل الفائض<br><span style="font-size:13px;font-weight:500">لنفس النقطة</span></button>
         <button class="btn btn-p" style="padding:16px 10px;font-size:16px" onclick="goNewDeliv()">➡️ نقطة بيع أخرى<br><span style="font-size:13px;font-weight:500">تسليم جديد</span></button>
@@ -1492,17 +1519,20 @@ function submitDeliv(){
   const notePrivate=(document.getElementById('f-note-priv')?.value||DF.notePrivate||'').trim();
   const notePublic=(document.getElementById('f-note-pub')?.value||DF.notePublic||'').trim();
   const notes=notePublic||notePrivate;
+  // Android fix: نقرأ من DF.items (محدَّث بـ oninput) كاحتياط إذا كان DOM فارغاً
   const items=ei();
-  TK.forEach(k=>{const inp=document.getElementById('tc-'+k);if(inp)items[k]=inp.value||'0';});
+  TK.forEach(k=>{const v=document.getElementById('tc-'+k)?.value;items[k]=(v!==undefined&&v!=='')?v:(DF.items[k]||'0');});
   if(!ptId){toast('اختر نقطة بيع','e');return;}
   if(!hasI(items)){toast('أدخل كمية خبز','e');return;}
   const cnt=ccount(items);const val=cval(items,ptId);
   S.deliveries.push({id:Date.now()+'',ptId,date:TODAY,time:time||nstr(),items,driver,notes,notePrivate,notePublic});
   if(driver&&!S.drivers.includes(driver))S.drivers.push(driver);
   const pt=S.points.find(p=>p.id===ptId);
-  AFTER_SUBMIT={ptId,cnt,val,ptName:pt?pt.name:'?'};
+  AFTER_SUBMIT={ptId,cnt,val,ptName:pt?pt.name:'?',items:{...items}};
   DF={...DF,items:ei(),notes:'',notePrivate:'',notePublic:'',leftMode:false,time:nstr()};
-  save();autoSync();toast(`✓ ${cnt} خبزة — ${val.toFixed(2)} د.م`);renderDeliv();scrollTop();
+  save();
+  saveSnapWithCtx({type:'تسليم',ptName:pt?pt.name:'?',cnt,date:TODAY});
+  autoSync();toast(`✓ ${cnt} خبزة — ${val.toFixed(2)} د.م`);renderDeliv();scrollTop();
 }
 function goLeftSamePt(ptId){
   AFTER_SUBMIT=null;AFTER_LEFT=null;
@@ -1726,8 +1756,9 @@ function submitLeft(){
 
   const ptId=DF.lPtId;
   let lType=DF.lType||'yesterday';
+  // Android fix: نقرأ من DF.lItems (محدَّث بـ oninput) كاحتياط إذا كان DOM فارغاً
   const items=ei();
-  TK.forEach(k=>{const inp=document.getElementById('tc-'+k);if(inp)items[k]=inp.value||'0';});
+  TK.forEach(k=>{const v=document.getElementById('tc-'+k)?.value;items[k]=(v!==undefined&&v!=='')?v:(DF.lItems[k]||'0');});
   if(!ptId){
     if(lBtn){lBtn.disabled=false;lBtn.style.opacity='1';}
     toast('اختر نقطة بيع','e');return;
@@ -1802,7 +1833,9 @@ function _doSaveLeft(ptId,targetDate,lType,items){
   const delivVal=todayDelivs.reduce((s,d)=>s+cval(d.items,ptId),0);
   AFTER_LEFT={ptId,ptName:pt?pt.name:'?',lType,cnt,val,delivCnt,delivVal};
   DF={...DF,lItems:ei(),leftMode:false,lType:'yesterday'};
-  save();autoSync();
+  save();
+  saveSnapWithCtx({type:'فائض',ptName:pt?pt.name:'?',cnt,lType,date:TODAY});
+  autoSync();
   renderDeliv();scrollTop();
 }
 function setMode(b){
@@ -2741,15 +2774,15 @@ function printDailyLog(ptId,selectedDates,deferredDates){
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Cairo',sans-serif;direction:rtl;color:#222;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    body{font-family:'Cairo',Arial,sans-serif;direction:rtl;color:#111;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:13px}
     @page{size:A4;margin:10mm}
     .hdr{text-align:center;margin-bottom:10px;padding-bottom:8px;border-bottom:3px solid #8B5E1A}
-    .ttl{font-size:24px;font-weight:900;color:#8B5E1A;font-family:'Cairo',sans-serif}
+    .ttl{font-size:24px;font-weight:900;color:#8B5E1A;font-family:'Cairo',Arial,sans-serif}
     .aya{font-family:'Amiri',serif;font-size:16px;color:#3A2000;margin:6px 0;line-height:2.1}
     .meta{font-size:11px;color:#555;margin-top:6px;display:flex;justify-content:space-between}
     .cols{columns:3;column-gap:8mm;column-rule:1.5px dashed #C4A35A;direction:rtl;margin-bottom:8mm}
     .totbox{border:2px solid #8B5E1A;border-radius:6px;padding:10px 14px;page-break-inside:avoid;margin-bottom:6mm}
-    .trow{display:flex;justify-content:space-between;font-size:12px;padding:3px 0}
+    .trow{display:flex;justify-content:space-between;font-size:13px;font-weight:700;padding:3px 0}
     .drow{display:flex;justify-content:space-between;align-items:center;border-top:2px solid #8B5E1A;margin-top:8px;padding-top:8px}
     .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:20mm;margin-top:6mm;page-break-inside:avoid}
     .sbox{border-top:1.5px solid #000;padding-top:5px;font-size:10px}
@@ -3638,27 +3671,28 @@ function renderSettings(){
 }
 
 function openSnapshotModal(){
-  const snaps=[];
-  for(let i=1;i<=10;i++){
-    try{const r=localStorage.getItem('makhbaza_snap_'+i);if(r){const s=JSON.parse(r);snaps.push({i,s});}}catch(e){}
-  }
+  const snaps=getSnaps();
   if(!snaps.length){toast('لا توجد نسخ احتياطية بعد','e');return;}
 
   let html='';
-  snaps.forEach(({i,s})=>{
-    const d=JSON.parse(s.data||'{}');
+  snaps.forEach((s,i)=>{
+    let d;try{d=JSON.parse(s.data||'{}');}catch(e){d={};}
     const dt=new Date(s.ts);
     const dtStr=`${dl(dt.toISOString().split('T')[0])} ${dt.getHours().toString().padStart(2,'0')}:${dt.getMinutes().toString().padStart(2,'0')}`;
     const delivCnt=(d.deliveries||[]).length;
-    const ptCnt=(d.points||[]).length;
+    const ctx=s.ctx;
+    const ctxStr=ctx?`<div style="font-size:12px;color:var(--A);font-weight:700">${ctx.type==='تسليم'?'🚚':'📦'} ${ctx.type} — ${ctx.ptName} — ${ctx.cnt} خبزة</div>`:'';
     html+=`<div style="padding:10px 12px;border-radius:var(--r);border:1.5px solid var(--br);margin-bottom:8px;background:var(--bg2)">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
-          <div style="font-size:14px;font-weight:800">نسخة ${i} ${i===1?'← الأحدث':''}</div>
-          <div style="font-size:12px;color:var(--tx2)">${dtStr}</div>
-          <div style="font-size:12px;color:var(--tx2)">${ptCnt} نقطة · ${delivCnt} تسليم</div>
+          <div style="font-size:13px;font-weight:800">نسخة ${i+1} ${i===0?'← الأحدث':''}</div>
+          ${ctxStr}
+          <div style="font-size:11px;color:var(--tx2)">${dtStr} · ${delivCnt} تسليم</div>
         </div>
-        <button class="btn btn-s btn-sm" onclick="restoreSnapshot(${i})" style="font-size:13px">استرجاع</button>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-s btn-sm" onclick="exportSnapshot(${i})" style="font-size:12px">📤 تصدير</button>
+          <button class="btn btn-p btn-sm" onclick="restoreSnapshot(${i})" style="font-size:12px">استرجاع</button>
+        </div>
       </div>
     </div>`;
   });
@@ -3666,11 +3700,11 @@ function openSnapshotModal(){
   const ov=document.createElement('div');ov.className='modal-overlay';ov.id='pm';ov.onclick=closeModal;
   ov.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
-    <div class="modal-title">📂 استرجاع نسخة احتياطية</div>
+    <div class="modal-title">📂 سجل النسخ الاحتياطية (${snaps.length})</div>
     <div style="font-size:12px;color:#D85A30;margin-bottom:12px;background:#FFF0E8;padding:8px 12px;border-radius:var(--r)">
       ⚠️ الاسترجاع سيستبدل البيانات الحالية — تأكد من حفظ نسخة أولاً
     </div>
-    ${html}
+    <div style="max-height:60vh;overflow-y:auto">${html}</div>
     <button class="btn btn-s" style="margin-top:8px" onclick="closeModal()">إلغاء</button>
   </div>`;
   document.body.appendChild(ov);
@@ -3678,14 +3712,26 @@ function openSnapshotModal(){
 
 function restoreSnapshot(i){
   try{
-    const r=localStorage.getItem('makhbaza_snap_'+i);
-    if(!r){toast('النسخة غير موجودة','e');return;}
-    const s=JSON.parse(r);
-    const d=JSON.parse(s.data);
+    const snaps=getSnaps();
+    if(!snaps[i]){toast('النسخة غير موجودة','e');return;}
+    const d=JSON.parse(snaps[i].data);
     Object.assign(S,d);
     save();render();closeModal();
-    toast('✓ تم استرجاع النسخة '+i);
+    toast('✓ تم استرجاع النسخة '+(i+1));
   }catch(e){toast('خطأ في الاسترجاع','e');}
+}
+
+function exportSnapshot(i){
+  try{
+    const snaps=getSnaps();
+    if(!snaps[i]){toast('النسخة غير موجودة','e');return;}
+    const s=snaps[i];
+    const dt=new Date(s.ts);
+    const fname=`محسين_نسخة_${dt.getFullYear()}-${(dt.getMonth()+1).toString().padStart(2,'0')}-${dt.getDate().toString().padStart(2,'0')}_${dt.getHours().toString().padStart(2,'0')}${dt.getMinutes().toString().padStart(2,'0')}.json`;
+    const blob=new Blob([s.data],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fname;a.click();
+    toast('✓ تم تصدير النسخة');
+  }catch(e){toast('خطأ في التصدير','e');}
 }
 
 function exportData(){
@@ -4247,6 +4293,14 @@ injectManifest();
 regSW();
 loadLocal();
 applyTheme();
+// إخفاء الـ splash فعلياً بعد الأنيمايشن — CSS وحده غير كافٍ في Chrome Android
+(function(){
+  var sp=document.getElementById('splash');
+  if(!sp)return;
+  var done=function(){sp.style.display='none';sp.style.pointerEvents='none';};
+  sp.addEventListener('animationend',done,{once:true});
+  setTimeout(done,4000);
+})();
 if(!DF.time)DF.time=nstr();
 if(CFG.managerPin&&CFG.managerPin.length>=4){
   showPinScreen();
