@@ -1469,29 +1469,19 @@ function updSum(){
 }
 
 function _showSubmitBtn(){
-  if(DF.leftMode)return; // لا تُظهر زر التسليم في وضع الفائض
+  if(DF.leftMode)return;
   const sb=document.getElementById('sticky-submit-deliv');
-  if(sb){sb.style.display='block';sb.style.opacity='1';}
-  // تحديث محتوى الزر الثابت
-  const btn=document.getElementById('sticky-deliv-btn');
-  if(btn&&DF.ptId){
-    const pt=S.points.find(p=>p.id===DF.ptId);
-    const parts=TK.filter(k=>parseInt(DF.items[k])>0).map(k=>`${TM[k].icon}${DF.items[k]}`).join(' · ');
-    const total=TK.reduce((s,k)=>s+(parseInt(DF.items[k])||0),0);
-    btn.innerHTML=`<div style="font-size:12px;opacity:.85;font-weight:700">🚚 تسليم — ${pt?pt.name:''}</div><div>${parts} | المجموع: ${total} خبزة</div>`;
-  }
-  // أخفِ زر الفائض
+  if(sb){sb.style.display='block';}
   const lw=document.getElementById('sticky-left-wrap');
   if(lw)lw.style.display='none';
 }
 function _hideSubmitBtn(){
   const sb=document.getElementById('sticky-submit-deliv');
-  if(sb){sb.style.display='none';}
+  if(sb)sb.style.display='none';
 }
 
-// تحديث زر الفائض عند كل تغيير في الكمية
+// تحديث زر الفائض عند كل تغيير في الكمية أو النقطة
 function updLeftBtn(){
-  // أخفِ زر التسليم دائماً في وضع الفائض
   const sb=document.getElementById('sticky-submit-deliv');
   if(sb)sb.style.display='none';
 
@@ -1500,7 +1490,11 @@ function updLeftBtn(){
   const btn=document.getElementById('sticky-left-btn');
   if(!wrap||!btn)return;
 
-  if(lTotal>0){
+  // دائماً أعد تفعيل الزر عند إعادة الحساب
+  btn.disabled=false;
+  btn.style.opacity='1';
+
+  if(lTotal>0&&DF.lPtId){
     const lParts=TK.filter(k=>parseInt(DF.lItems[k])>0).map(k=>`${TM[k].icon}${DF.lItems[k]}`).join(' · ');
     const lType=DF.lType||'yesterday';
     const lTypeLabel=lType==='yesterday'?'🥖 خبز بارد':lType==='swap'?'🔄 استبدال':'➡️ نقل';
@@ -1530,6 +1524,7 @@ function submitDeliv(){
   const pt=S.points.find(p=>p.id===ptId);
   AFTER_SUBMIT={ptId,cnt,val,ptName:pt?pt.name:'?',items:{...items}};
   DF={...DF,items:ei(),notes:'',notePrivate:'',notePublic:'',leftMode:false,time:nstr()};
+  _hideSubmitBtn();
   save();
   saveSnapWithCtx({type:'تسليم',ptName:pt?pt.name:'?',cnt,date:TODAY});
   autoSync();toast(`✓ ${cnt} خبزة — ${val.toFixed(2)} د.م`);renderDeliv();scrollTop();
@@ -1581,7 +1576,7 @@ function bLeftForm(){
       const btnStyle=isSel
         ?'border-color:#1E40AF;background:#BFDBFE;border-width:3px;'
         :'border-color:#3B82F6;background:#DBEAFE;';
-      h+=`<div class="pt-btn ${isSel?'selected':''}" onclick="DF.lPtId='${pt.id}';DF.lType='yesterday';DF.lItems=ei();renderDeliv()" style="${btnStyle}position:relative">
+      h+=`<div class="pt-btn ${isSel?'selected':''}" onclick="DF.lPtId='${pt.id}';DF.lType='yesterday';DF.lItems=ei();renderDeliv();updLeftBtn()" style="${btnStyle}position:relative">
         ${isSel?`<div style="position:absolute;top:6px;left:8px;width:20px;height:20px;border-radius:50%;background:#1E40AF;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:900">✓</div>`:''}
         <div class="pt-btn-name">${pt.name}</div>
         <div class="pt-btn-meta">${c} خبزة اليوم</div>
@@ -1780,7 +1775,6 @@ function submitLeft(){
   }else{
     _doSaveLeft(ptId,TODAY,lType,items);
   }
-  // إخفاء الزر بعد التسجيل
   if(lWrap)lWrap.style.display='none';
 }
 
